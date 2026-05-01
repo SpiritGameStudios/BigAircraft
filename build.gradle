@@ -1,0 +1,189 @@
+plugins {
+    id 'java-library'
+    id 'maven-publish'
+    id 'idea'
+    id 'net.neoforged.moddev' version '2.0.141'
+}
+
+version = mod_version
+group = mod_group_id
+
+base {
+    archivesName = mod_id
+}
+
+java.toolchain.languageVersion = JavaLanguageVersion.of(21)
+
+configurations {
+    localRuntime {
+        canBeResolved = true
+        canBeConsumed = false
+    }
+}
+
+neoForge {
+    version = project.neo_version
+
+    parchment {
+        mappingsVersion = project.parchment_mappings_version
+        minecraftVersion = project.parchment_minecraft_version
+    }
+
+    runs {
+        client {
+            client()
+            systemProperty 'neoforge.enabledGameTestNamespaces', project.mod_id
+        }
+
+        server {
+            server()
+            programArgument '--nogui'
+            systemProperty 'neoforge.enabledGameTestNamespaces', project.mod_id
+        }
+
+        gameTestServer {
+            type = "gameTestServer"
+            systemProperty 'neoforge.enabledGameTestNamespaces', project.mod_id
+        }
+
+        data {
+            data()
+            programArguments.addAll '--mod', project.mod_id, '--all', '--output', file('src/generated/resources/').getAbsolutePath(), '--existing', file('src/main/resources/').getAbsolutePath()
+        }
+
+        configureEach {
+            systemProperty 'forge.logging.markers', 'REGISTRIES'
+            logLevel = org.slf4j.event.Level.DEBUG
+        }
+    }
+
+    mods {
+        "${mod_id}" {
+            sourceSet(sourceSets.main)
+        }
+    }
+}
+
+sourceSets.main.resources { srcDir 'src/generated/resources' }
+configurations.runtimeClasspath.extendsFrom(configurations.localRuntime)
+
+repositories {
+    mavenLocal()
+
+    //Repositories for create, sable, etc
+    maven {
+        name = "BlameJared Maven"
+        url = "https://maven.blamejared.com"
+    }
+    maven {
+        name = "createmod Maven"
+        url = "https://maven.createmod.net/"
+    }
+    maven {
+        name = "Registrate"
+        url = "https://mvn.devos.one/snapshots"
+    } // Registrate
+    maven {
+        name = "Ryan's Public Maven"
+        url = "https://maven.ryanhcode.dev/releases/"
+    }
+    maven {
+        url = "https://raw.githubusercontent.com/Fuzss/modresources/main/maven/"
+    }
+
+    //Repositories for Aeronautics only
+    maven {
+        url = "https://maven.theillusivec4.top/"
+    } // Curios API
+    maven {
+        name = "Modrinth"
+        url = "https://api.modrinth.com/maven"
+        content {
+            includeGroup "maven.modrinth"
+        }
+    }
+    maven {
+        name = "SquidDev"
+        url = "https://maven.squiddev.cc"
+        content {
+            includeGroup "cc.tweaked"
+        }
+    } //CC Tweaked
+}
+
+dependencies {
+    def veil = "foundry.veil:veil-neoforge-${minecraft_version}:${veil_version}"
+    compileOnly(veil)
+    implementation(veil) {
+        exclude group: 'maven.modrinth'
+        exclude group: 'me.fallenbreath'
+    }
+
+    //Flywheel
+    def flywheelApi = "dev.engine-room.flywheel:flywheel-neoforge-api-${minecraft_version}:${flywheel_version}"
+    compileOnly(flywheelApi)
+
+    def flywheel = "dev.engine-room.flywheel:flywheel-neoforge-${minecraft_version}:${flywheel_version}"
+    implementation(flywheel)
+
+    //Sable
+    implementation("dev.ryanhcode.sable:sable-neoforge-${minecraft_version}:${sable_version}") {
+        exclude group: 'foundry.veil'
+    }
+    api("dev.ryanhcode.sable-companion:sable-companion-common-${minecraft_version}:${sable_companion_version}")
+
+    //Aeronautics
+    implementation "dev.eriksonn.aeronautics:aeronautics-neoforge-1.21.1:1.0.3"
+    //Aeronautics required dependencies
+    implementation "dev.simulated_team.simulated:simulated-neoforge-1.21.1:1.0.3"
+    implementation "maven.modrinth:natures-compass:1.21.1-3.4.0-neoforge"
+    implementation "cc.tweaked:cc-tweaked-1.21.1-forge:1.117.1"
+
+
+    //Create + Additional mods
+    localRuntime("mezz.jei:jei-${minecraft_version}-neoforge:${jei_version}")
+    localRuntime("com.simibubi.create:create-${minecraft_version}:${create_version}:slim") { transitive = false }
+    localRuntime("net.createmod.ponder:ponder-neoforge:${ponder_version}+mc${minecraft_version}") { transitive = false }
+    localRuntime("com.tterrag.registrate:Registrate:${registrate_version}")
+}
+
+var generateModMetadata = tasks.register("generateModMetadata", ProcessResources) {
+    var replaceProperties = [minecraft_version      : minecraft_version,
+                             minecraft_version_range: minecraft_version_range,
+                             neo_version            : neo_version,
+                             neo_version_range      : neo_version_range,
+                             loader_version_range   : loader_version_range,
+                             mod_id                 : mod_id,
+                             mod_name               : mod_name,
+                             mod_license            : mod_license,
+                             mod_version            : mod_version,
+                             mod_authors            : mod_authors,
+                             mod_description        : mod_description]
+    inputs.properties replaceProperties
+    expand replaceProperties
+    from "src/main/templates"
+    into "build/generated/sources/modMetadata"
+}
+
+sourceSets.main.resources.srcDir generateModMetadata
+neoForge.ideSyncTask generateModMetadata
+
+publishing {
+    publications {
+        register('mavenJava', MavenPublication) {
+            from components.java
+        }
+    }
+    repositories {
+        maven {
+            url "file://${project.projectDir}/repo"
+        }
+    }
+}
+
+idea {
+    module {
+        downloadSources = true
+        downloadJavadoc = true
+    }
+}

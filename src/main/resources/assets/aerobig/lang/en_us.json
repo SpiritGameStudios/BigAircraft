@@ -1,0 +1,13 @@
+{
+  "itemGroup.aerobig": "Example Mod Tab",
+  "block.aerobig.example_block": "Example Block",
+  "item.aerobig.example_item": "Example Item",
+
+  "aerobig.configuration.title": "Aeronautics: Big Configs",
+  "aerobig.configuration.section.aerobig.common.toml": "Aeronautics: Big Configs",
+  "aerobig.configuration.section.aerobig.common.toml.title": "Aeronautics: Big Configs",
+  "aerobig.configuration.items": "Item List",
+  "aerobig.configuration.logDirtBlock": "Log Dirt Block",
+  "aerobig.configuration.magicNumberIntroduction": "Magic Number Text",
+  "aerobig.configuration.magicNumber": "Magic Number"
+}
