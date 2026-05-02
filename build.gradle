@@ -138,13 +138,13 @@ dependencies {
     implementation "dev.simulated_team.simulated:simulated-neoforge-1.21.1:1.0.3"
     implementation "maven.modrinth:natures-compass:1.21.1-3.4.0-neoforge"
     implementation "cc.tweaked:cc-tweaked-1.21.1-forge:1.117.1"
+    implementation("com.tterrag.registrate:Registrate:${registrate_version}")
 
 
     //Create + Additional mods
     localRuntime("mezz.jei:jei-${minecraft_version}-neoforge:${jei_version}")
-    localRuntime("com.simibubi.create:create-${minecraft_version}:${create_version}:slim") { transitive = false }
+    implementation("com.simibubi.create:create-${minecraft_version}:${create_version}:slim") { transitive = false }
     localRuntime("net.createmod.ponder:ponder-neoforge:${ponder_version}+mc${minecraft_version}") { transitive = false }
-    localRuntime("com.tterrag.registrate:Registrate:${registrate_version}")
 }
 
 var generateModMetadata = tasks.register("generateModMetadata", ProcessResources) {

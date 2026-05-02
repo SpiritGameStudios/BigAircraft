@@ -1,0 +1,19 @@
+{
+    "variants": {
+        "axis=x": {
+            "model": "aerobig:block/carbon_composite_encased_shaft",
+            "x": 90,
+            "y": 90,
+            "uvlock": true
+        },
+        "axis=y": {
+            "model": "aerobig:block/carbon_composite_encased_shaft"
+        },
+        "axis=z": {
+            "model": "aerobig:block/carbon_composite_encased_shaft",
+            "x": 90,
+            "y": 180,
+            "uvlock": true
+        }
+    }
+}
