@@ -1,0 +1,6 @@
+{
+    "parent": "aerobig:block/template_carbon_composite",
+    "textures": {
+        "texture": "aerobig:block/cyan_carbon_composite"
+    }
+}

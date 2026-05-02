@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:block/cube_all",
+  "textures": {
+    "all": "aerobig:block/cyan_carbon_composite"
+  }
+}

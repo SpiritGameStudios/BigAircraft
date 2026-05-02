@@ -2,50 +2,84 @@ package dev.spiritstudios.aerobig.registry;
 
 import com.simibubi.create.AllBlocks;
 import com.simibubi.create.content.decoration.encasing.EncasingRegistry;
-import com.simibubi.create.content.kinetics.simpleRelays.encased.EncasedShaftBlock;
-import com.simibubi.create.foundation.data.CreateRegistrate;
-import com.tterrag.registrate.util.entry.BlockEntry;
-import dev.simulated_team.simulated.registrate.SimulatedRegistrate;
+import com.simibubi.create.foundation.block.DyedBlockList;
+import com.simibubi.create.foundation.data.BlockStateGen;
+import com.simibubi.create.foundation.data.TagGen;
+import com.tterrag.registrate.providers.RegistrateLangProvider;
+import com.tterrag.registrate.util.nullness.NonNullBiFunction;
 import dev.simulated_team.simulated.registrate.simulated_tab.CreativeTabItemTransforms;
 import dev.spiritstudios.aerobig.AeronauticsBig;
-import dev.spiritstudios.aerobig.block.CompositeEncasedShaftBlock;
-import net.minecraft.world.level.block.Block;
+import dev.spiritstudios.aerobig.block.CarbonCompositeBlock;
+import dev.spiritstudios.aerobig.block.CarbonCompositeEncasedShaftBlock;
+import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.level.block.SoundType;
-import net.minecraft.world.level.block.state.BlockBehaviour;
-import net.minecraft.world.level.material.MapColor;
+import net.minecraft.world.level.storage.loot.LootPool;
+import net.minecraft.world.level.storage.loot.entries.LootItem;
+import net.minecraft.world.level.storage.loot.providers.number.ConstantValue;
 
-public class AerospaceBlocks {
-    private static final AerospaceRegistrate REGISTRATE = AeronauticsBig.REGISTRATE.get();
+public interface AerospaceBlocks {
 
-    public static final BlockEntry<Block> CARBON_COMPOSITE = REGISTRATE.block(
-                    "carbon_composite",
-                    Block::new
+    NonNullBiFunction<DyeColor, String, String> DEFAULT_WHITE_NAME = (color, path) -> color == DyeColor.WHITE ? path : color.getSerializedName() + '_' + path;
+
+    DyedBlockList<CarbonCompositeBlock> DYED_CARBON_COMPOSITE_BLOCKS = new DyedBlockList<>(color -> {
+        String path = DEFAULT_WHITE_NAME.apply(color, "carbon_composite");
+
+        return AeronauticsBig.registrate().block(path, properties -> new CarbonCompositeBlock(properties, color))
+            .lang(RegistrateLangProvider.toEnglishName(path))
+            .properties(properties -> properties
+                .mapColor(color.getMapColor())
+                .requiresCorrectToolForDrops()
+                .strength(5.0F, 6.0F)
+                .sound(SoundType.COPPER)
             )
-            .properties(p -> p.mapColor(MapColor.METAL)
-                    .requiresCorrectToolForDrops()
-                    .strength(5.0F, 6.0F)
-                    .sound(SoundType.COPPER))
-            .simpleItem()
+            .blockstate((context, provider) -> provider
+                .simpleBlock(context.get(), provider.models()
+                    .cubeAll(path, provider.modLoc("block/" + path))
+                )
+            )
+            .tag(AerospaceTags.Blocks.CARBON_COMPOSITE)
+            .transform(TagGen.pickaxeOnly())
+            .item()
+            .tag(AerospaceTags.Items.CARBON_COMPOSITE)
+            .tag(AerospaceTags.Items.SHAFTLESS_CARBON_COMPOSITE)
+            .build()
             .register();
+    });
 
-    public static final BlockEntry<CompositeEncasedShaftBlock> CARBON_COMPOSITE_ENCASED_SHAFT = REGISTRATE.block(
-                    "carbon_composite_encased_shaft",
-                    CompositeEncasedShaftBlock::new
+    DyedBlockList<CarbonCompositeEncasedShaftBlock> CARBON_COMPOSITE_ENCASED_SHAFTS = new DyedBlockList<>(color -> {
+        String path = DEFAULT_WHITE_NAME.apply(color, "carbon_composite_encased_shaft");
+
+        return AeronauticsBig.registrate().block(path, properties -> new CarbonCompositeEncasedShaftBlock(properties, color))
+            .properties(properties -> properties
+                .mapColor(color.getMapColor())
+                .requiresCorrectToolForDrops()
+                .noOcclusion()
+                .strength(5.0F, 6.0F)
+                .sound(SoundType.COPPER)
             )
-            .properties(BlockBehaviour.Properties::noOcclusion)
-            .properties(p ->
-                    p.mapColor(MapColor.METAL)
-                            .requiresCorrectToolForDrops()
-                            .strength(5.0F, 6.0F)
-                            .sound(SoundType.COPPER)
-            )
-            .transform(b -> b.transform(EncasingRegistry.addVariantTo(AllBlocks.SHAFT)))
+            .blockstate((context, provider) -> BlockStateGen.axisBlock(context, provider, blockState -> provider
+                .models()
+                .withExistingParent(path, provider.modLoc("block/template_carbon_composite_encased_shaft"))
+                .texture("side", provider.modLoc("block/" + DEFAULT_WHITE_NAME.apply(color, "carbon_composite")))
+                .texture("gearbox", provider.modLoc("block/" + DEFAULT_WHITE_NAME.apply(color, "carbon_composite_gearbox"))),
+                true
+            ))
+            .loot((lootTables, block) -> lootTables.add(block, lootTables.createSingleItemTable(DYED_CARBON_COMPOSITE_BLOCKS.get(color))
+                .withPool(lootTables.applyExplosionCondition(AllBlocks.SHAFT.get(), LootPool.lootPool()
+                    .setRolls(ConstantValue.exactly(1.0F))
+                    .add(LootItem.lootTableItem(AllBlocks.SHAFT.get()))
+                ))
+            ))
+            .tag(AerospaceTags.Blocks.CARBON_COMPOSITE)
+            .transform(TagGen.pickaxeOnly())
             .transform(EncasingRegistry.addVariantTo(AllBlocks.SHAFT))
             .transform(CreativeTabItemTransforms.VisibilityType.INVISIBLE.applyBlock())
-            .simpleItem()
+            .item()
+            .tag(AerospaceTags.Items.CARBON_COMPOSITE)
+            .build()
             .register();
+    });
 
-    public static void init() {
-    }
+    static void init() {}
 
 }

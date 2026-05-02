@@ -1,0 +1,7 @@
+{
+  "parent": "aerobig:block/template_carbon_composite_encased_shaft",
+  "textures": {
+    "gearbox": "aerobig:block/magenta_carbon_composite_gearbox",
+    "side": "aerobig:block/magenta_carbon_composite"
+  }
+}

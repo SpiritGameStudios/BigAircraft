@@ -1,12 +1,9 @@
 package dev.spiritstudios.aerobig;
 
-import com.simibubi.create.foundation.data.CreateRegistrate;
 import com.tterrag.registrate.util.nullness.NonNullSupplier;
-import dev.eriksonn.aeronautics.registry.AeroRegistrate;
 import dev.simulated_team.simulated.registrate.SimulatedRegistrate;
 import dev.spiritstudios.aerobig.registry.AerospaceBlockEntityTypes;
 import dev.spiritstudios.aerobig.registry.AerospaceBlocks;
-import dev.spiritstudios.aerobig.registry.AerospaceRegistrate;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.CreativeModeTab;
@@ -19,25 +16,33 @@ import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.config.ModConfig;
 import net.neoforged.fml.ModContainer;
 
-@Mod(AeronauticsBig.MODID)
+@Mod(AeronauticsBig.MOD_ID)
 public class AeronauticsBig {
-    public static final String MODID = "aerobig";
+
+    public static final String MOD_ID = "aerobig";
     public static final Logger LOGGER = LogUtils.getLogger();
 
-    public static final NonNullSupplier<AerospaceRegistrate> REGISTRATE = NonNullSupplier.lazy(() -> (AerospaceRegistrate) new AerospaceRegistrate(
-            id("aerospace"),
-            "aerobig"
-    ).defaultCreativeTab((ResourceKey<CreativeModeTab>) null));
+    public static final NonNullSupplier<SimulatedRegistrate> REGISTRATE = NonNullSupplier.lazy(
+        () -> (SimulatedRegistrate) new SimulatedRegistrate(id("aerospace"), MOD_ID)
+            .defaultCreativeTab((ResourceKey<CreativeModeTab>) null)
+    );
 
     public AeronauticsBig(IEventBus modEventBus, ModContainer modContainer) {
-        REGISTRATE.get().registerEventListeners(modEventBus);
+        registrate().registerEventListeners(modEventBus);
+        registrate().addRawLang("aerospace.simulated_section.aerospace", "Aerospace");
+
         AerospaceBlocks.init();
         AerospaceBlockEntityTypes.init();
 
         modContainer.registerConfig(ModConfig.Type.COMMON, Config.SPEC);
     }
 
-    public static ResourceLocation id(String path) {
-        return ResourceLocation.fromNamespaceAndPath(MODID, path);
+    public static SimulatedRegistrate registrate() {
+        return REGISTRATE.get();
     }
+
+    public static ResourceLocation id(String path) {
+        return ResourceLocation.fromNamespaceAndPath(MOD_ID, path);
+    }
+
 }

@@ -1,0 +1,6 @@
+{
+    "parent": "aerobig:block/template_carbon_composite_encased_shaft",
+    "textures": {
+        "texture": "aerobig:block/blue_carbon_composite"
+    }
+}

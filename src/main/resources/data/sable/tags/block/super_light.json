@@ -1,6 +1,6 @@
 {
+    "replace": false,
     "values": [
-        "aerobig:carbon_composite",
-        "aerobig:carbon_composite_encased_shaft"
+        "#aerobig:carbon_composite"
     ]
 }
