@@ -33,8 +33,6 @@ public class AeronauticsBig {
 
         AerospaceBlocks.init();
         AerospaceBlockEntityTypes.init();
-
-        modContainer.registerConfig(ModConfig.Type.COMMON, Config.SPEC);
     }
 
     public static SimulatedRegistrate registrate() {
