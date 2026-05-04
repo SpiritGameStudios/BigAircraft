@@ -28,23 +28,28 @@ import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
 
+import javax.annotation.Nullable;
+import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.function.Predicate;
 
+@ParametersAreNonnullByDefault
+@MethodsReturnNonnullByDefault
 public class AnalogSpeedControllerBlock extends HorizontalAxisKineticBlock implements IBE<AnalogSpeedControllerBlockEntity> {
-    private static final int placementHelperId = PlacementHelpers.register(new AnalogSpeedControllerBlock.PlacementHelper());
+
+    private static final int PLACEMENT_HELPER_ID = PlacementHelpers.register(new PlacementHelper());
 
     public AnalogSpeedControllerBlock(Properties properties) {
         super(properties);
     }
 
     @Override
+    @Nullable
     public BlockState getStateForPlacement(BlockPlaceContext context) {
         BlockState above = context.getLevel()
                 .getBlockState(context.getClickedPos()
                         .above());
-        if (ICogWheel.isLargeCog(above) && above.getValue(CogWheelBlock.AXIS)
-                .isHorizontal())
-            return defaultBlockState().setValue(HORIZONTAL_AXIS, above.getValue(CogWheelBlock.AXIS) == Direction.Axis.X ? Direction.Axis.Z : Direction.Axis.X);
+        if (AnalogSpeedControllerBlockEntity.isCogwheelPresent(context.getLevel(), context.getClickedPos()))
+            return this.defaultBlockState().setValue(HORIZONTAL_AXIS, above.getValue(CogWheelBlock.AXIS) == Direction.Axis.X ? Direction.Axis.Z : Direction.Axis.X);
         return super.getStateForPlacement(context);
     }
 
@@ -57,7 +62,7 @@ public class AnalogSpeedControllerBlock extends HorizontalAxisKineticBlock imple
 
     @Override
     protected ItemInteractionResult useItemOn(ItemStack stack, BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hitResult) {
-        IPlacementHelper helper = PlacementHelpers.get(placementHelperId);
+        IPlacementHelper helper = PlacementHelpers.get(PLACEMENT_HELPER_ID);
         if (helper.matchesItem(stack))
             return helper.getOffset(player, level, state, pos, hitResult).placeInWorld(level, (BlockItem) stack.getItem(), player, hand, hitResult);
 
@@ -92,15 +97,15 @@ public class AnalogSpeedControllerBlock extends HorizontalAxisKineticBlock imple
         }
 
         @Override
-        public PlacementOffset getOffset(Player player, Level world, BlockState state, BlockPos pos, BlockHitResult ray) {
+        public PlacementOffset getOffset(Player player, Level level, BlockState state, BlockPos pos, BlockHitResult ray) {
             BlockPos newPos = pos.above();
-            if (!world.getBlockState(newPos)
+            if (!level.getBlockState(newPos)
                     .canBeReplaced())
                 return PlacementOffset.fail();
 
             Direction.Axis newAxis = state.getValue(HORIZONTAL_AXIS) == Direction.Axis.X ? Direction.Axis.Z : Direction.Axis.X;
 
-            if (!CogWheelBlock.isValidCogwheelPosition(true, world, newPos, newAxis))
+            if (!CogWheelBlock.isValidCogwheelPosition(true, level, newPos, newAxis))
                 return PlacementOffset.fail();
 
             return PlacementOffset.success(newPos, s -> s.setValue(CogWheelBlock.AXIS, newAxis));

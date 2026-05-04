@@ -3,7 +3,6 @@ package dev.spiritstudios.aerobig.registry;
 import com.simibubi.create.content.kinetics.base.KineticBlockEntity;
 import com.simibubi.create.content.kinetics.base.ShaftRenderer;
 import com.simibubi.create.content.kinetics.base.SingleAxisRotatingVisual;
-import com.simibubi.create.content.kinetics.speedController.SpeedControllerRenderer;
 import com.tterrag.registrate.util.entry.BlockEntityEntry;
 import dev.spiritstudios.aerobig.block.analog_speed_controller.AnalogSpeedControllerBlockEntity;
 import dev.spiritstudios.aerobig.block.analog_speed_controller.AnalogSpeedControllerRenderer;
@@ -19,11 +18,11 @@ public interface AerospaceBlockEntityTypes {
         .register();
 
     BlockEntityEntry<AnalogSpeedControllerBlockEntity> ANALOG_SPEED_CONTROLLER = registrate()
-            .blockEntity("analog_speed_controller", AnalogSpeedControllerBlockEntity::new)
-            .visual(() -> SingleAxisRotatingVisual::shaft)
-            .validBlocks(AerospaceBlocks.ANALOG_SPEED_CONTROLLER)
-            .renderer(() -> AnalogSpeedControllerRenderer::new)
-            .register();
+        .blockEntity("analog_speed_controller", AnalogSpeedControllerBlockEntity::new)
+        .visual(() -> SingleAxisRotatingVisual::shaft)
+        .validBlocks(AerospaceBlocks.ANALOG_SPEED_CONTROLLER)
+        .renderer(() -> AnalogSpeedControllerRenderer::new)
+        .register();
 
 
     static void init() {}
