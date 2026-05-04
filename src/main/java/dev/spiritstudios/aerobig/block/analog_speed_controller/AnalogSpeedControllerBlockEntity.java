@@ -4,6 +4,7 @@ import com.simibubi.create.content.kinetics.base.KineticBlockEntity;
 import com.simibubi.create.content.kinetics.simpleRelays.CogWheelBlock;
 import com.simibubi.create.content.kinetics.simpleRelays.ICogWheel;
 import com.simibubi.create.infrastructure.config.AllConfigs;
+import dev.spiritstudios.aerobig.registry.AerospaceAdvancements;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
@@ -70,6 +71,9 @@ public class AnalogSpeedControllerBlockEntity extends KineticBlockEntity {
         this.removeSource();
         this.signal = newSignal;
         this.attachKinetics();
+
+        if (this.level != null && isCogwheelPresent(this.level, this.worldPosition))
+            AerospaceAdvancements.ANALOG_SPEED_CONTROLLER.awardToNearby(worldPosition, level);
     }
 
     public void updateBracket() {
