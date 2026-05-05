@@ -1,7 +1,7 @@
 {
   "priority": 10000000,
   "title": {
-    "text": { "translate": "aerospace.simulated_section.aerospace" },
+    "text": { "translate": "aerobig.simulated_section.aerobig" },
     "background": "#bb001e3c"
   },
   "sprite": "aeronautics:banner",

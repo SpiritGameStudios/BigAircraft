@@ -1,0 +1,7 @@
+{
+  "parent": "aerobig:block/wrapped_gearbox_item",
+  "textures": {
+    "side": "aerobig:block/lime_carbon_composite_gearbox",
+    "top": "aerobig:block/lime_carbon_composite"
+  }
+}

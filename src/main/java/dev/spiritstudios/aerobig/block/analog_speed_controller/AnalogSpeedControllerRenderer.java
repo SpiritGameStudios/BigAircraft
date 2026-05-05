@@ -4,8 +4,6 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.simibubi.create.AllPartialModels;
 import com.simibubi.create.content.kinetics.base.KineticBlockEntityRenderer;
-import com.simibubi.create.content.kinetics.speedController.SpeedControllerBlock;
-import com.simibubi.create.content.kinetics.speedController.SpeedControllerBlockEntity;
 import com.simibubi.create.foundation.blockEntity.renderer.SmartBlockEntityRenderer;
 import dev.engine_room.flywheel.api.visualization.VisualizationManager;
 import net.createmod.catnip.render.CachedBuffers;
@@ -16,6 +14,7 @@ import net.minecraft.client.renderer.Sheets;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.util.Mth;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 
@@ -25,32 +24,35 @@ public class AnalogSpeedControllerRenderer extends SmartBlockEntityRenderer<Anal
     }
 
     @Override
-    protected void renderSafe(AnalogSpeedControllerBlockEntity blockEntity, float partialTicks, PoseStack ms, MultiBufferSource buffer, int light, int overlay) {
-        super.renderSafe(blockEntity, partialTicks, ms, buffer, light, overlay);
+    protected void renderSafe(AnalogSpeedControllerBlockEntity blockEntity, float partialTicks, PoseStack poseStack, MultiBufferSource buffer, int light, int overlay) {
+        super.renderSafe(blockEntity, partialTicks, poseStack, buffer, light, overlay);
 
         VertexConsumer builder = buffer.getBuffer(Sheets.solidBlockSheet());
-        if (!VisualizationManager.supportsVisualization(blockEntity.getLevel())) {
-            KineticBlockEntityRenderer.renderRotatingBuffer(blockEntity, getRotatedModel(blockEntity), ms, builder, light);
-        }
+
+        if (!VisualizationManager.supportsVisualization(blockEntity.getLevel()))
+            KineticBlockEntityRenderer.renderRotatingBuffer(blockEntity, getRotatedModel(blockEntity), poseStack, builder, light);
 
         if (!blockEntity.hasBracket)
             return;
 
         BlockPos pos = blockEntity.getBlockPos();
-        Level world = blockEntity.getLevel();
+        Level level = blockEntity.getLevel();
         BlockState blockState = blockEntity.getBlockState();
-        boolean alongX = blockState.getValue(AnalogSpeedControllerBlock.HORIZONTAL_AXIS) == Direction.Axis.X;
 
+        boolean alongX = blockState.getValue(AnalogSpeedControllerBlock.HORIZONTAL_AXIS) == Direction.Axis.X;
         SuperByteBuffer bracket = CachedBuffers.partial(AllPartialModels.SPEED_CONTROLLER_BRACKET, blockState);
+
         bracket.translate(0, 1, 0);
-        bracket.rotateCentered(
-                (float) (alongX ? Math.PI : Math.PI / 2), Direction.UP);
-        bracket.light(LevelRenderer.getLightColor(world, pos.above()));
-        bracket.renderInto(ms, builder);
+        bracket.rotateCentered(alongX ? Mth.PI : Mth.HALF_PI, Direction.UP);
+
+        if (level != null)
+            bracket.light(LevelRenderer.getLightColor(level, pos.above()));
+
+        bracket.renderInto(poseStack, builder);
     }
 
     private SuperByteBuffer getRotatedModel(AnalogSpeedControllerBlockEntity blockEntity) {
-        return CachedBuffers.block(KineticBlockEntityRenderer.KINETIC_BLOCK,
-                KineticBlockEntityRenderer.shaft(KineticBlockEntityRenderer.getRotationAxisOf(blockEntity)));
+        return CachedBuffers.block(KineticBlockEntityRenderer.KINETIC_BLOCK, KineticBlockEntityRenderer.shaft(KineticBlockEntityRenderer.getRotationAxisOf(blockEntity)));
     }
+
 }

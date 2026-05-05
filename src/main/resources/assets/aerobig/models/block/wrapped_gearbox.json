@@ -1,0 +1,8 @@
+{
+    "parent": "create:block/gearbox/block",
+    "textures": {
+        "0": "#top",
+        "1": "#side",
+        "particle": "#top"
+    }
+}

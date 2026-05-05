@@ -1,31 +1,55 @@
 package dev.spiritstudios.aerobig.block.analog_speed_controller;
 
+import com.simibubi.create.compat.computercraft.AbstractComputerBehaviour;
+import com.simibubi.create.compat.computercraft.ComputerCraftProxy;
 import com.simibubi.create.content.kinetics.base.KineticBlockEntity;
+import com.simibubi.create.content.kinetics.motor.KineticScrollValueBehaviour;
 import com.simibubi.create.content.kinetics.simpleRelays.CogWheelBlock;
 import com.simibubi.create.content.kinetics.simpleRelays.ICogWheel;
+import com.simibubi.create.foundation.blockEntity.behaviour.BlockEntityBehaviour;
+import com.simibubi.create.foundation.blockEntity.behaviour.ValueBoxTransform;
+import com.simibubi.create.foundation.blockEntity.behaviour.scrollValue.ScrollValueBehaviour;
+import com.simibubi.create.foundation.utility.CreateLang;
 import com.simibubi.create.infrastructure.config.AllConfigs;
-import dev.spiritstudios.aerobig.registry.AerospaceAdvancements;
+import dan200.computercraft.api.peripheral.PeripheralCapability;
+import dev.spiritstudios.aerobig.registry.ModAdvancements;
+import dev.spiritstudios.aerobig.registry.ModBlockEntityTypes;
+import net.createmod.catnip.math.VecHelper;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.util.Mth;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.phys.Vec3;
+import net.neoforged.neoforge.capabilities.RegisterCapabilitiesEvent;
 
+import java.util.List;
 import java.util.Objects;
 
 public class AnalogSpeedControllerBlockEntity extends KineticBlockEntity {
 
+    private static final int DEFAULT_SPEED = 16;
     private static final String SIGNAL_KEY = "Signal";
 
     private int signal = 0;
     public boolean hasBracket = false;
-    private boolean signalChanged = false;
+
+    public ScrollValueBehaviour targetSpeed;
+    public AbstractComputerBehaviour computerBehaviour;
 
     public AnalogSpeedControllerBlockEntity(BlockEntityType<?> typeIn, BlockPos pos, BlockState state) {
         super(typeIn, pos, state);
-        this.setLazyTickRate(40);
+    }
+
+    public static void registerComputerBehaviour(RegisterCapabilitiesEvent event) {
+        event.registerBlockEntity(
+            PeripheralCapability.get(),
+            ModBlockEntityTypes.ANALOG_SPEED_CONTROLLER.get(),
+            (be, context) -> be.computerBehaviour.getPeripheralCapability()
+        );
     }
 
     @Override
@@ -42,7 +66,7 @@ public class AnalogSpeedControllerBlockEntity extends KineticBlockEntity {
 
     public void neighbourChanged() {
         if (this.level != null && this.getSignalAt() != this.signal)
-            this.signalChanged = true;
+            this.analogSignalChanged(this.getSignalAt());
     }
 
     @Override
@@ -54,16 +78,23 @@ public class AnalogSpeedControllerBlockEntity extends KineticBlockEntity {
     }
 
     @Override
-    public void tick() {
-        super.tick();
+    public void invalidate() {
+        super.invalidate();
+        this.computerBehaviour.removePeripheral();
+    }
 
-        if (this.level == null || this.level.isClientSide)
-            return;
+    @Override
+    public void addBehaviours(List<BlockEntityBehaviour> behaviours) {
+        super.addBehaviours(behaviours);
+        int max = AllConfigs.server().kinetics.maxRotationSpeed.get();
 
-        if (this.signalChanged) {
-            this.signalChanged = false;
-            this.analogSignalChanged(this.getSignalAt());
-        }
+        this.targetSpeed = new KineticScrollValueBehaviour(CreateLang.translateDirect("kinetics.speed_controller.rotation_speed"), this, new ControllerValueBoxTransform());
+        this.targetSpeed.between(-max, max);
+        this.targetSpeed.value = DEFAULT_SPEED;
+        this.targetSpeed.withCallback(i -> this.analogSignalChanged(this.getSignalAt()));
+
+        behaviours.add(this.targetSpeed);
+        behaviours.add(this.computerBehaviour = ComputerCraftProxy.behaviour(this));
     }
 
     protected void analogSignalChanged(int newSignal) {
@@ -73,7 +104,7 @@ public class AnalogSpeedControllerBlockEntity extends KineticBlockEntity {
         this.attachKinetics();
 
         if (this.level != null && isCogwheelPresent(this.level, this.worldPosition))
-            AerospaceAdvancements.ANALOG_SPEED_CONTROLLER.awardToNearby(worldPosition, level);
+            ModAdvancements.ANALOG_SPEED_CONTROLLER.awardToNearby(worldPosition, level);
     }
 
     public void updateBracket() {
@@ -113,7 +144,7 @@ public class AnalogSpeedControllerBlockEntity extends KineticBlockEntity {
         float targetSpeed = Mth.map(
             this.signal,
             0.0F, 15.0F,
-            0.0F, AllConfigs.server().kinetics.maxRotationSpeed.get()
+            0.0F, this.targetSpeed.value
         );
 
         float speed = this.getTheoreticalSpeed();
@@ -131,5 +162,22 @@ public class AnalogSpeedControllerBlockEntity extends KineticBlockEntity {
             return targetingController ? targetSpeed : wheelSpeed;
 
         return targetingController ? speed : targetSpeed;
+    }
+
+    private static class ControllerValueBoxTransform extends ValueBoxTransform.Sided {
+
+        @Override
+        protected Vec3 getSouthLocation() {
+            return VecHelper.voxelSpace(8.0, 10.0, 15.5);
+        }
+
+        @Override
+        protected boolean isSideActive(BlockState state, Direction direction) {
+            if (direction.getAxis().isVertical())
+                return false;
+
+            return state.getValue(AnalogSpeedControllerBlock.HORIZONTAL_AXIS) != direction.getAxis();
+        }
+
     }
 }

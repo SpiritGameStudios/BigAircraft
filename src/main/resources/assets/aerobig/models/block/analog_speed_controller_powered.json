@@ -1,0 +1,6 @@
+{
+    "parent": "aerobig:block/analog_speed_controller",
+    "textures": {
+        "side": "aerobig:block/analog_speed_controller_side_powered"
+    }
+}

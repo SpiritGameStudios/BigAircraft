@@ -1,0 +1,7 @@
+{
+  "parent": "aerobig:block/wrapped_gearbox_item_vertical",
+  "textures": {
+    "side": "aerobig:block/yellow_carbon_composite_gearbox",
+    "top": "aerobig:block/yellow_carbon_composite"
+  }
+}

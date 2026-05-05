@@ -1,16 +1,17 @@
 {
-  "required": true,
-  "package": "dev.spiritstudios.aerobig.mixin",
-  "compatibilityLevel": "JAVA_21",
-  "client": [
-  ],
-  "injectors": {
-    "defaultRequire": 1
-  },
-  "overwrites": {
-    "requireAnnotations": true
-  },
-  "mixins": [
-    "RotationPropagatorMixin"
-  ]
+    "required": true,
+    "package": "dev.spiritstudios.aerobig.mixin",
+    "compatibilityLevel": "JAVA_21",
+    "client": [
+    ],
+    "injectors": {
+        "defaultRequire": 1
+    },
+    "overwrites": {
+        "requireAnnotations": true
+    },
+    "mixins": [
+        "ComputerBehaviourMixin",
+        "RotationPropagatorMixin"
+    ]
 }

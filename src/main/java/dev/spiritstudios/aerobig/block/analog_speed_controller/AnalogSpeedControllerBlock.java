@@ -1,12 +1,11 @@
 package dev.spiritstudios.aerobig.block.analog_speed_controller;
 
-import com.simibubi.create.AllShapes;
 import com.simibubi.create.content.kinetics.base.HorizontalAxisKineticBlock;
 import com.simibubi.create.content.kinetics.simpleRelays.CogWheelBlock;
 import com.simibubi.create.content.kinetics.simpleRelays.ICogWheel;
 import com.simibubi.create.foundation.block.IBE;
-import dev.spiritstudios.aerobig.registry.AerospaceBlockEntityTypes;
-import dev.spiritstudios.aerobig.registry.AerospaceBlocks;
+import dev.spiritstudios.aerobig.registry.ModBlockEntityTypes;
+import dev.spiritstudios.aerobig.registry.ModBlocks;
 import net.createmod.catnip.placement.IPlacementHelper;
 import net.createmod.catnip.placement.PlacementHelpers;
 import net.createmod.catnip.placement.PlacementOffset;
@@ -24,6 +23,9 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.StateDefinition;
+import net.minecraft.world.level.block.state.properties.BlockStateProperties;
+import net.minecraft.world.level.block.state.properties.BooleanProperty;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
@@ -37,32 +39,71 @@ import java.util.function.Predicate;
 public class AnalogSpeedControllerBlock extends HorizontalAxisKineticBlock implements IBE<AnalogSpeedControllerBlockEntity> {
 
     private static final int PLACEMENT_HELPER_ID = PlacementHelpers.register(new PlacementHelper());
+    public static final BooleanProperty POWERED = BlockStateProperties.POWERED;
+    private static final VoxelShape SHAPE = box(0.0, 0.0, 0.0, 16.0, 15.0, 16.0);
 
     public AnalogSpeedControllerBlock(Properties properties) {
         super(properties);
+        this.registerDefaultState(this.getStateDefinition().any().setValue(POWERED, false));
     }
 
     @Override
     @Nullable
     public BlockState getStateForPlacement(BlockPlaceContext context) {
-        BlockState above = context.getLevel()
-                .getBlockState(context.getClickedPos()
-                        .above());
-        if (AnalogSpeedControllerBlockEntity.isCogwheelPresent(context.getLevel(), context.getClickedPos()))
-            return this.defaultBlockState().setValue(HORIZONTAL_AXIS, above.getValue(CogWheelBlock.AXIS) == Direction.Axis.X ? Direction.Axis.Z : Direction.Axis.X);
-        return super.getStateForPlacement(context);
+        BlockState blockState = super.getStateForPlacement(context);
+
+        Level level = context.getLevel();
+        BlockPos clickedPos = context.getClickedPos();
+
+        if (AnalogSpeedControllerBlockEntity.isCogwheelPresent(level, clickedPos)) {
+            BlockState above = level.getBlockState(clickedPos.above());
+            blockState = this.defaultBlockState().setValue(HORIZONTAL_AXIS, above.getValue(CogWheelBlock.AXIS) == Direction.Axis.X ? Direction.Axis.Z : Direction.Axis.X);
+        }
+
+        if (blockState != null)
+            blockState = blockState.setValue(POWERED, level.hasNeighborSignal(clickedPos));
+
+        return blockState;
     }
 
     @Override
-    public void neighborChanged(BlockState state, Level world, BlockPos pos, Block neighbourBlock, BlockPos neighbourPos,
-                                boolean movedByPiston) {
-        if (neighbourPos.equals(pos.above()))
-            withBlockEntityDo(world, pos, AnalogSpeedControllerBlockEntity::updateBracket);
+    public void neighborChanged(BlockState state, Level level, BlockPos pos, Block neighbourBlock, BlockPos neighbourPos, boolean movedByPiston) {
+        if (level.isClientSide)
+            return;
+
+        this.withBlockEntityDo(level, pos, blockEntity -> {
+            if (neighbourPos.equals(pos.above()))
+                blockEntity.updateBracket();
+
+            blockEntity.neighbourChanged();
+        });
+
+        if (state.getValue(POWERED) != level.hasNeighborSignal(pos))
+            level.setBlock(pos, state.cycle(POWERED), UPDATE_CLIENTS | UPDATE_KNOWN_SHAPE);
+    }
+
+    @Override
+    public void onPlace(BlockState state, Level worldIn, BlockPos pos, BlockState oldState, boolean isMoving) {
+        super.onPlace(state, worldIn, pos, oldState, isMoving);
+
+        if (oldState.getBlock() != state.getBlock())
+            this.withBlockEntityDo(worldIn, pos, AnalogSpeedControllerBlockEntity::neighbourChanged);
+    }
+
+    @Override
+    protected boolean areStatesKineticallyEquivalent(BlockState oldState, BlockState newState) {
+        return super.areStatesKineticallyEquivalent(oldState, newState) && oldState.getValue(POWERED) == newState.getValue(POWERED);
+    }
+
+    @Override
+    protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
+        super.createBlockStateDefinition(builder.add(POWERED));
     }
 
     @Override
     protected ItemInteractionResult useItemOn(ItemStack stack, BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hitResult) {
         IPlacementHelper helper = PlacementHelpers.get(PLACEMENT_HELPER_ID);
+
         if (helper.matchesItem(stack))
             return helper.getOffset(player, level, state, pos, hitResult).placeInWorld(level, (BlockItem) stack.getItem(), player, hand, hitResult);
 
@@ -71,7 +112,7 @@ public class AnalogSpeedControllerBlock extends HorizontalAxisKineticBlock imple
 
     @Override
     public VoxelShape getShape(BlockState state, BlockGetter worldIn, BlockPos pos, CollisionContext context) {
-        return AllShapes.SPEED_CONTROLLER;
+        return SHAPE;
     }
 
     @Override
@@ -81,26 +122,27 @@ public class AnalogSpeedControllerBlock extends HorizontalAxisKineticBlock imple
 
     @Override
     public BlockEntityType<? extends AnalogSpeedControllerBlockEntity> getBlockEntityType() {
-        return AerospaceBlockEntityTypes.ANALOG_SPEED_CONTROLLER.get();
+        return ModBlockEntityTypes.ANALOG_SPEED_CONTROLLER.get();
     }
 
     @MethodsReturnNonnullByDefault
     private static class PlacementHelper implements IPlacementHelper {
+
         @Override
         public Predicate<ItemStack> getItemPredicate() {
-            return ((Predicate<ItemStack>) ICogWheel::isLargeCogItem).and(ICogWheel::isDedicatedCogItem);
+            return itemStack -> ICogWheel.isLargeCogItem(itemStack) && ICogWheel.isDedicatedCogItem(itemStack);
         }
 
         @Override
         public Predicate<BlockState> getStatePredicate() {
-            return AerospaceBlocks.ANALOG_SPEED_CONTROLLER::has;
+            return ModBlocks.ANALOG_SPEED_CONTROLLER::has;
         }
 
         @Override
         public PlacementOffset getOffset(Player player, Level level, BlockState state, BlockPos pos, BlockHitResult ray) {
             BlockPos newPos = pos.above();
-            if (!level.getBlockState(newPos)
-                    .canBeReplaced())
+
+            if (!level.getBlockState(newPos).canBeReplaced())
                 return PlacementOffset.fail();
 
             Direction.Axis newAxis = state.getValue(HORIZONTAL_AXIS) == Direction.Axis.X ? Direction.Axis.Z : Direction.Axis.X;
@@ -110,5 +152,7 @@ public class AnalogSpeedControllerBlock extends HorizontalAxisKineticBlock imple
 
             return PlacementOffset.success(newPos, s -> s.setValue(CogWheelBlock.AXIS, newAxis));
         }
+
     }
+
 }

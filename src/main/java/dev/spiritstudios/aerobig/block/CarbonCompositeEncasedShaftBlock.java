@@ -4,8 +4,9 @@ import com.simibubi.create.api.schematic.requirement.SpecialBlockItemRequirement
 import com.simibubi.create.content.kinetics.base.KineticBlockEntity;
 import com.simibubi.create.content.kinetics.simpleRelays.encased.EncasedShaftBlock;
 import com.simibubi.create.content.schematics.requirement.ItemRequirement;
-import dev.spiritstudios.aerobig.registry.AerospaceBlockEntityTypes;
-import dev.spiritstudios.aerobig.registry.AerospaceBlocks;
+import com.simibubi.create.foundation.block.DyedBlockList;
+import dev.spiritstudios.aerobig.registry.ModBlockEntityTypes;
+import dev.spiritstudios.aerobig.registry.ModBlocks;
 import net.minecraft.MethodsReturnNonnullByDefault;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
@@ -30,18 +31,18 @@ import javax.annotation.ParametersAreNonnullByDefault;
 
 @ParametersAreNonnullByDefault
 @MethodsReturnNonnullByDefault
-public class CarbonCompositeEncasedShaftBlock extends EncasedShaftBlock implements SpecialBlockItemRequirement {
+public class CarbonCompositeEncasedShaftBlock extends EncasedShaftBlock implements SpecialBlockItemRequirement, CarbonComposite<CarbonCompositeBlock> {
 
-    protected final DyeColor color;
+    private final DyeColor color;
 
     public CarbonCompositeEncasedShaftBlock(Properties properties, DyeColor color) {
-        super(properties, AerospaceBlocks.CARBON_COMPOSITE_ENCASED_SHAFTS.get(color)::get);
+        super(properties, ModBlocks.CARBON_COMPOSITE_ENCASED_SHAFTS.get(color)::get);
         this.color = color;
     }
 
     @Override
     protected ItemInteractionResult useItemOn(ItemStack itemStack, BlockState blockState, Level level, BlockPos blockPos, Player player, InteractionHand interactionHand, BlockHitResult blockHitResult) {
-        return CarbonCompositeBlock.useItemOn(itemStack, blockState, level, blockPos);
+        return CarbonComposite.useItemOn(itemStack, blockState, level, blockPos);
     }
 
     @Override
@@ -54,7 +55,7 @@ public class CarbonCompositeEncasedShaftBlock extends EncasedShaftBlock implemen
             Player player = context.getPlayer();
 
             if (player != null && !player.isCreative())
-                player.getInventory().placeItemBackInInventory(AerospaceBlocks.DYED_CARBON_COMPOSITE_BLOCKS.get(this.color).asStack());
+                player.getInventory().placeItemBackInInventory(this.getOfColor().asStack());
         }
 
         return InteractionResult.SUCCESS;
@@ -62,22 +63,22 @@ public class CarbonCompositeEncasedShaftBlock extends EncasedShaftBlock implemen
 
     @Override
     public BlockEntityType<? extends KineticBlockEntity> getBlockEntityType() {
-        return AerospaceBlockEntityTypes.CARBON_COMPOSITE_ENCASED_SHAFT.get();
+        return ModBlockEntityTypes.CARBON_COMPOSITE_ENCASED_SHAFT.get();
     }
 
     @Override
     public BlockEntity newBlockEntity(BlockPos pos, BlockState state) {
-        return AerospaceBlockEntityTypes.CARBON_COMPOSITE_ENCASED_SHAFT.create(pos, state);
+        return ModBlockEntityTypes.CARBON_COMPOSITE_ENCASED_SHAFT.create(pos, state);
     }
 
     @Override
     public ItemStack getCloneItemStack(BlockState state, HitResult target, LevelReader level, BlockPos pos, Player player) {
-        return this.getCasing().asItem().getDefaultInstance();
+        return this.getOfColor().asStack();
     }
 
     @Override
     public Block getCasing() {
-        return AerospaceBlocks.DYED_CARBON_COMPOSITE_BLOCKS.get(this.color).get();
+        return this.getOfColor().get();
     }
 
     @Override
@@ -90,8 +91,17 @@ public class CarbonCompositeEncasedShaftBlock extends EncasedShaftBlock implemen
 
     @Override
     public ItemRequirement getRequiredItems(BlockState state, @Nullable BlockEntity be) {
-        ItemStack stack = AerospaceBlocks.DYED_CARBON_COMPOSITE_BLOCKS.get(this.color).asStack();
-        return super.getRequiredItems(state, be).union(new ItemRequirement(ItemRequirement.ItemUseType.CONSUME, stack));
+        return super.getRequiredItems(state, be).union(this.getItemRequirement());
+    }
+
+    @Override
+    public DyeColor color() {
+        return this.color;
+    }
+
+    @Override
+    public DyedBlockList<CarbonCompositeBlock> dyedVariants() {
+        return ModBlocks.CARBON_COMPOSITE_BLOCKS;
     }
 
 }
