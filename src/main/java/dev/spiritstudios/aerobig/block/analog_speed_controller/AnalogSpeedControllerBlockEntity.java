@@ -173,11 +173,10 @@ public class AnalogSpeedControllerBlockEntity extends KineticBlockEntity {
 
         @Override
         protected boolean isSideActive(BlockState state, Direction direction) {
-            if (direction.getAxis().isVertical())
-                return false;
-
-            return state.getValue(AnalogSpeedControllerBlock.HORIZONTAL_AXIS) != direction.getAxis();
+            Direction.Axis axis = direction.getAxis();
+            return !axis.isVertical() && state.getValue(AnalogSpeedControllerBlock.HORIZONTAL_AXIS) != axis;
         }
 
     }
+
 }
