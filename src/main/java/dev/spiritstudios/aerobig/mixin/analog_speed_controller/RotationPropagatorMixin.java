@@ -1,4 +1,4 @@
-package dev.spiritstudios.aerobig.mixin;
+package dev.spiritstudios.aerobig.mixin.analog_speed_controller;
 
 import com.llamalad7.mixinextras.injector.wrapmethod.WrapMethod;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;

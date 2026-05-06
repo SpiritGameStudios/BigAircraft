@@ -1,0 +1,10 @@
+{
+  "variants": {
+    "axis=x": {
+      "model": "aerobig:block/blue_carbon_composite_wing_shaft_x"
+    },
+    "axis=z": {
+      "model": "aerobig:block/blue_carbon_composite_wing_shaft_z"
+    }
+  }
+}

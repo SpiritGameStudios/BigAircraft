@@ -11,7 +11,10 @@
         "requireAnnotations": true
     },
     "mixins": [
-        "ComputerBehaviourMixin",
-        "RotationPropagatorMixin"
+        "CreativeTabItemTransformsAccessor",
+        "analog_speed_controller.CogWheelBlockMixin",
+        "analog_speed_controller.ComputerBehaviourMixin",
+        "analog_speed_controller.RotationPropagatorMixin",
+        "encasing.EncasableBlockMixin"
     ]
 }

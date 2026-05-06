@@ -1,17 +1,19 @@
 package dev.spiritstudios.aerobig.block;
 
+import com.google.common.collect.Sets;
 import com.simibubi.create.content.kinetics.base.RotatedPillarKineticBlock;
 import com.simibubi.create.content.schematics.requirement.ItemRequirement;
 import com.simibubi.create.foundation.block.DyedBlockList;
 import com.simibubi.create.foundation.utility.BlockHelper;
 import com.tterrag.registrate.util.entry.BlockEntry;
 import dev.simulated_team.simulated.service.SimItemService;
-import dev.spiritstudios.aerobig.registry.ModBlocks;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
 import net.createmod.catnip.data.Iterate;
+import net.minecraft.Util;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.Vec3i;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.Mth;
@@ -21,36 +23,46 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
+import org.jetbrains.annotations.NotNull;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-public interface CarbonComposite<T extends Block & CarbonComposite<?>> {
+/**
+ * TODO: verify new impl
+ */
+public interface CarbonComposite<T extends Block & CarbonComposite<T>> {
+
+    /**
+     * Add <code>CARBON_COMPOSITES.add(this);</code> to the constructor.
+     */
+    HashSet<CarbonComposite<?>> CARBON_COMPOSITES = Sets.newHashSet();
 
     int MAX_TIMEOUT = 125;
-    BlockPos[] DIRECTION_OFFSETS = new BlockPos[] {
-        new BlockPos(1, 0, 0),
-        new BlockPos(-1, 0, 0),
-        new BlockPos(0, 1, 0),
-        new BlockPos(0, -1, 0),
-        new BlockPos(0, 0, 1),
-        new BlockPos(0, 0, -1),
-        new BlockPos(1, 1, 0),
-        new BlockPos(-1, -1, 0),
-        new BlockPos(1, -1, 0),
-        new BlockPos(-1, 1, 0),
-        new BlockPos(1, 0, 1),
-        new BlockPos(-1, 0, -1),
-        new BlockPos(1, 0, -1),
-        new BlockPos(-1, 0, 1),
-        new BlockPos(0, 1, 1),
-        new BlockPos(0, -1, -1),
-        new BlockPos(0, -1, 1),
-        new BlockPos(0, 1, -1)
-    };
 
+    /**
+     * All positions around an arbitrary point [0, 0, 0] creating a hollow 3x3x3 sphere. In other words, a 3x3x3 cube with the 8 vertices and the center missing.
+     */
+    HashSet<Vec3i> DIRECTION_OFFSETS = Util.make(Sets.newHashSetWithExpectedSize(18), set -> {
+        Vec3i vec;
+
+        for (int x = -1; x < 1; x++) {
+            for (int y = -1; y < 1; y++) {
+                for (int z = -1; z < 1; z++) {
+                    vec = new Vec3i(x, y, z);
+
+                    if (!vec.equals(Vec3i.ZERO) && vec.distManhattan(Vec3i.ZERO) < 3)
+                        set.add(vec);
+                }
+            }
+        }
+    });
+
+    @NotNull
     DyeColor color();
 
+    @NotNull
     DyedBlockList<T> dyedVariants();
 
     default BlockEntry<T> getOfColor() {
@@ -81,33 +93,19 @@ public interface CarbonComposite<T extends Block & CarbonComposite<?>> {
             return;
 
         List<BlockPos> frontier = new ObjectArrayList<>();
-        frontier.add(pos);
-
         Set<BlockPos> visited = new ObjectOpenHashSet<>();
 
-        BlockState newEnvelopeState = BlockHelper.copyProperties(state, ModBlocks.CARBON_COMPOSITE_BLOCKS.get(color).getDefaultState());
-        BlockState newEncasedEnvelopeState = BlockHelper.copyProperties(state, ModBlocks.CARBON_COMPOSITE_ENCASED_SHAFTS.get(color).getDefaultState());
-        BlockState newGearboxState = BlockHelper.copyProperties(state, ModBlocks.CARBON_COMPOSITE_GEARBOXES.get(color).getDefaultState());
-
+        frontier.add(pos);
         int timeout = MAX_TIMEOUT;
 
         while (!frontier.isEmpty() && timeout-- >= 0) {
             BlockPos currentPos = frontier.removeFirst();
             visited.add(currentPos);
 
-            for (BlockPos blockPos : DIRECTION_OFFSETS) {
-                BlockPos offsetPos = currentPos.offset(blockPos);
+            for (Vec3i vec : DIRECTION_OFFSETS) {
+                BlockPos offsetPos = currentPos.offset(vec);
 
-                if (visited.contains(offsetPos))
-                    continue;
-
-                BlockState adjacentState = level.getBlockState(offsetPos);
-
-                if (
-                    multiDye(level, offsetPos, adjacentState, newEnvelopeState) ||
-                    multiDye(level, offsetPos, adjacentState, newEncasedEnvelopeState) ||
-                    multiDye(level, offsetPos, adjacentState, newGearboxState)
-                ) {
+                if (!visited.contains(offsetPos) && appliedMultiDyeToPos(level, offsetPos, state, color)) {
                     frontier.add(offsetPos);
                     visited.add(offsetPos);
                 }
@@ -146,8 +144,19 @@ public interface CarbonComposite<T extends Block & CarbonComposite<?>> {
         return false;
     }
 
-    private static boolean multiDye(Level level, BlockPos pos, BlockState state, BlockState newState) {
-        if (!(state.getBlock() instanceof CarbonComposite<?> carbonComposite) || !carbonComposite.dyedVariants().contains(newState.getBlock()))
+    private static boolean appliedMultiDyeToPos(Level level, BlockPos offsetPos, BlockState state, DyeColor color) {
+        BlockState adjacentState = level.getBlockState(offsetPos);
+
+        for (CarbonComposite<?> carbonComposite : CARBON_COMPOSITES) {
+            if (tryMultiDye(level, offsetPos, adjacentState, BlockHelper.copyProperties(state, carbonComposite.dyedVariants().get(color).getDefaultState())))
+                return true;
+        }
+
+        return false;
+    }
+
+    private static boolean tryMultiDye(Level level, BlockPos pos, BlockState state, BlockState newState) {
+        if (!(state.getBlock() instanceof CarbonComposite<?> carbonComposite && carbonComposite.dyedVariants().contains(newState.getBlock())))
             return false;
 
         if (state != newState) {

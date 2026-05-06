@@ -1,11 +1,15 @@
 package dev.spiritstudios.aerobig;
 
+import com.google.common.collect.Iterables;
+import com.google.common.collect.Lists;
 import com.simibubi.create.AllBlockEntityTypes;
 import com.simibubi.create.compat.Mods;
+import com.simibubi.create.content.kinetics.base.KineticBlockEntity;
+import com.simibubi.create.foundation.block.DyedBlockList;
+import com.tterrag.registrate.util.entry.BlockEntityEntry;
 import com.tterrag.registrate.util.entry.BlockEntry;
 import com.tterrag.registrate.util.nullness.NonNullSupplier;
 import dev.simulated_team.simulated.registrate.SimulatedRegistrate;
-import dev.spiritstudios.aerobig.block.CarbonCompositeGearboxBlock;
 import dev.spiritstudios.aerobig.block.analog_speed_controller.AnalogSpeedControllerBlockEntity;
 import dev.spiritstudios.aerobig.config.BigAircraftConfigService;
 import dev.spiritstudios.aerobig.registry.ModBlockEntityTypes;
@@ -30,6 +34,7 @@ import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.ModContainer;
 
+import java.util.List;
 import java.util.function.Consumer;
 
 @Mod(BigAircraft.MOD_ID)
@@ -59,15 +64,20 @@ public class BigAircraft {
 
     @SubscribeEvent
     public static void addBlockEntityBlocks(BlockEntityTypeAddBlocksEvent event) {
-        BlockEntry<CarbonCompositeGearboxBlock>[] gearboxes = ModBlocks.CARBON_COMPOSITE_GEARBOXES.toArray();
-        int length = gearboxes.length;
+        addToExistingBlockEntity(event, AllBlockEntityTypes.GEARBOX, ModBlocks.CARBON_COMPOSITE_GEARBOXES);
+        addToExistingBlockEntity(event, AllBlockEntityTypes.ENCASED_SHAFT, ModBlocks.CARBON_COMPOSITE_ENCASED_SHAFTS, ModBlocks.CARBON_COMPOSITE_WING_SHAFTS);
+    }
+
+    private static void addToExistingBlockEntity(BlockEntityTypeAddBlocksEvent event, BlockEntityEntry<? extends KineticBlockEntity> blockEntity, DyedBlockList<?>... dyedBlockLists) {
+        List<BlockEntry<?>> dyedBlocks = Lists.newArrayList(Iterables.concat(dyedBlockLists));
+        int length = dyedBlocks.size();
 
         Block[] blocks = new Block[length];
 
         for (int i = 0; i < length; i++)
-            blocks[i] = gearboxes[i].get();
+            blocks[i] = dyedBlocks.get(i).get();
 
-        event.modify(AllBlockEntityTypes.GEARBOX.getKey(), blocks);
+        event.modify(blockEntity.getKey(), blocks);
     }
 
     @SubscribeEvent

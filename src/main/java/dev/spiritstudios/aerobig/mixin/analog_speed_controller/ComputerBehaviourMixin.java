@@ -1,4 +1,4 @@
-package dev.spiritstudios.aerobig.mixin;
+package dev.spiritstudios.aerobig.mixin.analog_speed_controller;
 
 import com.simibubi.create.compat.computercraft.implementation.ComputerBehaviour;
 import com.simibubi.create.compat.computercraft.implementation.peripherals.SyncedPeripheral;

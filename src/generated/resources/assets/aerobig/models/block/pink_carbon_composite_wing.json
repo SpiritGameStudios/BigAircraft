@@ -1,0 +1,6 @@
+{
+  "parent": "aerobig:block/template_carbon_composite_wing",
+  "textures": {
+    "texture": "aerobig:block/pink_carbon_composite"
+  }
+}

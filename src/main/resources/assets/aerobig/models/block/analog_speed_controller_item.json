@@ -1,5 +1,5 @@
 {
-	"credit": "Made with Blockbench",
+    "credit": "Made by axialeaa using Blockbench",
 	"parent": "block/block",
 	"textures": {
 		"top": "aerobig:block/analog_speed_controller_top",
