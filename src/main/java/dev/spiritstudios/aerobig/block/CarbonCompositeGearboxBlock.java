@@ -3,17 +3,13 @@ package dev.spiritstudios.aerobig.block;
 import com.simibubi.create.content.kinetics.gearbox.GearboxBlock;
 import com.simibubi.create.foundation.block.DyedBlockList;
 import dev.spiritstudios.aerobig.registry.ModBlocks;
-import dev.spiritstudios.aerobig.registry.ModItems;
 import net.minecraft.MethodsReturnNonnullByDefault;
 import net.minecraft.core.BlockPos;
-import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.InteractionHand;
-import net.minecraft.world.InteractionResult;
 import net.minecraft.world.ItemInteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.block.state.BlockState;
@@ -46,7 +42,7 @@ public class CarbonCompositeGearboxBlock extends GearboxBlock implements CarbonC
         if (state.getValue(AXIS).isVertical())
             return super.getDrops(state, builder);
 
-        return List.of(ModItems.VERTICAL_GEARBOXES.get(this.color()).asStack());
+        return List.of(ModBlocks.VERTICAL_GEARBOX_ITEMS.get(this.color()).asStack());
     }
 
     @Override
@@ -54,21 +50,7 @@ public class CarbonCompositeGearboxBlock extends GearboxBlock implements CarbonC
         if (state.getValue(AXIS).isVertical())
             return super.getCloneItemStack(state, target, level, pos, player);
 
-        return new ItemStack(ModItems.VERTICAL_GEARBOXES.get(this.color()).get());
-    }
-
-    @Override
-    public InteractionResult onSneakWrenched(BlockState state, UseOnContext context) {
-        super.onSneakWrenched(state, context);
-
-        if (context.getLevel() instanceof ServerLevel) {
-            Player player = context.getPlayer();
-
-            if (player != null && !player.isCreative())
-                player.getInventory().placeItemBackInInventory(this.getOfColor().asStack());
-        }
-
-        return InteractionResult.SUCCESS;
+        return new ItemStack(ModBlocks.VERTICAL_GEARBOX_ITEMS.get(this.color()).get());
     }
 
     @Override

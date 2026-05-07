@@ -53,7 +53,8 @@ public class BigAircraft {
 
     public BigAircraft(IEventBus modEventBus, ModContainer modContainer) {
         registrate().registerEventListeners(modEventBus);
-        registrate().addRawLang(MOD_ID + ".simulated_section." + MOD_ID, MOD_NAME);
+        registrate().addRawLang(LangKeys.SIMULATED_SECTION, MOD_NAME);
+        // registrate().addRawLang(LangKeys.ANALOG_SPEED_ACTUATOR_SPEED, "Rotation Speed");
 
         ModBlocks.init();
         ModBlockEntityTypes.init();
@@ -90,6 +91,13 @@ public class BigAircraft {
         forMatchingSpec(event, ConfigBase::onReload);
     }
 
+    private static void forMatchingSpec(ModConfigEvent event, Consumer<ConfigBase> action) {
+        for (ConfigBase config : BigAircraftConfigService.CONFIGS.values()) {
+            if (config.specification == event.getConfig().getSpec())
+                action.accept(config);
+        }
+    }
+
     @SubscribeEvent
     public static void registerCapabilities(RegisterCapabilitiesEvent event) {
         if (Mods.COMPUTERCRAFT.isLoaded())
@@ -102,13 +110,6 @@ public class BigAircraft {
 
     public static ResourceLocation id(String path) {
         return ResourceLocation.fromNamespaceAndPath(MOD_ID, path);
-    }
-
-    private static void forMatchingSpec(ModConfigEvent event, Consumer<ConfigBase> action) {
-        for (ConfigBase config : BigAircraftConfigService.CONFIGS.values()) {
-            if (config.specification == event.getConfig().getSpec())
-                action.accept(config);
-        }
     }
 
 }

@@ -5,24 +5,25 @@ import com.simibubi.create.AllItems;
 import com.simibubi.create.AllTags;
 import com.simibubi.create.content.decoration.encasing.EncasingRegistry;
 import com.simibubi.create.foundation.block.DyedBlockList;
-import com.simibubi.create.foundation.block.connected.SimpleCTBehaviour;
 import com.simibubi.create.foundation.data.*;
 import com.simibubi.create.foundation.data.recipe.CommonMetal;
 import com.tterrag.registrate.providers.RegistrateLangProvider;
 import com.tterrag.registrate.providers.RegistrateRecipeProvider;
 import com.tterrag.registrate.util.entry.BlockEntry;
 import com.tterrag.registrate.util.nullness.NonNullBiFunction;
-import com.tterrag.registrate.util.nullness.NonNullConsumer;
 import dev.simulated_team.simulated.registrate.simulated_tab.CreativeTabItemTransforms;
 import dev.spiritstudios.aerobig.block.*;
 import dev.spiritstudios.aerobig.block.analog_speed_controller.AnalogSpeedControllerBlock;
 import dev.spiritstudios.aerobig.config.BigAircraftStress;
+import dev.spiritstudios.aerobig.item.VerticalCarbonCompositeGearboxItem;
+import dev.spiritstudios.aerobig.mixin.CreativeTabItemTransformsAccessor;
+import dev.spiritstudios.aerobig.util.DyedItemList;
 import dev.spiritstudios.aerobig.util.ModSpriteShifts;
 import net.minecraft.core.Direction;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.data.recipes.RecipeCategory;
 import net.minecraft.data.recipes.ShapelessRecipeBuilder;
 import net.minecraft.world.item.DyeColor;
-import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
@@ -54,7 +55,7 @@ public interface ModBlocks {
                     .cubeAll(path, provider.modLoc("block/" + path))
                 )
             )
-            .onRegister(registerCarbonCompositeCT(color))
+            .onRegister(ModSpriteShifts.registerCasingCT(color, (state, direction) -> true))
             .tag(ModTags.Blocks.CARBON_COMPOSITE)
             .transform(TagGen.pickaxeOnly())
             .transform(CreativeTabItemTransforms.VisibilityType.SEARCH_ONLY.conditionalApplyBlock(() -> color != DyeColor.WHITE))
@@ -83,7 +84,7 @@ public interface ModBlocks {
                     .add(LootItem.lootTableItem(AllBlocks.SHAFT.get()))
                 ))
             ))
-            .onRegister(registerCarbonCompositeCT(color))
+            .onRegister(ModSpriteShifts.registerCasingCT(color, ModSpriteShifts.AXES_MATCH_PREDICATE.negate()))
             .tag(ModTags.Blocks.CARBON_COMPOSITE)
             .transform(TagGen.pickaxeOnly())
             .transform(EncasingRegistry.addVariantTo(AllBlocks.SHAFT))
@@ -104,6 +105,7 @@ public interface ModBlocks {
                 .withExistingParent(path, provider.modLoc("block/template_carbon_composite_wing"))
                 .texture("texture", provider.modLoc("block/" + DEFAULT_WHITE_NAME.apply(color, "carbon_composite")))
             ))
+            .onRegister(ModSpriteShifts.registerSimpleCT(color))
             .tag(ModTags.Blocks.CARBON_COMPOSITE)
             .tag(AllTags.AllBlockTags.WINDMILL_SAILS.tag)
             .transform(TagGen.pickaxeOnly())
@@ -160,6 +162,7 @@ public interface ModBlocks {
 
         return registrate().block(path, properties -> new CarbonCompositeGearboxBlock(properties, color))
             .properties(properties -> DEFAULT_CARBON_COMPOSITE_PROPERTIES.apply(color, properties).noOcclusion())
+            .onRegister(ModSpriteShifts.registerCasingCT(color, ModSpriteShifts.AXES_MATCH_PREDICATE))
             .tag(ModTags.Blocks.CARBON_COMPOSITE)
             .transform(BigAircraftStress.setNoImpact())
             .transform(TagGen.pickaxeOnly())
@@ -179,6 +182,25 @@ public interface ModBlocks {
                 .texture("top", provider.modLoc("block/" + DEFAULT_WHITE_NAME.apply(color, "carbon_composite")))
             )
             .build()
+            .register();
+    });
+
+    /**
+     * This is here to make sure the vertical gearboxes are registered right after the horizontal ones, and as such appear in that order in the creative menu.
+     */
+    DyedItemList<VerticalCarbonCompositeGearboxItem> VERTICAL_GEARBOX_ITEMS = new DyedItemList<>(color -> {
+        String path = DEFAULT_WHITE_NAME.apply(color, "vertical_carbon_composite_gearbox");
+
+        return registrate().item(path, properties -> new VerticalCarbonCompositeGearboxItem(properties, color))
+            .transform(builder -> builder.onRegisterAfter(Registries.ITEM, item -> {
+                if (color != DyeColor.WHITE)
+                    CreativeTabItemTransformsAccessor.getItemVisibilities().put(item, CreativeTabItemTransforms.VisibilityType.SEARCH_ONLY);
+            }))
+            .model((context, provider) -> provider
+                .withExistingParent(path, provider.modLoc("block/wrapped_gearbox_item_vertical"))
+                .texture("side", provider.modLoc("block/" + DEFAULT_WHITE_NAME.apply(color, "carbon_composite_gearbox")))
+                .texture("top", provider.modLoc("block/" + DEFAULT_WHITE_NAME.apply(color, "carbon_composite")))
+            )
             .register();
     });
 
@@ -215,10 +237,6 @@ public interface ModBlocks {
         .model((context, provider) -> provider.blockItem(context::get, "_item"))
         .build()
         .register();
-
-    private static NonNullConsumer<? super Block> registerCarbonCompositeCT(DyeColor color) {
-        return CreateRegistrate.connectedTextures(() -> new SimpleCTBehaviour(ModSpriteShifts.omni(DEFAULT_WHITE_NAME.apply(color, "carbon_composite"))));
-    }
 
     static void init() {
     }

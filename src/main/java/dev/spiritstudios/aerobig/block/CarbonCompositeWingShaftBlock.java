@@ -28,6 +28,7 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.LevelEvent;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
@@ -96,7 +97,6 @@ public class CarbonCompositeWingShaftBlock extends HorizontalAxisKineticBlock im
         return ItemRequirement.of(AllBlocks.SHAFT.getDefaultState(), blockEntity).union(this.getItemRequirement());
     }
 
-
     @Override
     public Block getCasing() {
         return this.getOfColor().get();
@@ -125,9 +125,12 @@ public class CarbonCompositeWingShaftBlock extends HorizontalAxisKineticBlock im
 
     @Override
     public InteractionResult onSneakWrenched(BlockState state, UseOnContext context) {
-        super.onSneakWrenched(state, context);
+        if (context.getLevel() instanceof ServerLevel serverLevel) {
+            BlockPos clickedPos = context.getClickedPos();
 
-        if (context.getLevel() instanceof ServerLevel) {
+            serverLevel.levelEvent(LevelEvent.PARTICLES_DESTROY_BLOCK, clickedPos, Block.getId(state));
+            KineticBlockEntity.switchToBlockState(serverLevel, clickedPos, AllBlocks.SHAFT.getDefaultState().setValue(RotatedPillarKineticBlock.AXIS, state.getValue(HORIZONTAL_AXIS)));
+
             Player player = context.getPlayer();
 
             if (player != null && !player.isCreative())

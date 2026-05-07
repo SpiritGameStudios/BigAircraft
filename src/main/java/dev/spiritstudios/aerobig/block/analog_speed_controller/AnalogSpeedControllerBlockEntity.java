@@ -164,6 +164,19 @@ public class AnalogSpeedControllerBlockEntity extends KineticBlockEntity {
         return targetingController ? speed : targetSpeed;
     }
 
+/*    private static class AnalogSpeedScrollValueBehaviour extends ScrollValueBehaviour {
+
+        public AnalogSpeedScrollValueBehaviour(SmartBlockEntity blockEntity) {
+            super(Component.translatable(LangKeys.ANALOG_SPEED_ACTUATOR_SPEED), blockEntity, new ControllerValueBoxTransform());
+        }
+
+        @Override
+        public ValueSettingsBoard createBoard(Player player, BlockHitResult hitResult) {
+            return new ValueSettingsBoard(this.label, this.max, 32, ImmutableList.of(CreateLang.translateDirect("generic.unit.rpm")), new ValueSettingsFormatter(ValueSettings::format));
+        }
+
+    }*/
+
     private static class ControllerValueBoxTransform extends ValueBoxTransform.Sided {
 
         @Override

@@ -6,7 +6,6 @@ import com.simibubi.create.content.schematics.requirement.ItemRequirement;
 import com.simibubi.create.foundation.block.DyedBlockList;
 import com.simibubi.create.foundation.utility.BlockHelper;
 import com.tterrag.registrate.util.entry.BlockEntry;
-import dev.simulated_team.simulated.service.SimItemService;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
 import net.createmod.catnip.data.Iterate;
@@ -29,9 +28,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-/**
- * TODO: verify new impl
- */
 public interface CarbonComposite<T extends Block & CarbonComposite<T>> {
 
     /**
@@ -44,12 +40,12 @@ public interface CarbonComposite<T extends Block & CarbonComposite<T>> {
     /**
      * All positions around an arbitrary point [0, 0, 0] creating a hollow 3x3x3 sphere. In other words, a 3x3x3 cube with the 8 vertices and the center missing.
      */
-    HashSet<Vec3i> DIRECTION_OFFSETS = Util.make(Sets.newHashSetWithExpectedSize(18), set -> {
+    HashSet<Vec3i> SPLODGE_OFFSETS = Util.make(Sets.newHashSetWithExpectedSize(18), set -> {
         Vec3i vec;
 
-        for (int x = -1; x < 1; x++) {
-            for (int y = -1; y < 1; y++) {
-                for (int z = -1; z < 1; z++) {
+        for (int x = -1; x <= 1; x++) {
+            for (int y = -1; y <= 1; y++) {
+                for (int z = -1; z <= 1; z++) {
                     vec = new Vec3i(x, y, z);
 
                     if (!vec.equals(Vec3i.ZERO) && vec.distManhattan(Vec3i.ZERO) < 3)
@@ -59,11 +55,8 @@ public interface CarbonComposite<T extends Block & CarbonComposite<T>> {
         }
     });
 
-    @NotNull
-    DyeColor color();
-
-    @NotNull
-    DyedBlockList<T> dyedVariants();
+    @NotNull DyeColor color();
+    @NotNull DyedBlockList<T> dyedVariants();
 
     default BlockEntry<T> getOfColor() {
         return this.dyedVariants().get(this.color());
@@ -74,7 +67,7 @@ public interface CarbonComposite<T extends Block & CarbonComposite<T>> {
     }
 
     static ItemInteractionResult useItemOn(ItemStack itemStack, BlockState blockState, Level level, BlockPos blockPos) {
-        DyeColor color = SimItemService.getDyeColor(itemStack);
+        DyeColor color = DyeColor.getColor(itemStack);
 
         if (color != null) {
             if (!level.isClientSide())
@@ -102,7 +95,7 @@ public interface CarbonComposite<T extends Block & CarbonComposite<T>> {
             BlockPos currentPos = frontier.removeFirst();
             visited.add(currentPos);
 
-            for (Vec3i vec : DIRECTION_OFFSETS) {
+            for (Vec3i vec : SPLODGE_OFFSETS) {
                 BlockPos offsetPos = currentPos.offset(vec);
 
                 if (!visited.contains(offsetPos) && appliedMultiDyeToPos(level, offsetPos, state, color)) {

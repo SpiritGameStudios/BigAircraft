@@ -1,5 +1,6 @@
 package dev.spiritstudios.aerobig.block;
 
+import com.simibubi.create.content.equipment.wrench.IWrenchable;
 import com.simibubi.create.foundation.block.DyedBlockList;
 import com.simibubi.create.foundation.block.ProperWaterloggedBlock;
 import dev.spiritstudios.aerobig.registry.ModBlocks;
@@ -27,7 +28,7 @@ import javax.annotation.ParametersAreNonnullByDefault;
 
 @ParametersAreNonnullByDefault
 @MethodsReturnNonnullByDefault
-public class CarbonCompositeWingBlock extends Block implements CarbonComposite<CarbonCompositeWingBlock>, ProperWaterloggedBlock {
+public class CarbonCompositeWingBlock extends Block implements CarbonComposite<CarbonCompositeWingBlock>, ProperWaterloggedBlock, IWrenchable {
 
     static final VoxelShape SHAPE = box(0.0, 5.0, 0.0, 16.0, 11.0, 16.0);
 
