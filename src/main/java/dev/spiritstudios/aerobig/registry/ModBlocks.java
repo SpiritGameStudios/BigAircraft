@@ -78,7 +78,7 @@ public interface ModBlocks {
                 .texture("gearbox", provider.modLoc("block/" + DEFAULT_WHITE_NAME.apply(color, "carbon_composite_gearbox"))),
                 true
             ))
-            .loot((lootTables, block) -> lootTables.add(block, lootTables.createSingleItemTable(block.dyedVariants().get(color))
+            .loot((lootTables, block) -> lootTables.add(block, lootTables.createSingleItemTable(block.getDyedVariants().get(color))
                 .withPool(lootTables.applyExplosionCondition(AllBlocks.SHAFT.get(), LootPool.lootPool()
                     .setRolls(ConstantValue.exactly(1.0F))
                     .add(LootItem.lootTableItem(AllBlocks.SHAFT.get()))
@@ -135,7 +135,7 @@ public interface ModBlocks {
                         .build();
                 }, BlockStateProperties.WATERLOGGED)
             )
-            .loot((lootTables, block) -> lootTables.add(block, lootTables.createSingleItemTable(block.dyedVariants().get(color))
+            .loot((lootTables, block) -> lootTables.add(block, lootTables.createSingleItemTable(block.getDyedVariants().get(color))
                 .withPool(lootTables.applyExplosionCondition(AllBlocks.SHAFT.get(), LootPool.lootPool()
                     .setRolls(ConstantValue.exactly(1.0F))
                     .add(LootItem.lootTableItem(AllBlocks.SHAFT.get()))

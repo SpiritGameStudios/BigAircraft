@@ -38,8 +38,6 @@ public class CarbonCompositeWingBlock extends Block implements CarbonComposite<C
         super(properties);
         this.color = color;
         this.registerDefaultState(this.getStateDefinition().any().setValue(WATERLOGGED, false));
-
-        CARBON_COMPOSITES.add(this);
     }
 
     @Override
@@ -48,7 +46,7 @@ public class CarbonCompositeWingBlock extends Block implements CarbonComposite<C
     }
 
     @Override
-    public DyeColor color() {
+    public DyeColor getDyeColor() {
         return this.color;
     }
 
@@ -58,7 +56,7 @@ public class CarbonCompositeWingBlock extends Block implements CarbonComposite<C
     }
 
     @Override
-    public DyedBlockList<CarbonCompositeWingBlock> dyedVariants() {
+    public DyedBlockList<CarbonCompositeWingBlock> getDyedVariants() {
         return ModBlocks.CARBON_COMPOSITE_WINGS;
     }
 
@@ -81,6 +79,11 @@ public class CarbonCompositeWingBlock extends Block implements CarbonComposite<C
     @Override
     protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
         builder.add(WATERLOGGED);
+    }
+
+    @Override
+    public DyeableGroup getDyeableGroup() {
+        return DyeableGroup.CONTROL_SURFACE;
     }
 
 }

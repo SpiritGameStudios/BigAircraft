@@ -2,7 +2,8 @@
 	"credit": "Made by axialeaa using Blockbench",
 	"parent": "block/block",
 	"textures": {
-		"particle": "#texture"
+		"particle": "#texture",
+        "underside": "aerobig:block/wing_underside"
 	},
 	"elements": [
 		{
@@ -15,7 +16,7 @@
 				"south": {"uv": [0, 5, 16, 11], "texture": "#texture", "cullface": "south"},
 				"west": {"uv": [0, 5, 16, 11], "texture": "#texture", "cullface": "west"},
 				"up": {"uv": [0, 0, 16, 16], "texture": "#texture"},
-				"down": {"uv": [0, 0, 16, 16], "texture": "#texture"}
+				"down": {"uv": [0, 0, 16, 16], "texture": "#underside"}
 			}
 		}
 	]

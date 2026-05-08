@@ -25,7 +25,6 @@ public class CarbonCompositeBlock extends CasingBlock implements CarbonComposite
     public CarbonCompositeBlock(Properties properties, DyeColor color) {
         super(properties);
         this.color = color;
-        CARBON_COMPOSITES.add(this);
     }
 
     @Override
@@ -34,13 +33,18 @@ public class CarbonCompositeBlock extends CasingBlock implements CarbonComposite
     }
 
     @Override
-    public DyeColor color() {
+    public DyeColor getDyeColor() {
         return this.color;
     }
 
     @Override
-    public DyedBlockList<CarbonCompositeBlock> dyedVariants() {
+    public DyedBlockList<CarbonCompositeBlock> getDyedVariants() {
         return ModBlocks.CARBON_COMPOSITE_BLOCKS;
+    }
+
+    @Override
+    public DyeableGroup getDyeableGroup() {
+        return DyeableGroup.FUSELAGE;
     }
 
 }

@@ -31,16 +31,15 @@ public class CarbonCompositeEncasedShaftBlock extends EncasedShaftBlock implemen
     public CarbonCompositeEncasedShaftBlock(Properties properties, DyeColor color) {
         super(properties, ModBlocks.CARBON_COMPOSITE_BLOCKS.get(color)::get);
         this.color = color;
-        CARBON_COMPOSITES.add(this);
     }
 
     @Override
-    public DyeColor color() {
+    public DyeColor getDyeColor() {
         return this.color;
     }
 
     @Override
-    public DyedBlockList<CarbonCompositeBlock> dyedVariants() {
+    public DyedBlockList<CarbonCompositeBlock> getDyedVariants() {
         return ModBlocks.CARBON_COMPOSITE_BLOCKS;
     }
 
@@ -74,6 +73,11 @@ public class CarbonCompositeEncasedShaftBlock extends EncasedShaftBlock implemen
         }
 
         return InteractionResult.SUCCESS;
+    }
+
+    @Override
+    public DyeableGroup getDyeableGroup() {
+        return DyeableGroup.FUSELAGE;
     }
 
 }

@@ -1,9 +1,10 @@
 {
-	"format_version": "1.21.11",
+	"format_version": "1.9.0",
 	"credit": "Made by axialeaa using Blockbench",
 	"parent": "block/block",
 	"textures": {
-		"particle": "#side"
+		"particle": "#side",
+        "underside": "aerobig:block/wing_underside"
 	},
 	"elements": [
 		{
@@ -16,7 +17,7 @@
 				"south": {"uv": [0, 5, 3, 11], "texture": "#top", "cullface": "south"},
 				"west": {"uv": [0, 5, 16, 11], "texture": "#side", "cullface": "west"},
 				"up": {"uv": [0, 0, 3, 16], "texture": "#top"},
-				"down": {"uv": [0, 0, 3, 16], "texture": "#top"}
+				"down": {"uv": [0, 0, 3, 16], "texture": "#underside"}
 			}
 		},
 		{
@@ -29,7 +30,7 @@
 				"south": {"uv": [5, 5, 8, 11], "texture": "#top", "cullface": "south"},
 				"west": {"uv": [0, 5, 16, 11], "texture": "#side"},
 				"up": {"uv": [5, 0, 8, 16], "texture": "#top"},
-				"down": {"uv": [5, 0, 8, 16], "texture": "#top"}
+				"down": {"uv": [5, 0, 8, 16], "texture": "#underside"}
 			}
 		}
 	]

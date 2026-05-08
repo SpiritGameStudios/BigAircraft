@@ -4,18 +4,18 @@ public interface ModItems {
 
     // moved to ModBlocks to ensure correct registration order
 
-/*    DyedItemList<VerticalCarbonCompositeGearboxItem> VERTICAL_GEARBOXES = new DyedItemList<>(color -> {
-        String path = DEFAULT_WHITE_NAME.apply(color, "vertical_carbon_composite_gearbox");
+/*    DyedItemList<VerticalCarbonCompositeGearboxItem> VERTICAL_GEARBOXES = new DyedItemList<>(getDyeColor -> {
+        String path = DEFAULT_WHITE_NAME.apply(getDyeColor, "vertical_carbon_composite_gearbox");
 
-        return registrate().item(path, properties -> new VerticalCarbonCompositeGearboxItem(properties, color))
+        return registrate().item(path, properties -> new VerticalCarbonCompositeGearboxItem(properties, getDyeColor))
             .transform(builder -> builder.onRegisterAfter(Registries.ITEM, item -> {
-                if (color != DyeColor.WHITE)
+                if (getDyeColor != DyeColor.WHITE)
                     CreativeTabItemTransformsAccessor.getItemVisibilities().put(item, CreativeTabItemTransforms.VisibilityType.SEARCH_ONLY);
             }))
             .model((context, provider) -> provider
                 .withExistingParent(path, provider.modLoc("block/wrapped_gearbox_item_vertical"))
-                .texture("side", provider.modLoc("block/" + DEFAULT_WHITE_NAME.apply(color, "carbon_composite_gearbox")))
-                .texture("top", provider.modLoc("block/" + DEFAULT_WHITE_NAME.apply(color, "carbon_composite")))
+                .texture("side", provider.modLoc("block/" + DEFAULT_WHITE_NAME.apply(getDyeColor, "carbon_composite_gearbox")))
+                .texture("top", provider.modLoc("block/" + DEFAULT_WHITE_NAME.apply(getDyeColor, "carbon_composite")))
             )
             .register();
     });*/

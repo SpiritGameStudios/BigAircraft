@@ -29,7 +29,6 @@ public class CarbonCompositeGearboxBlock extends GearboxBlock implements CarbonC
     public CarbonCompositeGearboxBlock(Properties properties, DyeColor color) {
         super(properties);
         this.color = color;
-        CARBON_COMPOSITES.add(this);
     }
 
     @Override
@@ -42,7 +41,7 @@ public class CarbonCompositeGearboxBlock extends GearboxBlock implements CarbonC
         if (state.getValue(AXIS).isVertical())
             return super.getDrops(state, builder);
 
-        return List.of(ModBlocks.VERTICAL_GEARBOX_ITEMS.get(this.color()).asStack());
+        return List.of(ModBlocks.VERTICAL_GEARBOX_ITEMS.get(this.getDyeColor()).asStack());
     }
 
     @Override
@@ -50,17 +49,22 @@ public class CarbonCompositeGearboxBlock extends GearboxBlock implements CarbonC
         if (state.getValue(AXIS).isVertical())
             return super.getCloneItemStack(state, target, level, pos, player);
 
-        return new ItemStack(ModBlocks.VERTICAL_GEARBOX_ITEMS.get(this.color()).get());
+        return new ItemStack(ModBlocks.VERTICAL_GEARBOX_ITEMS.get(this.getDyeColor()).get());
     }
 
     @Override
-    public DyeColor color() {
+    public DyeColor getDyeColor() {
         return this.color;
     }
 
     @Override
-    public DyedBlockList<CarbonCompositeGearboxBlock> dyedVariants() {
+    public DyedBlockList<CarbonCompositeGearboxBlock> getDyedVariants() {
         return ModBlocks.CARBON_COMPOSITE_GEARBOXES;
+    }
+
+    @Override
+    public DyeableGroup getDyeableGroup() {
+        return DyeableGroup.FUSELAGE;
     }
 
 }

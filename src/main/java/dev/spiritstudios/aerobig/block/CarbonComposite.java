@@ -1,14 +1,12 @@
 package dev.spiritstudios.aerobig.block;
 
 import com.google.common.collect.Sets;
-import com.simibubi.create.content.kinetics.base.RotatedPillarKineticBlock;
 import com.simibubi.create.content.schematics.requirement.ItemRequirement;
 import com.simibubi.create.foundation.block.DyedBlockList;
 import com.simibubi.create.foundation.utility.BlockHelper;
 import com.tterrag.registrate.util.entry.BlockEntry;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
-import net.createmod.catnip.data.Iterate;
 import net.minecraft.Util;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -30,17 +28,12 @@ import java.util.Set;
 
 public interface CarbonComposite<T extends Block & CarbonComposite<T>> {
 
-    /**
-     * Add <code>CARBON_COMPOSITES.add(this);</code> to the constructor.
-     */
-    HashSet<CarbonComposite<?>> CARBON_COMPOSITES = Sets.newHashSet();
-
     int MAX_TIMEOUT = 125;
 
     /**
      * All positions around an arbitrary point [0, 0, 0] creating a hollow 3x3x3 sphere. In other words, a 3x3x3 cube with the 8 vertices and the center missing.
      */
-    HashSet<Vec3i> SPLODGE_OFFSETS = Util.make(Sets.newHashSetWithExpectedSize(18), set -> {
+    HashSet<Vec3i> DYE_SPHERICAL_OFFSETS = Util.make(Sets.newHashSetWithExpectedSize(18), set -> {
         Vec3i vec;
 
         for (int x = -1; x <= 1; x++) {
@@ -55,11 +48,12 @@ public interface CarbonComposite<T extends Block & CarbonComposite<T>> {
         }
     });
 
-    @NotNull DyeColor color();
-    @NotNull DyedBlockList<T> dyedVariants();
+    @NotNull DyeColor getDyeColor();
+    @NotNull DyedBlockList<T> getDyedVariants();
+    @NotNull DyeableGroup getDyeableGroup();
 
     default BlockEntry<T> getOfColor() {
-        return this.dyedVariants().get(this.color());
+        return this.getDyedVariants().get(this.getDyeColor());
     }
 
     default ItemRequirement getItemRequirement() {
@@ -69,67 +63,69 @@ public interface CarbonComposite<T extends Block & CarbonComposite<T>> {
     static ItemInteractionResult useItemOn(ItemStack itemStack, BlockState blockState, Level level, BlockPos blockPos) {
         DyeColor color = DyeColor.getColor(itemStack);
 
-        if (color != null) {
-            if (!level.isClientSide())
-                level.playSound(null, blockPos, SoundEvents.DYE_USE, SoundSource.BLOCKS, 1.0F, Mth.randomBetween(level.getRandom(), 0.9F, 1.1F));
-
-            applyDye(blockState, level, blockPos, color);
-
+        if (color != null && applyDyeOn(blockState, level, blockPos, color)) {
+            level.playSound(null, blockPos, SoundEvents.DYE_USE, SoundSource.BLOCKS, 1.0F, Mth.randomBetween(level.getRandom(), 0.9F, 1.1F));
             return ItemInteractionResult.SUCCESS;
         }
 
         return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
     }
 
-    private static void applyDye(BlockState state, Level level, BlockPos pos, DyeColor color) {
-        if (tryApplySingularDye(level, pos, state, color) || trySpreadDyeToAdjacent(level, pos, color))
-            return;
+    private static boolean applyDyeOn(BlockState clickedState, Level level, BlockPos pos, DyeColor color) {
+        return tryDye(level, pos, clickedState, clickedState, color) || trySpreadDyeToAdjacent(level, pos, clickedState, color) || trySpreadDyeIteratively(level, pos, clickedState, color);
+    }
+
+    private static boolean trySpreadDyeIteratively(Level level, BlockPos origin, BlockState clickedState, DyeColor color) {
+        boolean hasDyed = false;
 
         List<BlockPos> frontier = new ObjectArrayList<>();
         Set<BlockPos> visited = new ObjectOpenHashSet<>();
 
-        frontier.add(pos);
+        frontier.add(origin);
         int timeout = MAX_TIMEOUT;
 
         while (!frontier.isEmpty() && timeout-- >= 0) {
             BlockPos currentPos = frontier.removeFirst();
             visited.add(currentPos);
 
-            for (Vec3i vec : SPLODGE_OFFSETS) {
+            for (Vec3i vec : DYE_SPHERICAL_OFFSETS) {
                 BlockPos offsetPos = currentPos.offset(vec);
 
-                if (!visited.contains(offsetPos) && appliedMultiDyeToPos(level, offsetPos, state, color)) {
+                if (visited.contains(offsetPos))
+                    continue;
+
+                BlockState offsetState = level.getBlockState(offsetPos);
+
+                if (tryDye(level, offsetPos, clickedState, offsetState, color)) {
                     frontier.add(offsetPos);
                     visited.add(offsetPos);
+
+                    hasDyed = true;
                 }
             }
-        }
-    }
-
-    private static boolean trySpreadDyeToAdjacent(Level level, BlockPos pos, DyeColor color) {
-        boolean hasDyed = false;
-
-        for (Direction direction : Iterate.directions) {
-            BlockPos offset = pos.relative(direction);
-            BlockState adjacentState = level.getBlockState(offset);
-
-            if (!tryApplySingularDye(level, offset, adjacentState, color))
-                continue;
-
-            hasDyed = true;
         }
 
         return hasDyed;
     }
 
-    private static boolean tryApplySingularDye(Level level, BlockPos pos, BlockState state, DyeColor color) {
-        if (state.getBlock() instanceof CarbonComposite<?> carbonComposite && carbonComposite.color() != color) {
-            BlockState blockState = carbonComposite.dyedVariants().get(color).getDefaultState();
+    private static boolean trySpreadDyeToAdjacent(Level level, BlockPos pos, BlockState clickedState, DyeColor color) {
+        boolean hasDyed = false;
 
-            if (carbonComposite instanceof RotatedPillarKineticBlock rotatedPillar)
-                blockState = blockState.setValue(RotatedPillarKineticBlock.AXIS, rotatedPillar.getRotationAxis(state));
+        for (Direction direction : Direction.values()) {
+            BlockPos offset = pos.relative(direction);
+            BlockState offsetState = level.getBlockState(offset);
 
-            level.setBlockAndUpdate(pos, blockState);
+            if (tryDye(level, offset, clickedState, offsetState, color))
+                hasDyed = true;
+        }
+
+        return hasDyed;
+    }
+
+    private static boolean tryDye(Level level, BlockPos applyingPos, BlockState clickedState, BlockState applyingState, DyeColor color) {
+        if (applyingState.getBlock() instanceof CarbonComposite<?> carbonComposite && carbonComposite.getDyeColor() != color && carbonComposite.inDyeableGroup(clickedState)) {
+            BlockState blockState = carbonComposite.getDyedVariants().get(color).getDefaultState();
+            level.setBlockAndUpdate(applyingPos, BlockHelper.copyProperties(applyingState, blockState));
 
             return true;
         }
@@ -137,31 +133,8 @@ public interface CarbonComposite<T extends Block & CarbonComposite<T>> {
         return false;
     }
 
-    private static boolean appliedMultiDyeToPos(Level level, BlockPos offsetPos, BlockState state, DyeColor color) {
-        BlockState adjacentState = level.getBlockState(offsetPos);
-
-        for (CarbonComposite<?> carbonComposite : CARBON_COMPOSITES) {
-            if (tryMultiDye(level, offsetPos, adjacentState, BlockHelper.copyProperties(state, carbonComposite.dyedVariants().get(color).getDefaultState())))
-                return true;
-        }
-
-        return false;
-    }
-
-    private static boolean tryMultiDye(Level level, BlockPos pos, BlockState state, BlockState newState) {
-        if (!(state.getBlock() instanceof CarbonComposite<?> carbonComposite && carbonComposite.dyedVariants().contains(newState.getBlock())))
-            return false;
-
-        if (state != newState) {
-            if (carbonComposite instanceof RotatedPillarKineticBlock)
-                newState = newState.setValue(RotatedPillarKineticBlock.AXIS, state.getValue(RotatedPillarKineticBlock.AXIS));
-
-            level.setBlockAndUpdate(pos, newState);
-
-            return true;
-        }
-
-        return false;
+    private boolean inDyeableGroup(BlockState state) {
+        return state.getBlock() instanceof CarbonComposite<?> carbonComposite && this.getDyeableGroup() == carbonComposite.getDyeableGroup();
     }
 
 }

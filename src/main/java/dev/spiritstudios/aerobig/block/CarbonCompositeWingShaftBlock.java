@@ -52,17 +52,15 @@ public class CarbonCompositeWingShaftBlock extends HorizontalAxisKineticBlock im
         super(properties);
         this.color = color;
         this.registerDefaultState(this.getStateDefinition().any().setValue(WATERLOGGED, false));
-
-        CARBON_COMPOSITES.add(this);
     }
 
     @Override
-    public DyeColor color() {
+    public DyeColor getDyeColor() {
         return this.color;
     }
 
     @Override
-    public DyedBlockList<CarbonCompositeWingBlock> dyedVariants() {
+    public DyedBlockList<CarbonCompositeWingBlock> getDyedVariants() {
         return ModBlocks.CARBON_COMPOSITE_WINGS;
     }
 
@@ -146,6 +144,11 @@ public class CarbonCompositeWingShaftBlock extends HorizontalAxisKineticBlock im
             return blockHitResult.getDirection().getAxis() == this.getRotationAxis(state) ? AllBlocks.SHAFT.asStack() : this.getOfColor().asStack();
 
         return super.getCloneItemStack(state, target, level, pos, player);
+    }
+
+    @Override
+    public DyeableGroup getDyeableGroup() {
+        return DyeableGroup.CONTROL_SURFACE;
     }
 
 }
