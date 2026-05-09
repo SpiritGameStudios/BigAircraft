@@ -1,0 +1,13 @@
+{
+  "variants": {
+    "type=bottom": {
+      "model": "aerobig:block/carbon_plating_slab"
+    },
+    "type=double": {
+      "model": "aerobig:block/carbon_plating"
+    },
+    "type=top": {
+      "model": "aerobig:block/carbon_plating_slab_top"
+    }
+  }
+}

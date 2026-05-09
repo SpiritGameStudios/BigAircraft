@@ -1,10 +1,40 @@
 {
   "variants": {
-    "axis=x": {
-      "model": "aerobig:block/blue_carbon_composite_wing_shaft_x"
+    "axis=x,connect_negative=false,connect_positive=false": {
+      "model": "aerobig:block/blue_carbon_composite_wing_shaft_shaft",
+      "uvlock": true,
+      "y": -90
     },
-    "axis=z": {
-      "model": "aerobig:block/blue_carbon_composite_wing_shaft_z"
+    "axis=x,connect_negative=false,connect_positive=true": {
+      "model": "aerobig:block/blue_carbon_composite_wing_shaft_shaft_positive",
+      "uvlock": true,
+      "y": -90
+    },
+    "axis=x,connect_negative=true,connect_positive=false": {
+      "model": "aerobig:block/blue_carbon_composite_wing_shaft_shaft_negative",
+      "uvlock": true,
+      "y": -90
+    },
+    "axis=x,connect_negative=true,connect_positive=true": {
+      "model": "aerobig:block/blue_carbon_composite_wing_shaft",
+      "uvlock": true,
+      "y": -90
+    },
+    "axis=z,connect_negative=false,connect_positive=false": {
+      "model": "aerobig:block/blue_carbon_composite_wing_shaft_shaft",
+      "uvlock": true
+    },
+    "axis=z,connect_negative=false,connect_positive=true": {
+      "model": "aerobig:block/blue_carbon_composite_wing_shaft_shaft_positive",
+      "uvlock": true
+    },
+    "axis=z,connect_negative=true,connect_positive=false": {
+      "model": "aerobig:block/blue_carbon_composite_wing_shaft_shaft_negative",
+      "uvlock": true
+    },
+    "axis=z,connect_negative=true,connect_positive=true": {
+      "model": "aerobig:block/blue_carbon_composite_wing_shaft",
+      "uvlock": true
     }
   }
 }

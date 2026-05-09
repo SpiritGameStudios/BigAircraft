@@ -9,6 +9,7 @@ import com.simibubi.create.foundation.data.*;
 import com.simibubi.create.foundation.data.recipe.CommonMetal;
 import com.tterrag.registrate.providers.RegistrateLangProvider;
 import com.tterrag.registrate.providers.RegistrateRecipeProvider;
+import com.tterrag.registrate.util.DataIngredient;
 import com.tterrag.registrate.util.entry.BlockEntry;
 import com.tterrag.registrate.util.nullness.NonNullBiFunction;
 import dev.simulated_team.simulated.registrate.simulated_tab.CreativeTabItemTransforms;
@@ -19,19 +20,21 @@ import dev.spiritstudios.aerobig.item.VerticalCarbonCompositeGearboxItem;
 import dev.spiritstudios.aerobig.mixin.CreativeTabItemTransformsAccessor;
 import dev.spiritstudios.aerobig.util.DyedItemList;
 import dev.spiritstudios.aerobig.util.ModSpriteShifts;
-import net.minecraft.core.Direction;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.data.recipes.RecipeCategory;
 import net.minecraft.data.recipes.ShapelessRecipeBuilder;
+import net.minecraft.tags.BlockTags;
+import net.minecraft.tags.ItemTags;
 import net.minecraft.world.item.DyeColor;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.SlabBlock;
 import net.minecraft.world.level.block.SoundType;
+import net.minecraft.world.level.block.StairBlock;
 import net.minecraft.world.level.block.state.BlockBehaviour;
-import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.material.MapColor;
 import net.minecraft.world.level.storage.loot.LootPool;
 import net.minecraft.world.level.storage.loot.entries.LootItem;
 import net.minecraft.world.level.storage.loot.providers.number.ConstantValue;
-import net.neoforged.neoforge.client.model.generators.ConfiguredModel;
 
 import static dev.spiritstudios.aerobig.BigAircraft.registrate;
 
@@ -61,7 +64,6 @@ public interface ModBlocks {
             .transform(CreativeTabItemTransforms.VisibilityType.SEARCH_ONLY.conditionalApplyBlock(() -> color != DyeColor.WHITE))
             .item()
             .tag(ModTags.Items.CARBON_COMPOSITE)
-            .tag(ModTags.Items.SHAFTLESS_CARBON_COMPOSITE)
             .build()
             .register();
     });
@@ -84,13 +86,13 @@ public interface ModBlocks {
                     .add(LootItem.lootTableItem(AllBlocks.SHAFT.get()))
                 ))
             ))
+            .transform(BigAircraftStress.setNoImpact())
             .onRegister(ModSpriteShifts.registerCasingCT(color, ModSpriteShifts.AXES_MATCH_PREDICATE.negate()))
-            .tag(ModTags.Blocks.CARBON_COMPOSITE)
+            .tag(ModTags.Blocks.CARBON_COMPOSITE_ENCASED_SHAFTS)
             .transform(TagGen.pickaxeOnly())
             .transform(EncasingRegistry.addVariantTo(AllBlocks.SHAFT))
             .transform(CreativeTabItemTransforms.VisibilityType.INVISIBLE.applyBlock())
             .item()
-            .tag(ModTags.Items.CARBON_COMPOSITE)
             .build()
             .register();
     });
@@ -102,16 +104,16 @@ public interface ModBlocks {
             .properties(properties -> DEFAULT_CARBON_COMPOSITE_PROPERTIES.apply(color, properties))
             .blockstate((context, provider) -> provider.simpleBlock(context.get(), provider
                 .models()
-                .withExistingParent(path, provider.modLoc("block/template_carbon_composite_wing"))
-                .texture("texture", provider.modLoc("block/" + DEFAULT_WHITE_NAME.apply(color, "carbon_composite")))
+                .withExistingParent(path, provider.modLoc("block/template_wing"))
+                .texture("side", provider.modLoc("block/" + DEFAULT_WHITE_NAME.apply(color, "carbon_composite_wing_side")))
+                .texture("top", provider.modLoc("block/" + DEFAULT_WHITE_NAME.apply(color, "carbon_composite")))
             ))
-            .onRegister(ModSpriteShifts.registerSimpleCT(color))
-            .tag(ModTags.Blocks.CARBON_COMPOSITE)
-            .tag(AllTags.AllBlockTags.WINDMILL_SAILS.tag)
+            .onRegister(ModSpriteShifts.registerCT(color, ModSpriteShifts.WingCTBehaviour::new))
+            .tag(ModTags.Blocks.CARBON_COMPOSITE_WINGS)
             .transform(TagGen.pickaxeOnly())
             .transform(CreativeTabItemTransforms.VisibilityType.SEARCH_ONLY.conditionalApplyBlock(() -> color != DyeColor.WHITE))
             .item()
-            .tag(ModTags.Items.CARBON_COMPOSITE)
+            .tag(ModTags.Items.CARBON_COMPOSITE_WINGS)
             .build()
             .register();
     });
@@ -121,38 +123,25 @@ public interface ModBlocks {
 
         return registrate().block(path, properties -> new CarbonCompositeWingShaftBlock(properties, color))
             .properties(properties -> DEFAULT_CARBON_COMPOSITE_PROPERTIES.apply(color, properties).noOcclusion())
-            .blockstate((context, provider) -> provider.getVariantBuilder(context.get())
-                .forAllStatesExcept(state -> {
-                    Direction.Axis axis = state.getValue(CarbonCompositeWingShaftBlock.HORIZONTAL_AXIS);
-                    String name = axis.getSerializedName();
-
-                    return ConfiguredModel.builder()
-                        .modelFile(provider.models()
-                            .withExistingParent(path + '_' + name, provider.modLoc("block/template_carbon_composite_wing_shaft_" + name))
-                            .texture("side", provider.modLoc("block/" + DEFAULT_WHITE_NAME.apply(color, "carbon_composite")))
-                            .texture("top", provider.modLoc("block/" + path))
-                        )
-                        .build();
-                }, BlockStateProperties.WATERLOGGED)
-            )
+            .blockstate(ModelConstructors.wingShaft(color))
             .loot((lootTables, block) -> lootTables.add(block, lootTables.createSingleItemTable(block.getDyedVariants().get(color))
                 .withPool(lootTables.applyExplosionCondition(AllBlocks.SHAFT.get(), LootPool.lootPool()
                     .setRolls(ConstantValue.exactly(1.0F))
                     .add(LootItem.lootTableItem(AllBlocks.SHAFT.get()))
                 ))
             ))
-            .tag(ModTags.Blocks.CARBON_COMPOSITE)
-            .tag(AllTags.AllBlockTags.WINDMILL_SAILS.tag)
+            .transform(BigAircraftStress.setNoImpact())
+            .onRegister(ModSpriteShifts.registerCT(color, ModSpriteShifts.WingCTBehaviour::new))
+            .tag(ModTags.Blocks.CARBON_COMPOSITE_WING_SHAFTS)
             .transform(TagGen.pickaxeOnly())
             .transform(EncasingRegistry.addVariantTo(AllBlocks.SHAFT))
             .transform(CreativeTabItemTransforms.VisibilityType.INVISIBLE.applyBlock())
             .item()
             .model((context, provider) -> provider
-                .withExistingParent(path, provider.modLoc("block/template_carbon_composite_wing_shaft_x"))
-                .texture("side", provider.modLoc("block/" + DEFAULT_WHITE_NAME.apply(color, "carbon_composite")))
-                .texture("top", provider.modLoc("block/" + path))
+                .withExistingParent(path, provider.modLoc("block/template_wing_shaft_item"))
+                .texture("side", provider.modLoc("block/" + DEFAULT_WHITE_NAME.apply(color, "carbon_composite_wing_side")))
+                .texture("top", provider.modLoc("block/" + DEFAULT_WHITE_NAME.apply(color, "carbon_composite")))
             )
-            .tag(ModTags.Items.CARBON_COMPOSITE)
             .build()
             .register();
     });
@@ -163,7 +152,7 @@ public interface ModBlocks {
         return registrate().block(path, properties -> new CarbonCompositeGearboxBlock(properties, color))
             .properties(properties -> DEFAULT_CARBON_COMPOSITE_PROPERTIES.apply(color, properties).noOcclusion())
             .onRegister(ModSpriteShifts.registerCasingCT(color, ModSpriteShifts.AXES_MATCH_PREDICATE))
-            .tag(ModTags.Blocks.CARBON_COMPOSITE)
+            .tag(ModTags.Blocks.CARBON_COMPOSITE_GEARBOXES)
             .transform(BigAircraftStress.setNoImpact())
             .transform(TagGen.pickaxeOnly())
             .transform(CreativeTabItemTransforms.VisibilityType.SEARCH_ONLY.conditionalApplyBlock(() -> color != DyeColor.WHITE))
@@ -175,7 +164,7 @@ public interface ModBlocks {
                 true
             ))
             .item()
-            .tag(ModTags.Items.CARBON_COMPOSITE)
+            .tag(ModTags.Items.CARBON_COMPOSITE_GEARBOXES)
             .model((context, provider) -> provider
                 .withExistingParent(path, provider.modLoc("block/wrapped_gearbox_item"))
                 .texture("side", provider.modLoc("block/" + path))
@@ -201,31 +190,53 @@ public interface ModBlocks {
                 .texture("side", provider.modLoc("block/" + DEFAULT_WHITE_NAME.apply(color, "carbon_composite_gearbox")))
                 .texture("top", provider.modLoc("block/" + DEFAULT_WHITE_NAME.apply(color, "carbon_composite")))
             )
+            .tag(ModTags.Items.CARBON_COMPOSITE_GEARBOXES)
             .register();
     });
+
+    BlockEntry<Block> CARBON_PLATING = registrate()
+        .block("carbon_plating", Block::new)
+        .initialProperties(SharedProperties::softMetal)
+        .properties(properties -> properties.mapColor(MapColor.COLOR_BLACK))
+        .transform(TagGen.pickaxeOnly())
+        .blockstate(BlockStateGen.simpleCubeAll("carbon_plating"))
+        .simpleItem()
+        .register();
+
+    BlockEntry<StairBlock> CARBON_PLATING_STAIRS = registrate()
+        .block("carbon_plating_stairs", properties -> new StairBlock(CARBON_PLATING.getDefaultState(), properties))
+        .initialProperties(SharedProperties::softMetal)
+        .properties(properties -> properties.mapColor(MapColor.COLOR_BLACK))
+        .transform(TagGen.pickaxeOnly())
+        .blockstate((context, provider) -> provider.stairsBlock(context.get(), provider.modLoc("block/carbon_plating")))
+        .recipe((context, provider) -> provider.stairs(DataIngredient.items(CARBON_PLATING.lazy()), RecipeCategory.BUILDING_BLOCKS, context, null, true))
+        .tag(BlockTags.STAIRS)
+        .item()
+        .tag(ItemTags.STAIRS)
+        .build()
+        .register();
+
+    BlockEntry<SlabBlock> CARBON_PLATING_SLAB = registrate()
+        .block("carbon_plating_slab", SlabBlock::new)
+        .initialProperties(SharedProperties::softMetal)
+        .properties(properties -> properties.mapColor(MapColor.COLOR_BLACK))
+        .transform(TagGen.pickaxeOnly())
+        .blockstate((context, provider) -> provider.slabBlock(context.get(), provider.modLoc("block/carbon_plating"), provider.modLoc("block/carbon_plating")))
+        .recipe((context, provider) -> provider.slab(DataIngredient.items(CARBON_PLATING.lazy()), RecipeCategory.BUILDING_BLOCKS, context, null, true))
+        .tag(BlockTags.SLABS)
+        .item()
+        .tag(ItemTags.SLABS)
+        .build()
+        .register();
 
     BlockEntry<AnalogSpeedControllerBlock> ANALOG_SPEED_CONTROLLER = registrate()
         .block("analog_speed_controller", AnalogSpeedControllerBlock::new)
         .initialProperties(SharedProperties::softMetal)
         .properties(properties -> properties.mapColor(MapColor.TERRACOTTA_YELLOW))
-        .transform(TagGen.axeOrPickaxe())
+        .transform(TagGen.pickaxeOnly())
         .tag(AllTags.AllBlockTags.SAFE_NBT.tag)
         .transform(BigAircraftStress.setNoImpact())
-        .blockstate((context, provider) -> provider
-            .getVariantBuilder(context.get())
-            .forAllStates(state -> {
-                Direction.Axis axis = state.getValue(BlockStateProperties.HORIZONTAL_AXIS);
-                return ConfiguredModel.builder()
-                    .modelFile(provider
-                        .models()
-                        .getExistingFile(
-                            provider.modLoc("block/" + context.getName() + (state.getValue(BlockStateProperties.POWERED) ? "_powered" : ""))
-                        )
-                    )
-                    .rotationY(axis == Direction.Axis.X ? 90 : 0)
-                    .build();
-            })
-        )
+        .blockstate(ModelConstructors.analogSpeedController())
         .recipe((context, provider) -> ShapelessRecipeBuilder.shapeless(RecipeCategory.MISC, context.get())
             .requires(CommonMetal.IRON.plates)
             .requires(AllItems.ELECTRON_TUBE)

@@ -1,9 +1,7 @@
 package dev.spiritstudios.aerobig.block;
 
 import com.simibubi.create.content.equipment.wrench.IWrenchable;
-import com.simibubi.create.foundation.block.DyedBlockList;
 import com.simibubi.create.foundation.block.ProperWaterloggedBlock;
-import dev.spiritstudios.aerobig.registry.ModBlocks;
 import net.minecraft.MethodsReturnNonnullByDefault;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -28,7 +26,7 @@ import javax.annotation.ParametersAreNonnullByDefault;
 
 @ParametersAreNonnullByDefault
 @MethodsReturnNonnullByDefault
-public class CarbonCompositeWingBlock extends Block implements CarbonComposite<CarbonCompositeWingBlock>, ProperWaterloggedBlock, IWrenchable {
+public class CarbonCompositeWingBlock extends Block implements ProperWaterloggedBlock, IWrenchable, ICarbonCompositeWing {
 
     static final VoxelShape SHAPE = box(0.0, 5.0, 0.0, 16.0, 11.0, 16.0);
 
@@ -56,11 +54,6 @@ public class CarbonCompositeWingBlock extends Block implements CarbonComposite<C
     }
 
     @Override
-    public DyedBlockList<CarbonCompositeWingBlock> getDyedVariants() {
-        return ModBlocks.CARBON_COMPOSITE_WINGS;
-    }
-
-    @Override
     protected FluidState getFluidState(BlockState state) {
         return this.fluidState(state);
     }
@@ -79,11 +72,6 @@ public class CarbonCompositeWingBlock extends Block implements CarbonComposite<C
     @Override
     protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
         builder.add(WATERLOGGED);
-    }
-
-    @Override
-    public DyeableGroup getDyeableGroup() {
-        return DyeableGroup.CONTROL_SURFACE;
     }
 
 }

@@ -1,0 +1,8 @@
+{
+  "parent": "minecraft:block/slab",
+  "textures": {
+    "bottom": "aerobig:block/carbon_plating",
+    "side": "aerobig:block/carbon_plating",
+    "top": "aerobig:block/carbon_plating"
+  }
+}

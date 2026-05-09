@@ -8,10 +8,8 @@ import com.simibubi.create.content.kinetics.base.HorizontalAxisKineticBlock;
 import com.simibubi.create.content.kinetics.base.KineticBlockEntity;
 import com.simibubi.create.content.kinetics.base.RotatedPillarKineticBlock;
 import com.simibubi.create.content.schematics.requirement.ItemRequirement;
-import com.simibubi.create.foundation.block.DyedBlockList;
 import com.simibubi.create.foundation.block.IBE;
 import com.simibubi.create.foundation.block.ProperWaterloggedBlock;
-import dev.spiritstudios.aerobig.registry.ModBlocks;
 import net.minecraft.MethodsReturnNonnullByDefault;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -33,6 +31,7 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
+import net.minecraft.world.level.block.state.properties.BooleanProperty;
 import net.minecraft.world.level.material.FluidState;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
@@ -41,27 +40,30 @@ import net.minecraft.world.phys.shapes.VoxelShape;
 import org.jetbrains.annotations.Nullable;
 
 import javax.annotation.ParametersAreNonnullByDefault;
+import java.util.Objects;
 
 @ParametersAreNonnullByDefault
 @MethodsReturnNonnullByDefault
-public class CarbonCompositeWingShaftBlock extends HorizontalAxisKineticBlock implements IBE<KineticBlockEntity>, SpecialBlockItemRequirement, EncasedBlock, CarbonComposite<CarbonCompositeWingBlock>, ProperWaterloggedBlock {
+public class CarbonCompositeWingShaftBlock extends HorizontalAxisKineticBlock implements IBE<KineticBlockEntity>, SpecialBlockItemRequirement, EncasedBlock, ProperWaterloggedBlock, ICarbonCompositeWing {
+
+    public static final BooleanProperty CONNECT_POSITIVE = BooleanProperty.create("connect_positive");
+    public static final BooleanProperty CONNECT_NEGATIVE = BooleanProperty.create("connect_negative");
 
     private final DyeColor color;
 
     public CarbonCompositeWingShaftBlock(Properties properties, DyeColor color) {
         super(properties);
         this.color = color;
-        this.registerDefaultState(this.getStateDefinition().any().setValue(WATERLOGGED, false));
+        this.registerDefaultState(this.getStateDefinition().any()
+            .setValue(WATERLOGGED, false)
+            .setValue(CONNECT_POSITIVE, false)
+            .setValue(CONNECT_NEGATIVE, false)
+        );
     }
 
     @Override
     public DyeColor getDyeColor() {
         return this.color;
-    }
-
-    @Override
-    public DyedBlockList<CarbonCompositeWingBlock> getDyedVariants() {
-        return ModBlocks.CARBON_COMPOSITE_WINGS;
     }
 
     @Override
@@ -76,18 +78,47 @@ public class CarbonCompositeWingShaftBlock extends HorizontalAxisKineticBlock im
 
     @Override
     public BlockState getStateForPlacement(BlockPlaceContext context) {
-        return this.withWater(super.getStateForPlacement(context), context);
+        BlockState stateForPlacement = this.defaultBlockState().setValue(HORIZONTAL_AXIS, Objects.requireNonNullElse(
+            getPreferredHorizontalAxis(context),
+            context.getHorizontalDirection().getAxis()
+        ));
+
+        Direction.Axis axis = stateForPlacement.getValue(HORIZONTAL_AXIS);
+
+        Level level = context.getLevel();
+        BlockPos clickedPos = context.getClickedPos();
+
+        if (level.getBlockState(relativeAxisDirectionPos(clickedPos, axis, false)).getBlock() instanceof ICarbonCompositeWing)
+            stateForPlacement = stateForPlacement.setValue(CONNECT_POSITIVE, true);
+
+        if (level.getBlockState(relativeAxisDirectionPos(clickedPos, axis, true)).getBlock() instanceof ICarbonCompositeWing)
+            stateForPlacement = stateForPlacement.setValue(CONNECT_NEGATIVE, true);
+
+        return this.withWater(stateForPlacement, context);
+    }
+
+    private static BlockPos relativeAxisDirectionPos(BlockPos pos, Direction.Axis axis, boolean positive) {
+        return pos.relative(Direction.fromAxisAndDirection(axis, positive ? Direction.AxisDirection.POSITIVE : Direction.AxisDirection.NEGATIVE));
     }
 
     @Override
     protected BlockState updateShape(BlockState state, Direction direction, BlockState neighborState, LevelAccessor level, BlockPos pos, BlockPos neighborPos) {
         this.updateWater(level, state, pos);
-        return state;
+        Direction.Axis axis = state.getValue(HORIZONTAL_AXIS);
+
+        if (direction.getAxis() != axis)
+            return state;
+
+        return state.setValue(ofAxisDirection(direction.getAxisDirection().opposite()), neighborState.getBlock() instanceof ICarbonCompositeWing);
+    }
+
+    private static BooleanProperty ofAxisDirection(Direction.AxisDirection axisDirection) {
+        return axisDirection == Direction.AxisDirection.POSITIVE ? CONNECT_POSITIVE : CONNECT_NEGATIVE;
     }
 
     @Override
     protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
-        super.createBlockStateDefinition(builder.add(WATERLOGGED));
+        super.createBlockStateDefinition(builder.add(WATERLOGGED, CONNECT_POSITIVE, CONNECT_NEGATIVE));
     }
 
     @Override
@@ -105,7 +136,15 @@ public class CarbonCompositeWingShaftBlock extends HorizontalAxisKineticBlock im
         Direction.Axis axis = state.getValue(RotatedPillarKineticBlock.AXIS);
         assert axis.isHorizontal();
 
-        KineticBlockEntity.switchToBlockState(level, pos, this.defaultBlockState().setValue(HORIZONTAL_AXIS, axis));
+        BlockState blockState = this.defaultBlockState().setValue(HORIZONTAL_AXIS, axis);
+
+        if (level.getBlockState(relativeAxisDirectionPos(pos, axis, false)).getBlock() instanceof ICarbonCompositeWing)
+            blockState = blockState.setValue(CONNECT_POSITIVE, true);
+
+        if (level.getBlockState(relativeAxisDirectionPos(pos, axis, true)).getBlock() instanceof ICarbonCompositeWing)
+            blockState = blockState.setValue(CONNECT_NEGATIVE, true);
+
+        KineticBlockEntity.switchToBlockState(level, pos, blockState);
 
         if (!player.isCreative())
             player.getItemInHand(hand).shrink(1);
@@ -144,11 +183,6 @@ public class CarbonCompositeWingShaftBlock extends HorizontalAxisKineticBlock im
             return blockHitResult.getDirection().getAxis() == this.getRotationAxis(state) ? AllBlocks.SHAFT.asStack() : this.getOfColor().asStack();
 
         return super.getCloneItemStack(state, target, level, pos, player);
-    }
-
-    @Override
-    public DyeableGroup getDyeableGroup() {
-        return DyeableGroup.CONTROL_SURFACE;
     }
 
 }

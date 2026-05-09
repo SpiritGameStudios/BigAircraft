@@ -1,0 +1,8 @@
+{
+    "replace": false,
+    "values": [
+        "#aerobig:carbon_composite_encased_shafts",
+        "#aerobig:carbon_composite_wing_shafts",
+        "#aerobig:carbon_composite_gearboxes"
+    ]
+}

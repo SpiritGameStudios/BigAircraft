@@ -1,0 +1,7 @@
+{
+  "parent": "aerobig:block/template_wing_shaft",
+  "textures": {
+    "side": "aerobig:block/green_carbon_composite_wing_side",
+    "top": "aerobig:block/green_carbon_composite"
+  }
+}

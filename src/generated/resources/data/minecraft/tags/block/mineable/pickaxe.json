@@ -80,6 +80,9 @@
     "aerobig:green_carbon_composite_gearbox",
     "aerobig:red_carbon_composite_gearbox",
     "aerobig:black_carbon_composite_gearbox",
+    "aerobig:carbon_plating",
+    "aerobig:carbon_plating_stairs",
+    "aerobig:carbon_plating_slab",
     "aerobig:analog_speed_controller"
   ]
 }
