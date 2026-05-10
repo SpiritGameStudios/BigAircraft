@@ -8,28 +8,30 @@ import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.Block;
 
-public interface ModTags {
+public final class ModTags {
+    public final static class Blocks {
+        public static final TagKey<Block> CARBON_COMPOSITE = create("carbon_composite");
+        public static final TagKey<Block> CARBON_COMPOSITE_GEARBOXES = create("carbon_composite_gearboxes");
+        public static final TagKey<Block> CARBON_COMPOSITE_ENCASED_SHAFTS = create("carbon_composite_encased_shafts");
+        public static final TagKey<Block> CARBON_COMPOSITE_WINGS = create("carbon_composite_wings");
+        public static final TagKey<Block> CARBON_COMPOSITE_WING_SHAFTS = create("carbon_composite_wing_shafts");
 
-    interface Blocks {
-
-        TagKey<Block> CARBON_COMPOSITE = create(Registries.BLOCK, "carbon_composite");
-        TagKey<Block> CARBON_COMPOSITE_GEARBOXES = create(Registries.BLOCK, "carbon_composite_gearboxes");
-        TagKey<Block> CARBON_COMPOSITE_ENCASED_SHAFTS = create(Registries.BLOCK, "carbon_composite_encased_shafts");
-        TagKey<Block> CARBON_COMPOSITE_WINGS = create(Registries.BLOCK, "carbon_composite_wings");
-        TagKey<Block> CARBON_COMPOSITE_WING_SHAFTS = create(Registries.BLOCK, "carbon_composite_wing_shafts");
-
+        public static TagKey<Block> create(String path) {
+            return TagKey.create(Registries.BLOCK, BigAircraft.id(path));
+        }
     }
 
-    interface Items {
+    public final static class Items {
+        public static final TagKey<Item> CARBON_COMPOSITE = create("carbon_composite");
+        public static final TagKey<Item> CARBON_COMPOSITE_GEARBOXES = create("carbon_composite_gearboxes");
+        public static final TagKey<Item> CARBON_COMPOSITE_WINGS = create("carbon_composite_wings");
 
-        TagKey<Item> CARBON_COMPOSITE = create(Registries.ITEM, "carbon_composite");
-        TagKey<Item> CARBON_COMPOSITE_GEARBOXES = create(Registries.ITEM, "carbon_composite_gearboxes");
-        TagKey<Item> CARBON_COMPOSITE_WINGS = create(Registries.ITEM, "carbon_composite_wings");
-
+        public static TagKey<Item> create(String path) {
+            return TagKey.create(Registries.ITEM, BigAircraft.id(path));
+        }
     }
 
-    static <T> TagKey<T> create(ResourceKey<Registry<T>> registryKey, String path) {
+    public static <T> TagKey<T> create(ResourceKey<Registry<T>> registryKey, String path) {
         return TagKey.create(registryKey, BigAircraft.id(path));
     }
-
 }

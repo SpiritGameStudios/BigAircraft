@@ -12,7 +12,6 @@ import org.spongepowered.asm.mixin.injection.At;
 
 @Mixin(CogWheelBlock.class)
 public class CogWheelBlockMixin {
-
     @WrapOperation(method = "getAxisForPlacement", at = @At(value = "INVOKE", target = "Lcom/tterrag/registrate/util/entry/BlockEntry;has(Lnet/minecraft/world/level/block/state/BlockState;)Z"))
     private boolean alignWithAnalogSpeedController(BlockEntry<SpeedControllerBlock> instance, BlockState state, Operation<Boolean> original) {
         return original.call(instance, state) || original.call(ModBlocks.ANALOG_SPEED_CONTROLLER, state);

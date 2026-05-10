@@ -7,15 +7,17 @@ import dev.spiritstudios.aerobig.block.analog_speed_controller.AnalogSpeedContro
 
 import static dev.spiritstudios.aerobig.BigAircraft.registrate;
 
-public interface ModBlockEntityTypes {
+public final class ModBlockEntityTypes {
+    public static final BlockEntityEntry<AnalogSpeedControllerBlockEntity> ANALOG_SPEED_CONTROLLER = registrate()
+            .blockEntity("analog_speed_controller", AnalogSpeedControllerBlockEntity::new)
+            .visual(() -> SingleAxisRotatingVisual::shaft)
+            .validBlocks(ModBlocks.ANALOG_SPEED_CONTROLLER)
+            .renderer(() -> AnalogSpeedControllerRenderer::new)
+            .register();
 
-    BlockEntityEntry<AnalogSpeedControllerBlockEntity> ANALOG_SPEED_CONTROLLER = registrate()
-        .blockEntity("analog_speed_controller", AnalogSpeedControllerBlockEntity::new)
-        .visual(() -> SingleAxisRotatingVisual::shaft)
-        .validBlocks(ModBlocks.ANALOG_SPEED_CONTROLLER)
-        .renderer(() -> AnalogSpeedControllerRenderer::new)
-        .register();
+    public static void init() {
+    }
 
-    static void init() {}
-
+    private ModBlockEntityTypes() {
+    }
 }

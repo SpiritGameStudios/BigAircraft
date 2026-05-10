@@ -14,7 +14,6 @@ import net.neoforged.neoforge.client.model.generators.ConfiguredModel;
 import static dev.spiritstudios.aerobig.registry.ModBlocks.DEFAULT_WHITE_NAME;
 
 public final class ModelConstructors {
-
     static NonNullBiConsumer<DataGenContext<Block, AnalogSpeedControllerBlock>, RegistrateBlockstateProvider> analogSpeedController() {
         return (context, provider) -> provider
             .getVariantBuilder(context.get())

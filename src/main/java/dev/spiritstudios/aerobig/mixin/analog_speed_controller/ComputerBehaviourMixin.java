@@ -14,7 +14,6 @@ import java.util.function.Supplier;
 
 @Mixin(ComputerBehaviour.class)
 public class ComputerBehaviourMixin {
-
     @Inject(method = "getPeripheralFor", at = @At("HEAD"), cancellable = true)
     private static void addAnalogSpeedControllerPeripheral(SmartBlockEntity be, CallbackInfoReturnable<Supplier<SyncedPeripheral<?>>> cir) {
         if (be instanceof AnalogSpeedControllerBlockEntity analogSpeedController)

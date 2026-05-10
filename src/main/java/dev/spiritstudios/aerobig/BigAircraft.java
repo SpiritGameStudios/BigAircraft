@@ -14,7 +14,6 @@ import dev.spiritstudios.aerobig.block.analog_speed_controller.AnalogSpeedContro
 import dev.spiritstudios.aerobig.config.BigAircraftConfigService;
 import dev.spiritstudios.aerobig.registry.ModBlockEntityTypes;
 import dev.spiritstudios.aerobig.registry.ModBlocks;
-import dev.spiritstudios.aerobig.registry.ModItems;
 import net.createmod.catnip.config.ConfigBase;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
@@ -58,7 +57,6 @@ public class BigAircraft {
 
         ModBlocks.init();
         ModBlockEntityTypes.init();
-        ModItems.init();
 
         BigAircraftConfigService.register(ModLoadingContext.get(), modContainer);
     }

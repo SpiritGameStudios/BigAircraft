@@ -13,7 +13,6 @@ import javax.annotation.ParametersAreNonnullByDefault;
 @ParametersAreNonnullByDefault
 @MethodsReturnNonnullByDefault
 public class VerticalCarbonCompositeGearboxItem extends VerticalGearboxItem {
-
     private final DyeColor color;
 
     public VerticalCarbonCompositeGearboxItem(Properties builder, DyeColor color) {
@@ -30,5 +29,4 @@ public class VerticalCarbonCompositeGearboxItem extends VerticalGearboxItem {
     public String getDescriptionId() {
         return Util.makeDescriptionId("item", BuiltInRegistries.BLOCK.getKey(this.getBlock()).withPath(s -> "vertical_" + s));
     }
-
 }

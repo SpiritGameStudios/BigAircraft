@@ -23,20 +23,19 @@ import java.util.EnumMap;
 import java.util.function.BiPredicate;
 import java.util.function.Function;
 
-public interface ModSpriteShifts {
+public final class ModSpriteShifts {
+    public static final BiPredicate<BlockState, Direction> AXES_MATCH_PREDICATE = (state, direction) -> direction.getAxis() == state.getValue(BlockStateProperties.AXIS);
 
-    BiPredicate<BlockState, Direction> AXES_MATCH_PREDICATE = (state, direction) -> direction.getAxis() == state.getValue(BlockStateProperties.AXIS);
-
-    EnumMap<DyeColor, CTSpriteShiftEntry> CARBON_COMPOSITES = Util.make(Maps.newEnumMap(DyeColor.class), map -> {
+    public static final EnumMap<DyeColor, CTSpriteShiftEntry> CARBON_COMPOSITES = Util.make(Maps.newEnumMap(DyeColor.class), map -> {
         for (DyeColor color : DyeColor.values())
             map.put(color, register(AllCTTypes.OMNIDIRECTIONAL, ModBlocks.DEFAULT_WHITE_NAME.apply(color, "carbon_composite")));
     });
 
-    static NonNullConsumer<? super Block> registerCT(DyeColor color, Function<CTSpriteShiftEntry, ? extends ConnectedTextureBehaviour> ctBehaviour) {
+    public static NonNullConsumer<? super Block> registerCT(DyeColor color, Function<CTSpriteShiftEntry, ? extends ConnectedTextureBehaviour> ctBehaviour) {
         return CreateRegistrate.connectedTextures(() -> ctBehaviour.apply(CARBON_COMPOSITES.get(color)));
     }
 
-    static NonNullConsumer<? super Block> registerCasingCT(DyeColor color, BiPredicate<BlockState, Direction> predicate) {
+    public static NonNullConsumer<? super Block> registerCasingCT(DyeColor color, BiPredicate<BlockState, Direction> predicate) {
         return block -> {
             CTSpriteShiftEntry spriteShiftEntry = CARBON_COMPOSITES.get(color);
 
@@ -45,12 +44,11 @@ public interface ModSpriteShifts {
         };
     }
 
-    static CTSpriteShiftEntry register(CTType type, String path) {
+    public static CTSpriteShiftEntry register(CTType type, String path) {
         return CTSpriteShifter.getCT(type, BigAircraft.id("block/" + path), BigAircraft.id("block/" + path + "_connected"));
     }
 
-    class WingCTBehaviour extends ConnectedTextureBehaviour.Base {
-
+    public static class WingCTBehaviour extends ConnectedTextureBehaviour.Base {
         protected CTSpriteShiftEntry shift;
 
         public WingCTBehaviour(CTSpriteShiftEntry shift) {
@@ -75,5 +73,4 @@ public interface ModSpriteShifts {
         }
 
     }
-
 }

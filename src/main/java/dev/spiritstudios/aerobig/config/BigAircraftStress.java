@@ -11,7 +11,6 @@ import net.minecraft.world.level.block.Block;
 import net.neoforged.neoforge.common.ModConfigSpec;
 
 public class BigAircraftStress extends CStress {
-
     private static final String STRESS_UNITS = "[in Stress Units]";
     private static final String IMPACT = "Configure the individual stress impact of mechanical blocks. Note that this cost is doubled for every speed increase it receives.";
     private static final String CAPACITY = "Configure how much stress a source can accommodate for.";
@@ -54,5 +53,4 @@ public class BigAircraftStress extends CStress {
         if (!builder.getOwner().getModid().equals(BigAircraft.MOD_ID))
             throw new IllegalStateException("Non-%1$s blocks cannot be added to %1$s's config.".formatted(BigAircraft.MOD_NAME));
     }
-
 }

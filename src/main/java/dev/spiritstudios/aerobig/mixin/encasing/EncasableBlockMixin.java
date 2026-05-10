@@ -22,7 +22,6 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(EncasableBlock.class)
 public interface EncasableBlockMixin {
-
     @Inject(method = "tryEncase", at = @At(value = "FIELD", target = "Lnet/minecraft/world/level/Level;isClientSide:Z", opcode = Opcodes.GETFIELD), cancellable = true)
     private void onlyEncaseShaftWithWingWhenHorizontal(BlockState state, Level level, BlockPos pos, ItemStack heldItem, Player player, InteractionHand hand, BlockHitResult ray, CallbackInfoReturnable<ItemInteractionResult> cir, @Local(name = "block") Block block) {
         if (!ModBlocks.CARBON_COMPOSITE_WING_SHAFTS.contains(block))

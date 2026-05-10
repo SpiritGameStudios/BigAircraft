@@ -14,7 +14,6 @@ import java.util.Map;
 import java.util.function.Supplier;
 
 public enum BigAircraftConfigService {
-
     INSTANCE;
 
     public static final Map<ModConfig.Type, ConfigBase> CONFIGS = new EnumMap<>(ModConfig.Type.class);
