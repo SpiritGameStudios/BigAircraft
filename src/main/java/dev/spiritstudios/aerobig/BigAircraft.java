@@ -73,8 +73,9 @@ public class BigAircraft {
 
         Block[] blocks = new Block[length];
 
-        for (int i = 0; i < length; i++)
+        for (int i = 0; i < length; i++) {
             blocks[i] = dyedBlocks.get(i).get();
+        }
 
         event.modify(blockEntity.getKey(), blocks);
     }

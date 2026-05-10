@@ -173,9 +173,7 @@ public final class ModBlocks {
                 .register();
     });
 
-    /**
-     * This is here to make sure the vertical gearboxes are registered right after the horizontal ones, and as such appear in that order in the creative menu.
-     */
+    /// This is here to make sure the vertical gearboxes are registered right after the horizontal ones, and as such appear in that order in the creative menu.
     public static final DyedItemList<VerticalCarbonCompositeGearboxItem> VERTICAL_GEARBOX_ITEMS = new DyedItemList<>(color -> {
         String path = DEFAULT_WHITE_NAME.apply(color, "vertical_carbon_composite_gearbox");
 
