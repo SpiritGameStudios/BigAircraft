@@ -4,13 +4,13 @@ import com.simibubi.create.AllBlocks;
 import com.simibubi.create.AllItems;
 import com.simibubi.create.AllTags;
 import com.simibubi.create.content.decoration.encasing.EncasingRegistry;
-import com.simibubi.create.foundation.block.DyedBlockList;
 import com.simibubi.create.foundation.data.*;
 import com.simibubi.create.foundation.data.recipe.CommonMetal;
 import com.tterrag.registrate.providers.RegistrateLangProvider;
 import com.tterrag.registrate.providers.RegistrateRecipeProvider;
 import com.tterrag.registrate.util.DataIngredient;
 import com.tterrag.registrate.util.entry.BlockEntry;
+import com.tterrag.registrate.util.entry.ItemEntry;
 import com.tterrag.registrate.util.nullness.NonNullBiFunction;
 import dev.simulated_team.simulated.registrate.simulated_tab.CreativeTabItemTransforms;
 import dev.spiritstudios.aerobig.block.*;
@@ -18,7 +18,7 @@ import dev.spiritstudios.aerobig.block.analog_speed_controller.AnalogSpeedContro
 import dev.spiritstudios.aerobig.config.BigAircraftStress;
 import dev.spiritstudios.aerobig.item.VerticalCarbonCompositeGearboxItem;
 import dev.spiritstudios.aerobig.mixin.CreativeTabItemTransformsAccessor;
-import dev.spiritstudios.aerobig.util.DyedItemList;
+import dev.spiritstudios.aerobig.util.OrderedDyedEntryList;
 import dev.spiritstudios.aerobig.util.ModSpriteShifts;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.data.recipes.RecipeCategory;
@@ -26,6 +26,7 @@ import net.minecraft.data.recipes.ShapelessRecipeBuilder;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.tags.ItemTags;
 import net.minecraft.world.item.DyeColor;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.SlabBlock;
 import net.minecraft.world.level.block.SoundType;
@@ -46,7 +47,7 @@ public final class ModBlocks {
             .strength(5.0F, 6.0F)
             .sound(SoundType.COPPER);
 
-    public static final DyedBlockList<CarbonCompositeBlock> CARBON_COMPOSITE_BLOCKS = new DyedBlockList<>(color -> {
+    public static final OrderedDyedEntryList<Block, BlockEntry<CarbonCompositeBlock>> CARBON_COMPOSITE_BLOCKS = new OrderedDyedEntryList<>(color -> {
         String path = DEFAULT_WHITE_NAME.apply(color, "carbon_composite");
 
         return registrate().block(path, properties -> new CarbonCompositeBlock(properties, color))
@@ -67,7 +68,7 @@ public final class ModBlocks {
                 .register();
     });
 
-    public static final DyedBlockList<CarbonCompositeEncasedShaftBlock> CARBON_COMPOSITE_ENCASED_SHAFTS = new DyedBlockList<>(color -> {
+    public static final OrderedDyedEntryList<Block, BlockEntry<CarbonCompositeEncasedShaftBlock>> CARBON_COMPOSITE_ENCASED_SHAFTS = new OrderedDyedEntryList<>(color -> {
         String path = DEFAULT_WHITE_NAME.apply(color, "carbon_composite_encased_shaft");
 
         return registrate().block(path, properties -> new CarbonCompositeEncasedShaftBlock(properties, color))
@@ -96,7 +97,7 @@ public final class ModBlocks {
                 .register();
     });
 
-    public static final DyedBlockList<CarbonCompositeWingBlock> CARBON_COMPOSITE_WINGS = new DyedBlockList<>(color -> {
+    public static final OrderedDyedEntryList<Block, BlockEntry<CarbonCompositeWingBlock>> CARBON_COMPOSITE_WINGS = new OrderedDyedEntryList<>(color -> {
         String path = DEFAULT_WHITE_NAME.apply(color, "carbon_composite_wing");
 
         return registrate().block(path, properties -> new CarbonCompositeWingBlock(properties, color))
@@ -117,7 +118,7 @@ public final class ModBlocks {
                 .register();
     });
 
-    public static final DyedBlockList<CarbonCompositeWingShaftBlock> CARBON_COMPOSITE_WING_SHAFTS = new DyedBlockList<>(color -> {
+    public static final OrderedDyedEntryList<Block, BlockEntry<CarbonCompositeWingShaftBlock>> CARBON_COMPOSITE_WING_SHAFTS = new OrderedDyedEntryList<>(color -> {
         String path = DEFAULT_WHITE_NAME.apply(color, "carbon_composite_wing_shaft");
 
         return registrate().block(path, properties -> new CarbonCompositeWingShaftBlock(properties, color))
@@ -145,7 +146,7 @@ public final class ModBlocks {
                 .register();
     });
 
-    public static final DyedBlockList<CarbonCompositeGearboxBlock> CARBON_COMPOSITE_GEARBOXES = new DyedBlockList<>(color -> {
+    public static final OrderedDyedEntryList<Block, BlockEntry<CarbonCompositeGearboxBlock>> CARBON_COMPOSITE_GEARBOXES = new OrderedDyedEntryList<>(color -> {
         String path = DEFAULT_WHITE_NAME.apply(color, "carbon_composite_gearbox");
 
         return registrate().block(path, properties -> new CarbonCompositeGearboxBlock(properties, color))
@@ -174,7 +175,7 @@ public final class ModBlocks {
     });
 
     /// This is here to make sure the vertical gearboxes are registered right after the horizontal ones, and as such appear in that order in the creative menu.
-    public static final DyedItemList<VerticalCarbonCompositeGearboxItem> VERTICAL_GEARBOX_ITEMS = new DyedItemList<>(color -> {
+    public static final OrderedDyedEntryList<Item, ItemEntry<VerticalCarbonCompositeGearboxItem>> VERTICAL_GEARBOX_ITEMS = new OrderedDyedEntryList<>(color -> {
         String path = DEFAULT_WHITE_NAME.apply(color, "vertical_carbon_composite_gearbox");
 
         return registrate().item(path, properties -> new VerticalCarbonCompositeGearboxItem(properties, color))

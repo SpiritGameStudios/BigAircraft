@@ -1,8 +1,9 @@
 package dev.spiritstudios.aerobig.block;
 
 import com.simibubi.create.content.kinetics.gearbox.GearboxBlock;
-import com.simibubi.create.foundation.block.DyedBlockList;
+import com.tterrag.registrate.util.entry.BlockEntry;
 import dev.spiritstudios.aerobig.registry.ModBlocks;
+import dev.spiritstudios.aerobig.util.OrderedDyedEntryList;
 import net.minecraft.MethodsReturnNonnullByDefault;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.InteractionHand;
@@ -12,6 +13,7 @@ import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelReader;
+import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.storage.loot.LootParams;
 import net.minecraft.world.phys.BlockHitResult;
@@ -58,7 +60,7 @@ public class CarbonCompositeGearboxBlock extends GearboxBlock implements CarbonC
     }
 
     @Override
-    public DyedBlockList<CarbonCompositeGearboxBlock> getDyedVariants() {
+    public OrderedDyedEntryList<Block, BlockEntry<CarbonCompositeGearboxBlock>> getDyedVariants() {
         return ModBlocks.CARBON_COMPOSITE_GEARBOXES;
     }
 

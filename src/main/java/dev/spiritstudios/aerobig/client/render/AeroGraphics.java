@@ -124,8 +124,8 @@ public record AeroGraphics(Minecraft mc, GuiGraphics graphics) {
         graphics.pose().mulPose(Axis.ZN.rotationDegrees(Mth.wrapDegrees(roll * Mth.RAD_TO_DEG)));
         graphics.pose().translate(-windowCentreX, -windowCentreY, 0);
 
-        var padX = graphics.guiWidth() / 4;
-        var padY = graphics.guiHeight() / 4;
+        int padX = graphics.guiWidth() / 4;
+        int padY = graphics.guiHeight() / 4;
 
         graphics.enableScissor(
                 padX, padY,
@@ -156,50 +156,42 @@ public record AeroGraphics(Minecraft mc, GuiGraphics graphics) {
             this.hLine((float) windowCentreX - HORIZON_LINE_CENTRE_PADDING, -len, up);
             this.hLine((float) windowCentreX + HORIZON_LINE_CENTRE_PADDING - 1, len, up);
 
+            String str = String.format("%d", -i);
+            if (i % 5 == 0) {
+                int y = (int) up - (mc.font.lineHeight / 2);
+
+                this.write(str, windowCentreX - len - 12 - this.mc.font.width(str), y, false);
+                this.write(str, windowCentreX + len + 12, y, false);
+            }
+
             RenderSystem.defaultBlendFunc();
             RenderSystem.disableBlend();
-
-            var mc = Minecraft.getInstance();
-            var str = String.format("%d", -i);
-            if (i % 5 == 0) {
-                this.write(
-                        mc, str,
-                        windowCentreX - len - 12 - mc.font.width(str),
-                        (int) up - (mc.font.lineHeight / 2)
-                );
-
-                this.write(
-                        mc, str,
-                        windowCentreX + len + 12,
-                        (int) up - (mc.font.lineHeight / 2)
-                );
-            }
         }
 
         graphics.disableScissor();
         graphics.pose().popPose();
     }
 
-    public void drawAirspeed(Minecraft minecraft, int windowCentreY, Pose3dc pose, Pose3dc prevPose) {
-        var dx = pose.position().x() - prevPose.position().x();
+    public void drawAirspeed(int windowCentreY, Pose3dc pose, Pose3dc prevPose) {
+        double dx = pose.position().x() - prevPose.position().x();
 //        var dy =  pose.position().y() - prevPose.position().y();
-        var dz = pose.position().z() - prevPose.position().z();
+        double dz = pose.position().z() - prevPose.position().z();
 
-        var airspeedBPT = Math.sqrt(dx * dx + dz * dz);
+        double airspeedBPT = Math.hypot(dx, dz);
 
-        this.write(minecraft, "" + (int) (airspeedBPT * BPT_TO_KN), 0, windowCentreY + 10);
+        this.write("" + (int) (airspeedBPT * BPT_TO_KN), 0, windowCentreY + 10, true);
     }
 
-    public void writeAltitude(Minecraft minecraft, int windowWidth, int windowCenterY, Vec3 pos) {
-        Vec3 vec3 = Sable.HELPER.projectOutOfSubLevel(minecraft.level, pos);
-        this.write(minecraft, "G%.2f".formatted(vec3.y), windowWidth - windowWidth / 4, windowCenterY - ALTITUDE_TEXT_HEIGHT / 2);
+    public void writeAltitude(int windowWidth, int windowCenterY, Vec3 pos) {
+        Vec3 vec3 = Sable.HELPER.projectOutOfSubLevel(this.mc.level, pos);
+        this.write("G%.2f".formatted(vec3.y), windowWidth - windowWidth / 4, windowCenterY - ALTITUDE_TEXT_HEIGHT / 2, true);
     }
 
-    private void write(Minecraft minecraft, String text, int x, int y) {
-        this.write(minecraft, Component.literal(text), x, y);
+    private void write(String text, int x, int y, boolean dropShadow) {
+        this.write(Component.literal(text), x, y, dropShadow);
     }
 
-    private void write(Minecraft minecraft, Component text, int x, int y) {
-        this.graphics.drawString(minecraft.font, text, x, y, CommonColors.WHITE);
+    private void write(Component text, int x, int y, boolean dropShadow) {
+        this.graphics.drawString(this.mc.font, text, x, y, CommonColors.WHITE, dropShadow);
     }
 }

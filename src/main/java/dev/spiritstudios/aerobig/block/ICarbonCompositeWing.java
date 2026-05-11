@@ -1,13 +1,15 @@
 package dev.spiritstudios.aerobig.block;
 
-import com.simibubi.create.foundation.block.DyedBlockList;
+import com.tterrag.registrate.util.entry.BlockEntry;
 import dev.ryanhcode.sable.api.block.BlockSubLevelCustomCenterOfMass;
 import dev.ryanhcode.sable.api.block.BlockSubLevelLiftProvider;
 import dev.ryanhcode.sable.companion.math.JOMLConversion;
 import dev.spiritstudios.aerobig.registry.ModBlocks;
+import dev.spiritstudios.aerobig.util.OrderedDyedEntryList;
 import net.minecraft.MethodsReturnNonnullByDefault;
 import net.minecraft.core.Direction;
 import net.minecraft.world.level.BlockGetter;
+import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 import org.joml.Vector3dc;
 
@@ -18,7 +20,7 @@ import javax.annotation.ParametersAreNonnullByDefault;
 public interface ICarbonCompositeWing extends CarbonComposite<CarbonCompositeWingBlock>, BlockSubLevelLiftProvider, BlockSubLevelCustomCenterOfMass {
 
     @Override
-    default DyedBlockList<CarbonCompositeWingBlock> getDyedVariants() {
+    default OrderedDyedEntryList<Block, BlockEntry<CarbonCompositeWingBlock>> getDyedVariants() {
         return ModBlocks.CARBON_COMPOSITE_WINGS;
     }
 

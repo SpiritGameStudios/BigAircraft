@@ -2,8 +2,9 @@ package dev.spiritstudios.aerobig.block;
 
 import com.simibubi.create.content.kinetics.simpleRelays.encased.EncasedShaftBlock;
 import com.simibubi.create.content.schematics.requirement.ItemRequirement;
-import com.simibubi.create.foundation.block.DyedBlockList;
+import com.tterrag.registrate.util.entry.BlockEntry;
 import dev.spiritstudios.aerobig.registry.ModBlocks;
+import dev.spiritstudios.aerobig.util.OrderedDyedEntryList;
 import net.minecraft.MethodsReturnNonnullByDefault;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
@@ -15,6 +16,7 @@ import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
@@ -39,7 +41,7 @@ public class CarbonCompositeEncasedShaftBlock extends EncasedShaftBlock implemen
     }
 
     @Override
-    public DyedBlockList<CarbonCompositeBlock> getDyedVariants() {
+    public OrderedDyedEntryList<Block, BlockEntry<CarbonCompositeBlock>> getDyedVariants() {
         return ModBlocks.CARBON_COMPOSITE_BLOCKS;
     }
 

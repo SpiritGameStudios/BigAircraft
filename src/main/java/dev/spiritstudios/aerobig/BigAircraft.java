@@ -5,15 +5,14 @@ import com.google.common.collect.Lists;
 import com.simibubi.create.AllBlockEntityTypes;
 import com.simibubi.create.compat.Mods;
 import com.simibubi.create.content.kinetics.base.KineticBlockEntity;
-import com.simibubi.create.foundation.block.DyedBlockList;
 import com.tterrag.registrate.util.entry.BlockEntityEntry;
 import com.tterrag.registrate.util.entry.BlockEntry;
 import com.tterrag.registrate.util.nullness.NonNullSupplier;
 import dev.simulated_team.simulated.registrate.SimulatedRegistrate;
 import dev.spiritstudios.aerobig.block.analog_speed_controller.AnalogSpeedControllerBlockEntity;
 import dev.spiritstudios.aerobig.config.BigAircraftConfigService;
-import dev.spiritstudios.aerobig.registry.ModBlockEntityTypes;
-import dev.spiritstudios.aerobig.registry.ModBlocks;
+import dev.spiritstudios.aerobig.registry.*;
+import dev.spiritstudios.aerobig.util.OrderedDyedEntryList;
 import net.createmod.catnip.config.ConfigBase;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
@@ -55,6 +54,10 @@ public class BigAircraft {
         registrate().addRawLang(LangKeys.SIMULATED_SECTION, MOD_NAME);
         // registrate().addRawLang(LangKeys.ANALOG_SPEED_ACTUATOR_SPEED, "Rotation Speed");
 
+        ModBuiltInRegistries.init();
+        ModRegistries.init();
+        ModAviationDisplayTypes.init();
+        ModDataComponents.init();
         ModBlocks.init();
         ModBlockEntityTypes.init();
 
@@ -67,7 +70,8 @@ public class BigAircraft {
         addToExistingBlockEntity(event, AllBlockEntityTypes.ENCASED_SHAFT, ModBlocks.CARBON_COMPOSITE_ENCASED_SHAFTS, ModBlocks.CARBON_COMPOSITE_WING_SHAFTS);
     }
 
-    private static void addToExistingBlockEntity(BlockEntityTypeAddBlocksEvent event, BlockEntityEntry<? extends KineticBlockEntity> blockEntity, DyedBlockList<?>... dyedBlockLists) {
+    @SafeVarargs
+    private static void addToExistingBlockEntity(BlockEntityTypeAddBlocksEvent event, BlockEntityEntry<? extends KineticBlockEntity> blockEntity, OrderedDyedEntryList<Block, ? extends BlockEntry<?>>... dyedBlockLists) {
         List<BlockEntry<?>> dyedBlocks = Lists.newArrayList(Iterables.concat(dyedBlockLists));
         int length = dyedBlocks.size();
 

@@ -6,7 +6,6 @@ import dev.ryanhcode.sable.companion.math.JOMLConversion;
 import dev.ryanhcode.sable.companion.math.Pose3d;
 import dev.ryanhcode.sable.companion.math.Pose3dc;
 import dev.ryanhcode.sable.sublevel.SubLevel;
-import dev.simulated_team.simulated.util.SimMathUtils;
 import dev.spiritstudios.aerobig.BigAircraft;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
@@ -68,8 +67,8 @@ public class AircraftHudRenderer {
         AeroGraphics aeroGraphics = new AeroGraphics(minecraft, graphics);
 
         aeroGraphics.drawHeading(yaw, pitch, roll, windowHeight, centreX, centreY);
-        aeroGraphics.drawAirspeed(minecraft, centreY, pose, prevPose);
-        aeroGraphics.writeAltitude(minecraft, windowWidth, windowHeight, player.position());
+        aeroGraphics.drawAirspeed(centreY, pose, prevPose);
+        aeroGraphics.writeAltitude(windowWidth, windowHeight, player.position());
 
         aeroGraphics.drawAttitude(pitch, roll, windowHeight, centreX, centreY);
     }

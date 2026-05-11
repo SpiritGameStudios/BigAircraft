@@ -15,6 +15,8 @@
         "analog_speed_controller.CogWheelBlockMixin",
         "analog_speed_controller.ComputerBehaviourMixin",
         "analog_speed_controller.RotationPropagatorMixin",
-        "encasing.EncasableBlockMixin"
+        "encasing.EncasableBlockMixin",
+        "observable_hud.AviatorsGogglesItemMixin",
+        "observable_hud.SmartBlockEntityMixin"
     ]
 }

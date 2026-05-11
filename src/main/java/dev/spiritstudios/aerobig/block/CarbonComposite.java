@@ -2,9 +2,9 @@ package dev.spiritstudios.aerobig.block;
 
 import com.google.common.collect.Sets;
 import com.simibubi.create.content.schematics.requirement.ItemRequirement;
-import com.simibubi.create.foundation.block.DyedBlockList;
 import com.simibubi.create.foundation.utility.BlockHelper;
 import com.tterrag.registrate.util.entry.BlockEntry;
+import dev.spiritstudios.aerobig.util.OrderedDyedEntryList;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
 import net.minecraft.Util;
@@ -49,7 +49,7 @@ public interface CarbonComposite<T extends Block & CarbonComposite<T>> {
     });
 
     @NotNull DyeColor getDyeColor();
-    @NotNull DyedBlockList<T> getDyedVariants();
+    @NotNull OrderedDyedEntryList<Block, BlockEntry<T>> getDyedVariants();
     @NotNull DyeableGroup getDyeableGroup();
 
     default BlockEntry<T> getOfColor() {

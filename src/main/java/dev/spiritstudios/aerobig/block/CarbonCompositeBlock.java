@@ -1,8 +1,9 @@
 package dev.spiritstudios.aerobig.block;
 
 import com.simibubi.create.content.decoration.encasing.CasingBlock;
-import com.simibubi.create.foundation.block.DyedBlockList;
+import com.tterrag.registrate.util.entry.BlockEntry;
 import dev.spiritstudios.aerobig.registry.ModBlocks;
+import dev.spiritstudios.aerobig.util.OrderedDyedEntryList;
 import net.minecraft.MethodsReturnNonnullByDefault;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.InteractionHand;
@@ -11,6 +12,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
 
@@ -38,7 +40,7 @@ public class CarbonCompositeBlock extends CasingBlock implements CarbonComposite
     }
 
     @Override
-    public DyedBlockList<CarbonCompositeBlock> getDyedVariants() {
+    public OrderedDyedEntryList<Block, BlockEntry<CarbonCompositeBlock>> getDyedVariants() {
         return ModBlocks.CARBON_COMPOSITE_BLOCKS;
     }
 
