@@ -50,7 +50,7 @@ public class AircraftHudRenderer {
 
     private static void render(GuiGraphics graphics, Minecraft minecraft, LocalPlayer player, Pose3dc pose, Pose3dc prevPose) {
         Vector3d downNormal = JOMLConversion.atLowerCornerOf(Direction.DOWN.getNormal());
-        Vector3d forwardNormal = new Vector3d(0F, 0F, -1F);
+        Vector3d forwardNormal = JOMLConversion.atLowerCornerOf(Direction.NORTH.getNormal());
 
         pose.orientation().transformInverse(downNormal);
         pose.orientation().transformInverse(forwardNormal);

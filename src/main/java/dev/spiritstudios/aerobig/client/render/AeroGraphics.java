@@ -130,10 +130,9 @@ public record AeroGraphics(Minecraft mc, GuiGraphics graphics) {
         graphics.enableScissor(
                 padX, padY,
                 graphics.guiWidth() - padX, graphics.guiHeight() - padY
-
         );
 
-        final int step = 1;
+        final int step = 5;
         final float scale = 4;
 
         for (int i = -360; i < 360; i += step) {
@@ -176,6 +175,7 @@ public record AeroGraphics(Minecraft mc, GuiGraphics graphics) {
                 );
             }
         }
+
         graphics.disableScissor();
         graphics.pose().popPose();
     }
