@@ -62,12 +62,10 @@ public class AircraftHudRenderer {
 
         AeroGraphics aeroGraphics = new AeroGraphics(graphics);
 
-        aeroGraphics.writeRoll(minecraft, roll, centreX, centreY);
-        aeroGraphics.writePitch(minecraft, pitch, centreX, centreY + 10);
-        aeroGraphics.writeKnots(minecraft, centreY, pose, prevPose);
+        aeroGraphics.writeAirspeed(minecraft, centreY, pose, prevPose);
         aeroGraphics.writeAltitude(minecraft, windowWidth, windowHeight, player.position());
 
-        aeroGraphics.drawHorizon(pitch, roll, windowHeight, centreX, centreY);
+        aeroGraphics.drawAttitude(pitch, roll, windowHeight, centreX, centreY);
     }
 
     private static float getRadians(double y, double a) {
