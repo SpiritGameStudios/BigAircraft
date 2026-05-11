@@ -17,7 +17,7 @@ public final class ModTags {
         public static final TagKey<Block> CARBON_COMPOSITE_WING_SHAFTS = create("carbon_composite_wing_shafts");
 
         public static TagKey<Block> create(String path) {
-            return TagKey.create(Registries.BLOCK, BigAircraft.id(path));
+            return ModTags.create(Registries.BLOCK, path);
         }
     }
 
@@ -27,7 +27,7 @@ public final class ModTags {
         public static final TagKey<Item> CARBON_COMPOSITE_WINGS = create("carbon_composite_wings");
 
         public static TagKey<Item> create(String path) {
-            return TagKey.create(Registries.ITEM, BigAircraft.id(path));
+            return ModTags.create(Registries.ITEM, path);
         }
     }
 

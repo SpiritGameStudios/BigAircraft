@@ -78,12 +78,12 @@ public class CarbonCompositeWingShaftBlock extends HorizontalAxisKineticBlock im
 
     @Override
     public BlockState getStateForPlacement(BlockPlaceContext context) {
-        BlockState stateForPlacement = this.defaultBlockState().setValue(HORIZONTAL_AXIS, Objects.requireNonNullElse(
+        Direction.Axis axis = Objects.requireNonNullElse(
             getPreferredHorizontalAxis(context),
             context.getHorizontalDirection().getAxis()
-        ));
+        );
 
-        Direction.Axis axis = stateForPlacement.getValue(HORIZONTAL_AXIS);
+        BlockState stateForPlacement = this.defaultBlockState().setValue(HORIZONTAL_AXIS, axis);
 
         Level level = context.getLevel();
         BlockPos clickedPos = context.getClickedPos();
@@ -109,10 +109,10 @@ public class CarbonCompositeWingShaftBlock extends HorizontalAxisKineticBlock im
         if (direction.getAxis() != axis)
             return state;
 
-        return state.setValue(ofAxisDirection(direction.getAxisDirection().opposite()), neighborState.getBlock() instanceof ICarbonCompositeWing);
+        return state.setValue(getAxisDirectionProperty(direction.getAxisDirection().opposite()), neighborState.getBlock() instanceof ICarbonCompositeWing);
     }
 
-    private static BooleanProperty ofAxisDirection(Direction.AxisDirection axisDirection) {
+    private static BooleanProperty getAxisDirectionProperty(Direction.AxisDirection axisDirection) {
         return axisDirection == Direction.AxisDirection.POSITIVE ? CONNECT_POSITIVE : CONNECT_NEGATIVE;
     }
 

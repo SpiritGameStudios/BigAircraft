@@ -28,7 +28,7 @@ import javax.annotation.ParametersAreNonnullByDefault;
 @MethodsReturnNonnullByDefault
 public class CarbonCompositeWingBlock extends Block implements ProperWaterloggedBlock, IWrenchable, ICarbonCompositeWing {
 
-    static final VoxelShape SHAPE = box(0.0, 5.0, 0.0, 16.0, 11.0, 16.0);
+    static final VoxelShape SHAPE = box(0.0, 4.0, 0.0, 16.0, 12.0, 16.0);
 
     private final DyeColor color;
 
