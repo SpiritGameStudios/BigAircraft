@@ -6,6 +6,7 @@ import dev.ryanhcode.sable.companion.math.JOMLConversion;
 import dev.ryanhcode.sable.companion.math.Pose3d;
 import dev.ryanhcode.sable.companion.math.Pose3dc;
 import dev.ryanhcode.sable.sublevel.SubLevel;
+import dev.simulated_team.simulated.util.SimMathUtils;
 import dev.spiritstudios.aerobig.BigAircraft;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
@@ -23,7 +24,7 @@ import org.joml.Vector3d;
 /**
  * <h1>Plans</h1>
  * - allow players to click on certain components (gimbal sensor, altitude sensor, velocity sensor, hot air burner (?)) to add information to their hud. could be the same overlay as normal goggle tooltips or a cleaner, more minimalistic flight interface<br>
- *   - @CallMeEcho maybe design a ui in paint first?
+ * - @CallMeEcho maybe design a ui in paint first?
  */
 public class AircraftHudRenderer {
 
@@ -49,20 +50,25 @@ public class AircraftHudRenderer {
 
     private static void render(GuiGraphics graphics, Minecraft minecraft, LocalPlayer player, Pose3dc pose, Pose3dc prevPose) {
         Vector3d downNormal = JOMLConversion.atLowerCornerOf(Direction.DOWN.getNormal());
+        Vector3d forwardNormal = new Vector3d(0F, 0F, -1F);
+
         pose.orientation().transformInverse(downNormal);
+        pose.orientation().transformInverse(forwardNormal);
 
         int windowWidth = graphics.guiWidth();
         int windowHeight = graphics.guiHeight();
 
+        float yaw = -getRadians(-forwardNormal.z, -forwardNormal.x) + Mth.HALF_PI;
         float roll = getRadians(downNormal.y(), downNormal.z());
         float pitch = getRadians(downNormal.y(), downNormal.x());
 
         int centreX = windowWidth / 2;
         int centreY = windowHeight / 2;
 
-        AeroGraphics aeroGraphics = new AeroGraphics(graphics);
+        AeroGraphics aeroGraphics = new AeroGraphics(minecraft, graphics);
 
-        aeroGraphics.writeAirspeed(minecraft, centreY, pose, prevPose);
+        aeroGraphics.drawHeading(yaw, pitch, roll, windowHeight, centreX, centreY);
+        aeroGraphics.drawAirspeed(minecraft, centreY, pose, prevPose);
         aeroGraphics.writeAltitude(minecraft, windowWidth, windowHeight, player.position());
 
         aeroGraphics.drawAttitude(pitch, roll, windowHeight, centreX, centreY);
