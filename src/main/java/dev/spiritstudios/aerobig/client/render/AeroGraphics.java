@@ -6,9 +6,12 @@ import com.mojang.blaze3d.vertex.*;
 import com.mojang.math.Axis;
 import dev.ryanhcode.sable.Sable;
 import dev.ryanhcode.sable.companion.math.Pose3dc;
+import dev.spiritstudios.aerobig.BigAircraft;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.renderer.GameRenderer;
+import net.minecraft.client.renderer.RenderStateShard;
+import net.minecraft.client.renderer.RenderType;
 import net.minecraft.network.chat.Component;
 import net.minecraft.util.CommonColors;
 import net.minecraft.util.Mth;
@@ -16,52 +19,40 @@ import net.minecraft.world.phys.Vec3;
 import org.joml.Matrix4f;
 
 public record AeroGraphics(Minecraft mc, GuiGraphics graphics) {
+    public static final RenderStateShard.TransparencyStateShard INVERT = new RenderStateShard.TransparencyStateShard(
+            BigAircraft.MOD_ID + ":invert",
+            () -> {
+                RenderSystem.enableBlend();
+                RenderSystem.blendFuncSeparate(
+                        GlStateManager.SourceFactor.ONE_MINUS_DST_COLOR,
+                        GlStateManager.DestFactor.ONE_MINUS_SRC_COLOR,
+                        GlStateManager.SourceFactor.ONE,
+                        GlStateManager.DestFactor.ZERO
+                );
+            },
+            () -> {
+                RenderSystem.defaultBlendFunc();
+                RenderSystem.disableBlend();
+            }
+    );
+
+    public static final RenderType GUI_INVERT = RenderType.create(
+            BigAircraft.MOD_ID + ":gui_invert",
+            DefaultVertexFormat.POSITION_COLOR,
+            VertexFormat.Mode.QUADS,
+            786432,
+            RenderType.CompositeState.builder()
+                    .setShaderState(RenderType.RENDERTYPE_GUI_SHADER)
+                    .setTransparencyState(RenderType.TRANSLUCENT_TRANSPARENCY)
+                    .setDepthTestState(RenderType.LEQUAL_DEPTH_TEST)
+                    .setTransparencyState(INVERT)
+                    .createCompositeState(false)
+    );
 
     private static final double BPT_TO_KN = 18000.0 / 463.0;
     private static final int HORIZON_LINE_LENGTH = 30;
     private static final int HORIZON_LINE_CENTRE_PADDING = 7;
     private static final int ALTITUDE_TEXT_HEIGHT = 118;
-
-    public void hLine(float x, float length, float y) {
-        this.fill(x, y, x + length, y + 1);
-    }
-
-    public void vLine(float x, float length, float y) {
-        this.fill(x, y, x + 1, y + length);
-    }
-
-    public void fill(float minX, float minY, float maxX, float maxY) {
-        if (maxX > minX) {
-            float prevMinX = minX;
-            minX = maxX;
-            maxX = prevMinX;
-        }
-
-        if (maxY > minY) {
-            float prevMinY = minY;
-            minY = maxY;
-            maxY = prevMinY;
-        }
-
-        if (minX < 0 && maxX > graphics.guiWidth()) return;
-        if (minY < 0 && maxY > graphics.guiHeight()) return;
-
-        RenderSystem.setShader(GameRenderer::getPositionShader);
-
-        BufferBuilder bufferBuilder = Tesselator.getInstance().begin(
-                VertexFormat.Mode.QUADS,
-                DefaultVertexFormat.POSITION
-        );
-
-        Matrix4f matrix = this.graphics.pose().last().pose();
-
-        bufferBuilder.addVertex(matrix, minX, minY, 0);
-        bufferBuilder.addVertex(matrix, minX, maxY, 0);
-        bufferBuilder.addVertex(matrix, maxX, maxY, 0);
-        bufferBuilder.addVertex(matrix, maxX, minY, 0);
-
-        BufferUploader.drawWithShader(bufferBuilder.buildOrThrow());
-    }
 
     private static int wrapHeading(int angle) {
         int i = angle % 360;
@@ -78,12 +69,12 @@ public record AeroGraphics(Minecraft mc, GuiGraphics graphics) {
 
         int left = graphics.guiWidth() / 3;
         int right = (graphics.guiWidth() / 3) * 2;
-        final float topOffset = 50;
+        final int topOffset = 50;
         int degPerPixel = (graphics.guiWidth() / mc.options.fov().get());
 
         int offset = (graphics.guiWidth() / 2) - Mth.floor(heading * degPerPixel);
 
-        for (int i = -540; i < 540; i ++) {
+        for (int i = -540; i < 540; i++) {
             int x = (i * degPerPixel) + offset;
             if (x < left) continue;
             if (x > right) continue;
@@ -96,25 +87,18 @@ public record AeroGraphics(Minecraft mc, GuiGraphics graphics) {
                         mc.font,
                         String.format("%03d", wrapHeading(i)),
                         x,
-                        (int)topOffset + (len / 2) + 2,
+                        topOffset + (len / 2) + 2,
                         CommonColors.WHITE
                 );
             }
 
-            RenderSystem.enableBlend();
-            RenderSystem.blendFuncSeparate(
-                    GlStateManager.SourceFactor.ONE_MINUS_DST_COLOR,
-                    GlStateManager.DestFactor.ONE_MINUS_SRC_COLOR,
-                    GlStateManager.SourceFactor.ONE,
-                    GlStateManager.DestFactor.ZERO
-            );
-            this.vLine(
+            graphics.vLine(
+                    GUI_INVERT,
                     x,
-                    len,
-                    topOffset - (len / 2F)
+                    topOffset - (len / 2),
+                    topOffset - (len / 2) + len,
+                    CommonColors.WHITE
             );
-            RenderSystem.defaultBlendFunc();
-            RenderSystem.disableBlend();
         }
     }
 
@@ -133,39 +117,41 @@ public record AeroGraphics(Minecraft mc, GuiGraphics graphics) {
         );
 
         final int step = 5;
-        final float scale = 4;
+        final float scale = 3;
 
         for (int i = -360; i < 360; i += step) {
             float angle = (i * Mth.DEG_TO_RAD) + pitch;
             float mag = angle / Mth.PI;
             mag *= scale;
 
-            float up = -mag * windowHeight + windowCentreY - 1;
+            int up = (int)(-mag * windowHeight + windowCentreY - 1);
 
             int len = i % 5 == 0 ? 40 : 15;
             if (i == 0) len = 80;
 
-            RenderSystem.enableBlend();
-            RenderSystem.blendFuncSeparate(
-                    GlStateManager.SourceFactor.ONE_MINUS_DST_COLOR,
-                    GlStateManager.DestFactor.ONE_MINUS_SRC_COLOR,
-                    GlStateManager.SourceFactor.ONE,
-                    GlStateManager.DestFactor.ZERO
+            graphics.hLine(
+                    GUI_INVERT,
+                    (windowCentreX - HORIZON_LINE_CENTRE_PADDING) - len,
+                    windowCentreX - HORIZON_LINE_CENTRE_PADDING,
+                    up,
+                    CommonColors.WHITE
             );
 
-            this.hLine((float) windowCentreX - HORIZON_LINE_CENTRE_PADDING, -len, up);
-            this.hLine((float) windowCentreX + HORIZON_LINE_CENTRE_PADDING - 1, len, up);
+            graphics.hLine(
+                    GUI_INVERT,
+                    windowCentreX + HORIZON_LINE_CENTRE_PADDING - 1,
+                    (windowCentreX + HORIZON_LINE_CENTRE_PADDING - 1) + len,
+                    up,
+                    CommonColors.WHITE
+            );
 
             String str = String.format("%d", -i);
             if (i % 5 == 0) {
-                int y = (int) up - (mc.font.lineHeight / 2);
+                int y = up - (mc.font.lineHeight / 2);
 
                 this.write(str, windowCentreX - len - 12 - this.mc.font.width(str), y, false);
                 this.write(str, windowCentreX + len + 12, y, false);
             }
-
-            RenderSystem.defaultBlendFunc();
-            RenderSystem.disableBlend();
         }
 
         graphics.disableScissor();
