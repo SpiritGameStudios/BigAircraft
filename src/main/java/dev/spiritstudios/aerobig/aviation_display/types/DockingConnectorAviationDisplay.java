@@ -11,15 +11,14 @@ import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.core.BlockPos;
 import net.minecraft.util.CommonColors;
 
-public class DockingConnectorAviationDisplay extends AviationDisplayType {
+public class DockingConnectorAviationDisplay extends AviationDisplayType<DockingConnectorBlockEntity> {
     public DockingConnectorAviationDisplay() {
         super(SimBlockEntityTypes.DOCKING_CONNECTOR);
     }
 
     @Override
-    public void render(GuiGraphics graphics, Minecraft mc, ClientLevel level, ClientSubLevel beSubLevel, BlockPos blockPos, LocalPlayer player, float partialTick) {
-        if (!(level.getBlockEntity(blockPos) instanceof DockingConnectorBlockEntity connector)) return;
-        if (!connector.hasOtherConnector()) return;
+    public void render(DockingConnectorBlockEntity blockEntity, GuiGraphics graphics, Minecraft mc, ClientLevel level, ClientSubLevel beSubLevel, BlockPos blockPos, LocalPlayer player, float partialTick) {
+        if (!blockEntity.hasOtherConnector()) return;
 
         graphics.drawString(
                 mc.font,

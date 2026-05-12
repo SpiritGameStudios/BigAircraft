@@ -11,20 +11,19 @@ import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.core.BlockPos;
 import net.minecraft.util.CommonColors;
 
-public class HotAirBurnerAviationDisplay extends AviationDisplayType {
+public class HotAirBurnerAviationDisplay extends AviationDisplayType<HotAirBurnerBlockEntity> {
 
     public HotAirBurnerAviationDisplay() {
         super(AeroBlockEntityTypes.HOT_AIR_BURNER);
     }
 
     @Override
-    public void render(GuiGraphics graphics, Minecraft mc, ClientLevel level, ClientSubLevel beSubLevel, BlockPos blockPos, LocalPlayer player, float partialTick) {
-        if (!(level.getBlockEntity(blockPos) instanceof HotAirBurnerBlockEntity burner)) return;
-        if (!burner.canOutputGas()) return;
+    public void render(HotAirBurnerBlockEntity blockEntity, GuiGraphics graphics, Minecraft mc, ClientLevel level, ClientSubLevel beSubLevel, BlockPos blockPos, LocalPlayer player, float partialTick) {
+        if (!blockEntity.canOutputGas()) return;
 
         graphics.drawString(
                 mc.font,
-                "G%.2f".formatted(burner.getGasOutput()),
+                "G%.2f".formatted(blockEntity.getGasOutput()),
                 0, 0,
                 CommonColors.WHITE
         );

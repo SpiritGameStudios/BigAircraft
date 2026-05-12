@@ -38,27 +38,18 @@ public class AviatorsGogglesItemMixin extends BaseArmorItem {
         BlockEntity blockEntity = level.getBlockEntity(clickedPos);
 
         if (player != null && blockEntity instanceof ObservableHud observableHud) {
-            AviationDisplayType aviationDisplayType = AviationDisplayType.BY_BLOCK_ENTITY.get(blockEntity.getType());
+            AviationDisplayType<?> aviationDisplayType = AviationDisplayType.BY_BLOCK_ENTITY.get(blockEntity.getType());
 
             if (aviationDisplayType == null)
                 return InteractionResult.PASS;
 
             ItemStack itemInHand = context.getItemInHand();
 
-            AviationDisplaysComponent component = itemInHand.getOrDefault(
-                    ModDataComponents.AVIATION_DISPLAYS,
-                    AviationDisplaysComponent.DEFAULT
-            );
-
             itemInHand.applyComponents(DataComponentMap.builder()
-                    .set(ModDataComponents.AVIATION_DISPLAYS, component.with(new AviationDisplay(
-                            aviationDisplayType,
-                            new GlobalPos(
-                                    level.dimension(),
-                                    clickedPos
-                            )
-                    )))
-                    .build()
+                .set(ModDataComponents.AVIATION_DISPLAYS, AviationDisplaysComponent.getFromItemStack(itemInHand)
+                    .with(new AviationDisplay(aviationDisplayType, GlobalPos.of(level.dimension(), clickedPos)))
+                )
+                .build()
             );
 
             observableHud.bigAircraft$addObserver(player.getUUID());

@@ -6,7 +6,7 @@ import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceKey;
 
 public final class ModRegistries {
-    public static final ResourceKey<Registry<AviationDisplayType>> AVIATION_DISPLAY_TYPE = key("aviation_display_type");
+    public static final ResourceKey<Registry<AviationDisplayType<?>>> AVIATION_DISPLAY_TYPE = key("aviation_display_type");
 
     private static <T> ResourceKey<Registry<T>> key(String name) {
         return ResourceKey.createRegistryKey(BigAircraft.id(name));

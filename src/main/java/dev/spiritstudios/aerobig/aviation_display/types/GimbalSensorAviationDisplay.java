@@ -1,11 +1,14 @@
 package dev.spiritstudios.aerobig.aviation_display.types;
 
+import com.mojang.blaze3d.platform.GlStateManager;
+import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.math.Axis;
 import dev.ryanhcode.sable.companion.math.JOMLConversion;
 import dev.ryanhcode.sable.sublevel.ClientSubLevel;
 import dev.simulated_team.simulated.content.blocks.gimbal_sensor.GimbalSensorBlockEntity;
 import dev.simulated_team.simulated.index.SimBlockEntityTypes;
 import dev.spiritstudios.aerobig.aviation_display.AviationDisplayType;
+import dev.spiritstudios.aerobig.client.render.AviationHudNumberRenderer;
 import dev.spiritstudios.aerobig.client.render.BigAircraftRenderTypes;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
@@ -17,7 +20,7 @@ import net.minecraft.util.CommonColors;
 import net.minecraft.util.Mth;
 import org.joml.Vector3d;
 
-public class GimbalSensorAviationDisplay extends AviationDisplayType {
+public class GimbalSensorAviationDisplay extends AviationDisplayType<GimbalSensorBlockEntity> {
 
     private static final int HORIZON_LINE_CENTRE_PADDING = 7;
     private static final int LADDER_STEP_DIST = 5;
@@ -37,11 +40,9 @@ public class GimbalSensorAviationDisplay extends AviationDisplayType {
     }
 
     @Override
-    public void render(GuiGraphics graphics, Minecraft mc, ClientLevel level, ClientSubLevel subLevel, BlockPos blockPos, LocalPlayer player, float partialTick) {
-        if (!(level.getBlockEntity(blockPos) instanceof GimbalSensorBlockEntity gimbal)) return;
-
-        float roll = (float) gimbal.getXAngle();
-        float pitch = (float) gimbal.getZAngle();
+    public void render(GimbalSensorBlockEntity blockEntity, GuiGraphics graphics, Minecraft mc, ClientLevel level, ClientSubLevel subLevel, BlockPos blockPos, LocalPlayer player, float partialTick) {
+        float roll = (float) blockEntity.getXAngle();
+        float pitch = (float) blockEntity.getZAngle();
         Vector3d forwardNormal = JOMLConversion.atLowerCornerOf(Direction.NORTH.getNormal());
         subLevel.logicalPose().orientation().transformInverse(forwardNormal);
         float yaw =  forwardNormal.x * forwardNormal.x > Mth.EPSILON ? (float) -Mth.atan2(-forwardNormal.x, forwardNormal.z) + Mth.PI : 0.0F;
@@ -64,6 +65,8 @@ public class GimbalSensorAviationDisplay extends AviationDisplayType {
 
         final int step = 5;
         final float scale = 3;
+
+        AviationHudNumberRenderer numberRenderer = new AviationHudNumberRenderer(graphics, AviationHudNumberRenderer.Font.SMALL, BigAircraftRenderTypes.GUI_INVERT);
 
         for (int i = -360; i < 360; i += step) {
             float angle = (i * Mth.DEG_TO_RAD) + pitch;
@@ -91,12 +94,22 @@ public class GimbalSensorAviationDisplay extends AviationDisplayType {
                     CommonColors.WHITE
             );
 
-            String str = String.format("%d", -i);
             if (i % 5 == 0) {
                 int y = up - (mc.font.lineHeight / 2);
 
-                graphics.drawString(mc.font, str, windowCentreX - len - 12 - mc.font.width(str), y, CommonColors.WHITE);
-                graphics.drawString(mc.font, str, windowCentreX + len + 12, y,  CommonColors.WHITE);
+                RenderSystem.enableBlend();
+                RenderSystem.blendFuncSeparate(
+                    GlStateManager.SourceFactor.ONE_MINUS_DST_COLOR,
+                    GlStateManager.DestFactor.ONE_MINUS_SRC_COLOR,
+                    GlStateManager.SourceFactor.ONE,
+                    GlStateManager.DestFactor.ZERO
+                );
+
+                numberRenderer.drawInt(-i, windowCentreX - len - 12, y, AviationHudNumberRenderer.Alignment.RIGHT);
+                numberRenderer.drawInt(-i, windowCentreX + len + 12, y, AviationHudNumberRenderer.Alignment.LEFT);
+
+                RenderSystem.defaultBlendFunc();
+                RenderSystem.disableBlend();
             }
         }
 
@@ -121,13 +134,18 @@ public class GimbalSensorAviationDisplay extends AviationDisplayType {
             if (i % 90 == 0) len = 18;
 
             if (i % 5 == 0) {
-                graphics.drawCenteredString(
-                        mc.font,
-                        String.format("%03d", wrapHeading(i)),
-                        x,
-                        topOffset + (len / 2) + 2,
-                        CommonColors.WHITE
+                RenderSystem.enableBlend();
+                RenderSystem.blendFuncSeparate(
+                    GlStateManager.SourceFactor.ONE_MINUS_DST_COLOR,
+                    GlStateManager.DestFactor.ONE_MINUS_SRC_COLOR,
+                    GlStateManager.SourceFactor.ONE,
+                    GlStateManager.DestFactor.ZERO
                 );
+
+                numberRenderer.drawInt(wrapHeading(i), x, topOffset + (len / 2) + 2, AviationHudNumberRenderer.Alignment.CENTER);
+
+                RenderSystem.defaultBlendFunc();
+                RenderSystem.disableBlend();
             }
 
             graphics.vLine(

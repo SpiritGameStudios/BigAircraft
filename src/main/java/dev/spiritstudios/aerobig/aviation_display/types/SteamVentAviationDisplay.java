@@ -11,7 +11,7 @@ import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.core.BlockPos;
 import net.minecraft.util.CommonColors;
 
-public class SteamVentAviationDisplay extends AviationDisplayType {
+public class SteamVentAviationDisplay extends AviationDisplayType<SteamVentBlockEntity> {
 
     private static final int ALTITUDE_TEXT_HEIGHT = 118;
 
@@ -20,13 +20,12 @@ public class SteamVentAviationDisplay extends AviationDisplayType {
     }
 
     @Override
-    public void render(GuiGraphics graphics, Minecraft mc, ClientLevel level, ClientSubLevel subLevel, BlockPos blockPos, LocalPlayer player, float partialTick) {
-        if (!(level.getBlockEntity(blockPos) instanceof SteamVentBlockEntity vent)) return;
-        if (!vent.canOutputGas()) return;
+    public void render(SteamVentBlockEntity blockEntity, GuiGraphics graphics, Minecraft mc, ClientLevel level, ClientSubLevel subLevel, BlockPos blockPos, LocalPlayer player, float partialTick) {
+        if (!blockEntity.canOutputGas()) return;
 
         graphics.drawString(
                 mc.font,
-                "G%.2f".formatted(vent.getGasOutput()),
+                "G%.2f".formatted(blockEntity.getGasOutput()),
                 graphics.guiWidth() - graphics.guiWidth() / 4, graphics.guiHeight() / 2 - ALTITUDE_TEXT_HEIGHT / 2,
                 CommonColors.WHITE
         );

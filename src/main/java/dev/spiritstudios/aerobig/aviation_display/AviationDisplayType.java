@@ -8,22 +8,26 @@ import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 
-public abstract class AviationDisplayType {
-    public static final SimpleRegistry<BlockEntityType<?>, AviationDisplayType> BY_BLOCK_ENTITY = SimpleRegistry.create();
+public abstract class AviationDisplayType<T extends BlockEntity> {
+    public static final SimpleRegistry<BlockEntityType<?>, AviationDisplayType<?>> BY_BLOCK_ENTITY = SimpleRegistry.create();
+    public final BlockEntityType<T> blockEntityType;
 
-    public AviationDisplayType(BlockEntityEntry<?> blockEntityType) {
-        BY_BLOCK_ENTITY.register(blockEntityType.get(), this);
+    public AviationDisplayType(BlockEntityEntry<T> blockEntityType) {
+        this.blockEntityType = blockEntityType.get();
+        BY_BLOCK_ENTITY.register(this.blockEntityType, this);
     }
 
     public abstract void render(
-            GuiGraphics graphics,
-            Minecraft mc,
-            ClientLevel level,
-            ClientSubLevel subLevel,
-            BlockPos blockPos,
-            LocalPlayer player,
-            float partialTick
+        T blockEntity,
+        GuiGraphics graphics,
+        Minecraft mc,
+        ClientLevel level,
+        ClientSubLevel subLevel,
+        BlockPos blockPos,
+        LocalPlayer player,
+        float partialTick
     );
 }

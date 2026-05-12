@@ -2,13 +2,20 @@ package dev.spiritstudios.aerobig.mixin.observable_hud;
 
 import com.simibubi.create.foundation.blockEntity.CachedRenderBBBlockEntity;
 import com.simibubi.create.foundation.blockEntity.SmartBlockEntity;
+import dev.spiritstudios.aerobig.component.AviationDisplaysComponent;
 import dev.spiritstudios.aerobig.flight_hud.ObservableHud;
+import dev.spiritstudios.aerobig.registry.ModDataComponents;
 import net.createmod.catnip.nbt.NBTHelper;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.GlobalPos;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.UUIDUtil;
+import net.minecraft.core.component.DataComponentMap;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import org.spongepowered.asm.mixin.Mixin;
@@ -56,6 +63,39 @@ public class SmartBlockEntityMixin extends CachedRenderBBBlockEntity implements 
 
         this.setChanged();
         this.sendData();
+    }
+
+    @Inject(method = "remove", at = @At("HEAD"))
+    private void test(CallbackInfo ci) {
+        for (UUID uuid : this.bigAircraft$observers) {
+            assert this.level != null;
+            Player player = this.level.getPlayerByUUID(uuid);
+
+            if (player != null)
+                this.bigAircraft$removeAssociatedInventoryData(this.level, player);
+        }
+
+        this.bigAircraft$observers.clear();
+
+        this.setChanged();
+        this.sendData();
+    }
+
+    @Unique
+    private void bigAircraft$removeAssociatedInventoryData(Level level, Player player) {
+        for (ItemStack itemStack : player.getInventory().items) {
+            AviationDisplaysComponent component = itemStack.get(ModDataComponents.AVIATION_DISPLAYS);
+
+            if (component == null || component.displays().isEmpty())
+                continue;
+
+            itemStack.applyComponents(DataComponentMap.builder()
+                .set(ModDataComponents.AVIATION_DISPLAYS, component.removePosition(
+                    GlobalPos.of(level.dimension(), this.getBlockPos())
+                ))
+                .build()
+            );
+        }
     }
 
 }

@@ -11,20 +11,19 @@ import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.core.BlockPos;
 import net.minecraft.util.CommonColors;
 
-public class OpticalSensorAviationDisplay extends AviationDisplayType {
+public class OpticalSensorAviationDisplay extends AviationDisplayType<OpticalSensorBlockEntity> {
 
     public OpticalSensorAviationDisplay() {
         super(SimBlockEntityTypes.OPTICAL_SENSOR);
     }
 
     @Override
-    public void render(GuiGraphics graphics, Minecraft mc, ClientLevel level, ClientSubLevel beSubLevel, BlockPos blockPos, LocalPlayer player, float partialTick) {
-        if (!(level.getBlockEntity(blockPos) instanceof OpticalSensorBlockEntity sensor)) return;
-        if (!sensor.hasHit()) return;
+    public void render(OpticalSensorBlockEntity blockEntity, GuiGraphics graphics, Minecraft mc, ClientLevel level, ClientSubLevel beSubLevel, BlockPos blockPos, LocalPlayer player, float partialTick) {
+        if (!blockEntity.hasHit()) return;
 
         graphics.drawString(
                 mc.font,
-                String.valueOf(sensor.getHitBlockDistance()),
+                "%.2f".formatted(blockEntity.getHitBlockDistance()),
                 0, 0,
                 CommonColors.WHITE
         );
