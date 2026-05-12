@@ -11,6 +11,7 @@ import dev.spiritstudios.aerobig.aviation_display.AviationDisplayType;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.multiplayer.ClientLevel;
+import net.minecraft.util.CommonColors;
 import net.minecraft.util.Mth;
 import net.minecraft.world.phys.Vec3;
 
@@ -48,7 +49,7 @@ public class GimbalSensorAviationDisplay extends AviationDisplayType<GimbalSenso
             float mag = angle / Mth.PI;
             mag *= scale;
 
-            float up = -mag * windowHeight + windowCentreY - 1;
+            int up = (int) -mag * windowHeight + windowCentreY - 1;
 
             int len = i % LADDER_STEP_DIST == 0 ? 25 : 10;
 
@@ -63,8 +64,18 @@ public class GimbalSensorAviationDisplay extends AviationDisplayType<GimbalSenso
                 GlStateManager.DestFactor.ZERO
             );
 
-            this.hLine(graphics, poseStack, (float) windowCentreX - HORIZON_LINE_CENTRE_PADDING, -len, up);
-            this.hLine(graphics, poseStack, (float) windowCentreX + HORIZON_LINE_CENTRE_PADDING - 1, len, up);
+            graphics.hLine(
+                    windowCentreX - HORIZON_LINE_CENTRE_PADDING,
+                    windowCentreX - HORIZON_LINE_CENTRE_PADDING + -len,
+                    up,
+                    CommonColors.WHITE
+            );
+            graphics.hLine(
+                    windowCentreX + HORIZON_LINE_CENTRE_PADDING - 1,
+                    windowCentreX + HORIZON_LINE_CENTRE_PADDING - 1 + len,
+                    up,
+                    CommonColors.WHITE
+            );
 
             String str = String.format("%d", -i);
 

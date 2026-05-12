@@ -54,7 +54,8 @@ public class BigAircraft {
         registrate().addRawLang(LangKeys.SIMULATED_SECTION, MOD_NAME);
         // registrate().addRawLang(LangKeys.ANALOG_SPEED_ACTUATOR_SPEED, "Rotation Speed");
 
-        ModBuiltInRegistries.init();
+        modEventBus.register(ModBuiltInRegistries.class);
+
         ModRegistries.init();
         ModAviationDisplayTypes.init();
         ModDataComponents.init();

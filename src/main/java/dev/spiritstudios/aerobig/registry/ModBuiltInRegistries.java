@@ -6,18 +6,18 @@ import net.minecraft.core.Registry;
 import net.minecraft.core.WritableRegistry;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceKey;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.neoforge.registries.NewRegistryEvent;
 import net.neoforged.neoforge.registries.RegistryBuilder;
 
 public final class ModBuiltInRegistries {
+    public static final Registry<AviationDisplayType<?>> AVIATION_DISPLAY_TYPE = new RegistryBuilder<>(ModRegistries.AVIATION_DISPLAY_TYPE)
+            .sync(true)
+            .create();
 
-    public static final Registry<AviationDisplayType<?>> AVIATION_DISPLAY_TYPE = register(ModRegistries.AVIATION_DISPLAY_TYPE);
-
-    private static <T> Registry<T> register(ResourceKey<Registry<T>> key) {
-        Registry<T> registry = new RegistryBuilder<>(key).sync(true).create();
-        //noinspection unchecked
-        ((WritableRegistry<Registry<T>>) BuiltInRegistries.REGISTRY).register(key, registry, RegistrationInfo.BUILT_IN);
-
-        return registry;
+    @SubscribeEvent
+    private static void registerRegistries(NewRegistryEvent event) {
+        event.register(AVIATION_DISPLAY_TYPE);
     }
 
     public static void init() {}
