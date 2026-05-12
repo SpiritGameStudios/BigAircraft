@@ -1,0 +1,42 @@
+package dev.spiritstudios.aerobig.client.render;
+
+import com.mojang.blaze3d.platform.GlStateManager;
+import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.blaze3d.vertex.DefaultVertexFormat;
+import com.mojang.blaze3d.vertex.VertexFormat;
+import dev.spiritstudios.aerobig.BigAircraft;
+import net.minecraft.client.renderer.RenderStateShard;
+import net.minecraft.client.renderer.RenderType;
+
+public class BigAircraftRenderTypes {
+    public static final RenderStateShard.TransparencyStateShard INVERT = new RenderStateShard.TransparencyStateShard(
+            BigAircraft.MOD_ID + ":invert",
+            () -> {
+                RenderSystem.enableBlend();
+                RenderSystem.blendFuncSeparate(
+                        GlStateManager.SourceFactor.ONE_MINUS_DST_COLOR,
+                        GlStateManager.DestFactor.ONE_MINUS_SRC_COLOR,
+                        GlStateManager.SourceFactor.ONE,
+                        GlStateManager.DestFactor.ZERO
+                );
+            },
+            () -> {
+                RenderSystem.defaultBlendFunc();
+                RenderSystem.disableBlend();
+            }
+    );
+
+    public static final RenderType GUI_INVERT = RenderType.create(
+            BigAircraft.MOD_ID + ":gui_invert",
+            DefaultVertexFormat.POSITION_COLOR,
+            VertexFormat.Mode.QUADS,
+            786432,
+            RenderType.CompositeState.builder()
+                    .setShaderState(RenderType.RENDERTYPE_GUI_SHADER)
+                    .setTransparencyState(RenderType.TRANSLUCENT_TRANSPARENCY)
+                    .setDepthTestState(RenderType.LEQUAL_DEPTH_TEST)
+                    .setTransparencyState(INVERT)
+                    .createCompositeState(false)
+    );
+
+}

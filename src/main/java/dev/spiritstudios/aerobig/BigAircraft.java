@@ -49,16 +49,16 @@ public class BigAircraft {
             .defaultCreativeTab((ResourceKey<CreativeModeTab>) null)
     );
 
-    public BigAircraft(IEventBus modEventBus, ModContainer modContainer) {
-        registrate().registerEventListeners(modEventBus);
+    public BigAircraft(IEventBus modBus, ModContainer modContainer) {
+        registrate().registerEventListeners(modBus);
         registrate().addRawLang(LangKeys.SIMULATED_SECTION, MOD_NAME);
         // registrate().addRawLang(LangKeys.ANALOG_SPEED_ACTUATOR_SPEED, "Rotation Speed");
 
-        modEventBus.register(ModBuiltInRegistries.class);
+        modBus.register(ModBuiltInRegistries.class);
 
         ModRegistries.init();
-        ModAviationDisplayTypes.init();
-        ModDataComponents.init();
+        ModAviationDisplayTypes.init(modBus);
+        ModDataComponents.init(modBus);
         ModBlocks.init();
         ModBlockEntityTypes.init();
 

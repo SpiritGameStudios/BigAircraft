@@ -1,6 +1,5 @@
 package dev.spiritstudios.aerobig.aviation_display.types;
 
-import com.mojang.blaze3d.vertex.PoseStack;
 import dev.ryanhcode.sable.sublevel.ClientSubLevel;
 import dev.simulated_team.simulated.content.blocks.docking_connector.DockingConnectorBlockEntity;
 import dev.simulated_team.simulated.index.SimBlockEntityTypes;
@@ -8,22 +7,25 @@ import dev.spiritstudios.aerobig.aviation_display.AviationDisplayType;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.multiplayer.ClientLevel;
-import net.minecraft.world.phys.Vec3;
+import net.minecraft.client.player.LocalPlayer;
+import net.minecraft.core.BlockPos;
+import net.minecraft.util.CommonColors;
 
-public class DockingConnectorAviationDisplay extends AviationDisplayType<DockingConnectorBlockEntity> {
-
+public class DockingConnectorAviationDisplay extends AviationDisplayType {
     public DockingConnectorAviationDisplay() {
-        super(SimBlockEntityTypes.DOCKING_CONNECTOR, true);
+        super(SimBlockEntityTypes.DOCKING_CONNECTOR);
     }
 
     @Override
-    public boolean canDisplay(DockingConnectorBlockEntity blockEntity, ClientLevel level, ClientSubLevel beSubLevel, Vec3 pos) {
-        return super.canDisplay(blockEntity, level, beSubLevel, pos) && blockEntity.hasOtherConnector();
-    }
+    public void render(GuiGraphics graphics, Minecraft mc, ClientLevel level, ClientSubLevel beSubLevel, BlockPos blockPos, LocalPlayer player, float partialTick) {
+        if (!(level.getBlockEntity(blockPos) instanceof DockingConnectorBlockEntity connector)) return;
+        if (!connector.hasOtherConnector()) return;
 
-    @Override
-    public void display(DockingConnectorBlockEntity blockEntity, Minecraft minecraft, GuiGraphics graphics, PoseStack poseStack, ClientLevel level, ClientSubLevel beSubLevel, Vec3 pos, int windowHeight, int windowWidth, float partialTick) {
-        this.write(minecraft, graphics, "Docking.", 0, 0, true);
+        graphics.drawString(
+                mc.font,
+                "Docking.",
+                0, 0,
+                CommonColors.WHITE
+        );
     }
-
 }

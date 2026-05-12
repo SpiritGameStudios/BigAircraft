@@ -1,6 +1,5 @@
 package dev.spiritstudios.aerobig.aviation_display.types;
 
-import com.mojang.blaze3d.vertex.PoseStack;
 import dev.eriksonn.aeronautics.content.blocks.hot_air.hot_air_burner.HotAirBurnerBlockEntity;
 import dev.eriksonn.aeronautics.index.AeroBlockEntityTypes;
 import dev.ryanhcode.sable.sublevel.ClientSubLevel;
@@ -8,22 +7,27 @@ import dev.spiritstudios.aerobig.aviation_display.AviationDisplayType;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.multiplayer.ClientLevel;
-import net.minecraft.world.phys.Vec3;
+import net.minecraft.client.player.LocalPlayer;
+import net.minecraft.core.BlockPos;
+import net.minecraft.util.CommonColors;
 
-public class HotAirBurnerAviationDisplay extends AviationDisplayType<HotAirBurnerBlockEntity> {
+public class HotAirBurnerAviationDisplay extends AviationDisplayType {
 
     public HotAirBurnerAviationDisplay() {
-        super(AeroBlockEntityTypes.HOT_AIR_BURNER, true);
+        super(AeroBlockEntityTypes.HOT_AIR_BURNER);
     }
 
     @Override
-    public boolean canDisplay(HotAirBurnerBlockEntity blockEntity, ClientLevel level, ClientSubLevel beSubLevel, Vec3 pos) {
-        return super.canDisplay(blockEntity, level, beSubLevel, pos) && blockEntity.canOutputGas();
-    }
+    public void render(GuiGraphics graphics, Minecraft mc, ClientLevel level, ClientSubLevel beSubLevel, BlockPos blockPos, LocalPlayer player, float partialTick) {
+        if (!(level.getBlockEntity(blockPos) instanceof HotAirBurnerBlockEntity burner)) return;
+        if (!burner.canOutputGas()) return;
 
-    @Override
-    public void display(HotAirBurnerBlockEntity blockEntity, Minecraft minecraft, GuiGraphics graphics, PoseStack poseStack, ClientLevel level, ClientSubLevel beSubLevel, Vec3 pos, int windowHeight, int windowWidth, float partialTick) {
-        this.write(minecraft, graphics, "G%.2f".formatted(blockEntity.getGasOutput()), 0, 0, true);
+        graphics.drawString(
+                mc.font,
+                "G%.2f".formatted(burner.getGasOutput()),
+                0, 0,
+                CommonColors.WHITE
+        );
     }
 
 }

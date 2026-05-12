@@ -5,8 +5,10 @@ import dev.ryanhcode.sable.Sable;
 import dev.ryanhcode.sable.companion.math.JOMLConversion;
 import dev.ryanhcode.sable.companion.math.Pose3d;
 import dev.ryanhcode.sable.companion.math.Pose3dc;
-import dev.ryanhcode.sable.sublevel.SubLevel;
+import dev.ryanhcode.sable.sublevel.ClientSubLevel;
 import dev.spiritstudios.aerobig.BigAircraft;
+import dev.spiritstudios.aerobig.component.AviationDisplay;
+import dev.spiritstudios.aerobig.registry.ModDataComponents;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.player.LocalPlayer;
@@ -32,53 +34,37 @@ public class AircraftHudRenderer {
 
     @SubscribeEvent
     private static void registerGuiLayers(RegisterGuiLayersEvent event) {
-        event.registerAboveAll(BigAircraft.id("aircraft_hud"), (graphics, deltaTracker) -> {
+        event.registerAboveAll(BigAircraft.id("aviation_hud"), (graphics, deltaTracker) -> {
             Minecraft minecraft = Minecraft.getInstance();
+            if (minecraft.level == null) return;
 
             LocalPlayer player = minecraft.player;
-            SubLevel subLevel = Sable.HELPER.getTrackingOrVehicleSubLevel(player);
+            ClientSubLevel subLevel = (ClientSubLevel) Sable.HELPER.getTrackingOrVehicleSubLevel(player);
 
-            if (shouldRender(minecraft, player) && subLevel != null) {
-                Pose3dc pose = subLevel.logicalPose();
-                Pose3dc prevPose = subLevel.lastPose();
+            if (shouldRender(minecraft, player) & subLevel != null) {
+                var helmet = player.getItemBySlot(EquipmentSlot.HEAD);
+                var displays = helmet.get(ModDataComponents.AVIATION_DISPLAYS);
+                if (displays != null) {
+                    for (AviationDisplay display : displays.displays()) {
+                        if (display.pos().dimension() != subLevel.getLevel().dimension()) continue;
+                        if (!subLevel.getPlot().contains(display.pos().pos().getCenter())) continue;
 
-                render(graphics, minecraft, player, pose, prevPose);
+                        display.type().render(
+                                graphics,
+                                minecraft,
+                                player.clientLevel,
+                                subLevel,
+                                display.pos().pos(),
+                                player,
+                                deltaTracker.getGameTimeDeltaPartialTick(false)
+                        );
+                    }
+                }
             }
         });
-    }
-
-    private static void render(GuiGraphics graphics, Minecraft minecraft, LocalPlayer player, Pose3dc pose, Pose3dc prevPose) {
-        Vector3d downNormal = JOMLConversion.atLowerCornerOf(Direction.DOWN.getNormal());
-        Vector3d forwardNormal = JOMLConversion.atLowerCornerOf(Direction.NORTH.getNormal());
-
-        pose.orientation().transformInverse(downNormal);
-        pose.orientation().transformInverse(forwardNormal);
-
-        int windowWidth = graphics.guiWidth();
-        int windowHeight = graphics.guiHeight();
-
-        float yaw = -getRadians(-forwardNormal.z, -forwardNormal.x) + Mth.HALF_PI;
-        float roll = getRadians(downNormal.y(), downNormal.z());
-        float pitch = getRadians(downNormal.y(), downNormal.x());
-
-        int centreX = windowWidth / 2;
-        int centreY = windowHeight / 2;
-
-        AeroGraphics aeroGraphics = new AeroGraphics(minecraft, graphics);
-
-        aeroGraphics.drawHeading(yaw, pitch, roll, windowHeight, centreX, centreY);
-        aeroGraphics.drawAirspeed(centreY, pose, prevPose);
-        aeroGraphics.writeAltitude(windowWidth, windowHeight, player.position());
-
-        aeroGraphics.drawAttitude(pitch, roll, windowHeight, centreX, centreY);
-    }
-
-    private static float getRadians(double y, double a) {
-        return a * a > Mth.EPSILON ? (float) Mth.atan2(a, -y) : 0.0F;
     }
 
     private static boolean shouldRender(Minecraft minecraft, @Nullable Player player) {
         return player != null && player.getItemBySlot(EquipmentSlot.HEAD).is(AeroItems.AVIATORS_GOGGLES) && !minecraft.options.hideGui;
     }
-
 }

@@ -1,6 +1,5 @@
 package dev.spiritstudios.aerobig.aviation_display.types;
 
-import com.mojang.blaze3d.vertex.PoseStack;
 import dev.ryanhcode.sable.sublevel.ClientSubLevel;
 import dev.simulated_team.simulated.content.blocks.portable_engine.PortableEngineBlockEntity;
 import dev.simulated_team.simulated.index.SimBlockEntityTypes;
@@ -8,22 +7,28 @@ import dev.spiritstudios.aerobig.aviation_display.AviationDisplayType;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.multiplayer.ClientLevel;
-import net.minecraft.world.phys.Vec3;
+import net.minecraft.client.player.LocalPlayer;
+import net.minecraft.core.BlockPos;
+import net.minecraft.util.CommonColors;
 
-public class PortableEngineAviationDisplay extends AviationDisplayType<PortableEngineBlockEntity> {
+public class PortableEngineAviationDisplay extends AviationDisplayType {
 
     public PortableEngineAviationDisplay() {
-        super(SimBlockEntityTypes.PORTABLE_ENGINE, false);
+        super(SimBlockEntityTypes.PORTABLE_ENGINE);
     }
 
     @Override
-    public boolean canDisplay(PortableEngineBlockEntity blockEntity, ClientLevel level, ClientSubLevel beSubLevel, Vec3 pos) {
-        return super.canDisplay(blockEntity, level, beSubLevel, pos) && !blockEntity.isTotalFuelInfinite() && blockEntity.getTotalBurnTime() > 0;
-    }
+    public void render(GuiGraphics graphics, Minecraft mc, ClientLevel level, ClientSubLevel subLevel, BlockPos blockPos, LocalPlayer player, float partialTick) {
+        if (!(level.getBlockEntity(blockPos) instanceof PortableEngineBlockEntity engine)) return;
 
-    @Override
-    public void display(PortableEngineBlockEntity blockEntity, Minecraft minecraft, GuiGraphics graphics, PoseStack poseStack, ClientLevel level, ClientSubLevel beSubLevel, Vec3 pos, int windowHeight, int windowWidth, float partialTick) {
-        this.write(minecraft, graphics, "%s/%s".formatted(blockEntity.getCurrentBurnTime(), blockEntity.getTotalBurnTime()), 0, 0, true);
-    }
+        if (engine.isTotalFuelInfinite()) return;
+        if (engine.getTotalBurnTime() <= 0) return;
 
+        graphics.drawString(
+                mc.font,
+                "%s/%s".formatted(engine.getCurrentBurnTime(), engine.getTotalBurnTime()),
+                0, 0,
+                CommonColors.WHITE
+        );
+    }
 }

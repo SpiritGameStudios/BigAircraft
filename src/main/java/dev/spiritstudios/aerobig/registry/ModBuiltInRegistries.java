@@ -11,7 +11,7 @@ import net.neoforged.neoforge.registries.NewRegistryEvent;
 import net.neoforged.neoforge.registries.RegistryBuilder;
 
 public final class ModBuiltInRegistries {
-    public static final Registry<AviationDisplayType<?>> AVIATION_DISPLAY_TYPE = new RegistryBuilder<>(ModRegistries.AVIATION_DISPLAY_TYPE)
+    public static final Registry<AviationDisplayType> AVIATION_DISPLAY_TYPE = new RegistryBuilder<>(ModRegistries.AVIATION_DISPLAY_TYPE)
             .sync(true)
             .create();
 
