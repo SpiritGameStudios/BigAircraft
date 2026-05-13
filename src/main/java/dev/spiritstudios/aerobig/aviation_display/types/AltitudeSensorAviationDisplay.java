@@ -24,7 +24,7 @@ public class AltitudeSensorAviationDisplay extends AviationDisplayType<AltitudeS
 
     @Override
     public void render(AltitudeSensorBlockEntity blockEntity, GuiGraphics graphics, Minecraft mc, ClientLevel level, ClientSubLevel subLevel, BlockPos blockPos, LocalPlayer player, float partialTick) {
-        AviationHudNumberRenderer numberRenderer = new AviationHudNumberRenderer(graphics, AviationHudNumberRenderer.Font.BOLD, BigAircraftRenderTypes.GUI_INVERT);
+        AviationHudNumberRenderer numberRenderer = new AviationHudNumberRenderer(graphics, AviationHudNumberRenderer.Font.BOLD);
 
         RenderSystem.enableBlend();
         RenderSystem.blendFuncSeparate(

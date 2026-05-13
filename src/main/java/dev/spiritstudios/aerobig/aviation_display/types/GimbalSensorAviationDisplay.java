@@ -66,7 +66,7 @@ public class GimbalSensorAviationDisplay extends AviationDisplayType<GimbalSenso
         final int step = 5;
         final float scale = 3;
 
-        AviationHudNumberRenderer numberRenderer = new AviationHudNumberRenderer(graphics, AviationHudNumberRenderer.Font.SMALL, BigAircraftRenderTypes.GUI_INVERT);
+        AviationHudNumberRenderer numberRenderer = new AviationHudNumberRenderer(graphics, AviationHudNumberRenderer.Font.SMALL);
 
         for (int i = -360; i < 360; i += step) {
             float angle = (i * Mth.DEG_TO_RAD) + pitch;

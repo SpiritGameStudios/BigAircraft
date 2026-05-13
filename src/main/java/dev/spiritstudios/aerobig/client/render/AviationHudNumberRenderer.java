@@ -1,10 +1,10 @@
 package dev.spiritstudios.aerobig.client.render;
 
-import com.mojang.blaze3d.vertex.*;
 import dev.spiritstudios.aerobig.BigAircraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.resources.ResourceLocation;
+import org.joml.Matrix4f;
 
 public class AviationHudNumberRenderer {
 
@@ -14,36 +14,34 @@ public class AviationHudNumberRenderer {
 
     private final GuiGraphics graphics;
     private final Font font;
-    private final RenderType renderType; // idk how to make this work :c help pls
 
     private int cursor;
 
-    public AviationHudNumberRenderer(GuiGraphics graphics, Font font, RenderType renderType) {
+    public AviationHudNumberRenderer(GuiGraphics graphics, Font font) {
         this.graphics = graphics;
         this.font = font;
-        this.renderType = renderType;
     }
 
     public void drawInt(int number, int x, int y, Alignment alignment) {
         this.cursor = x - alignment.getOffset(this.getWidth(number));
 
         if (number < 0)
-            this.blitAndMoveCursor(MINUS_SIGN_INDEX, this.font.characterWidth, y);
+            this.renderAndMoveCursor(MINUS_SIGN_INDEX, this.font.characterWidth, y);
 
-        this.blitChars(Integer.toString(Math.abs(number)), y);
+        this.renderChars(Integer.toString(Math.abs(number)), y);
     }
 
     public void drawDouble(double number, int x, int y, Alignment alignment) {
         this.cursor = x - alignment.getOffset(this.getWidth(number));
 
         if (number < 0)
-            this.blitAndMoveCursor(MINUS_SIGN_INDEX, this.font.characterWidth, y);
+            this.renderAndMoveCursor(MINUS_SIGN_INDEX, this.font.characterWidth, y);
 
         String[] parts = "%.2f".formatted(Math.abs(number)).split("\\.");
 
-        this.blitChars(parts[0], y);
-        this.blitAndMoveCursor(DECIMAL_POINT_INDEX, this.font.pointCharWidth, y);
-        this.blitChars(parts[1], y);
+        this.renderChars(parts[0], y);
+        this.renderAndMoveCursor(DECIMAL_POINT_INDEX, this.font.pointCharWidth, y);
+        this.renderChars(parts[1], y);
     }
 
     private int getWidth(int number) {
@@ -55,20 +53,37 @@ public class AviationHudNumberRenderer {
         return s.length() * (this.font.characterWidth + PADDING) + this.font.pointCharWidth;
     }
 
-    private void blitChars(String number, int y) {
+    private void renderChars(String number, int y) {
         for (char c : number.toCharArray())
-            this.blitAndMoveCursor(c - '0', this.font.characterWidth, y);
+            this.renderAndMoveCursor(c - '0', this.font.characterWidth, y);
     }
 
-    private void blitAndMoveCursor(int index, int shift, int y) {
-        this.graphics.blit(this.font.id, this.cursor, y + this.font.atlasHeight / 2, 0, this.font.characterWidth * index, 0, this.font.characterWidth, this.font.atlasHeight, this.font.atlasWidth, this.font.atlasHeight);
+    private void renderAndMoveCursor(int index, int shift, int y) {
+        int x1 = this.cursor;
+        int x2 = x1 + this.font.characterWidth;
+
+        int y1 = y + this.font.atlasHeight / 2;
+        int y2 = y1 + font.atlasHeight;
+
+
+        float u1 = (this.font.characterWidth * index + 0.0F) / (float) this.font.atlasWidth;
+        float u2 = ((this.font.characterWidth * index) + (float) this.font.characterWidth) / (float) this.font.atlasWidth;
+        float v1 = 0.0f;
+        float v2 = 1.0f;
+
+        Matrix4f pose = graphics.pose().last().pose();
+        this.graphics.bufferSource().getBuffer(BigAircraftRenderTypes.NUMBER_INVERT.apply(font.id))
+                .addVertex(pose, x1, y1, 0).setUv(u1, v1)
+                .addVertex(pose, x1, y2, 0).setUv(u1, v2)
+                .addVertex(pose, x2, y2, 0).setUv(u2, v2)
+                .addVertex(pose, x2, y1, 0).setUv(u2, v1);
+
         this.cursor += shift + PADDING;
     }
 
     public enum Font {
         BOLD("gui/sprites/aviation_display/numerical_bold", 6, 2, 10, 72),
-        SMALL("gui/sprites/aviation_display/numerical_small", 3, 1, 5, 36),
-        ;
+        SMALL("gui/sprites/aviation_display/numerical_small", 3, 1, 5, 36);
 
         private final ResourceLocation id;
         private final int characterWidth;
@@ -98,5 +113,4 @@ public class AviationHudNumberRenderer {
             };
         }
     }
-
 }
