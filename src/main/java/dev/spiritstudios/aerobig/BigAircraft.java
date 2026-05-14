@@ -56,6 +56,7 @@ public class BigAircraft {
 
         ModRegistries.init();
         ModI18N.init();
+        ModSoundEvents.init(modBus);
         ModFlightHudAugments.init(modBus);
         ModDataComponents.init(modBus);
         ModBlocks.init();

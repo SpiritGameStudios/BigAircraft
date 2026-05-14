@@ -23,11 +23,18 @@ public class AltitudeSensorFlightHudAugment extends FlightHudAugmentType<Altitud
 
     @Override
     public void render(AltitudeSensorBlockEntity blockEntity, GuiGraphics graphics, Minecraft mc, ClientLevel level, ClientSubLevel subLevel, BlockPos blockPos, LocalPlayer player, float partialTick) {
-        new FlightHudNumberRenderer(graphics, NumericalFont.BOLD, BigAircraftRenderTypes.NUMBER_INVERT).drawDouble(
-            blockEntity.getNormalHeight(),
+        new FlightHudNumberRenderer(graphics, NumericalFont.BOLD, BigAircraftRenderTypes.GUI_TEXTURED_INVERT).drawDouble(
+            blockEntity.getAirPressure(),
             graphics.guiWidth() - graphics.guiWidth() / 4,
             graphics.guiHeight() / 2 - ALTITUDE_TEXT_HEIGHT / 2,
             FlightHudNumberRenderer.Alignment.LEFT
+        );
+
+        new FlightHudNumberRenderer(graphics, NumericalFont.BOLD, BigAircraftRenderTypes.GUI_TEXTURED_INVERT).drawDouble(
+                blockEntity.getWorldHeight(),
+                graphics.guiWidth() - graphics.guiWidth() / 4,
+                (graphics.guiHeight() / 2 - ALTITUDE_TEXT_HEIGHT / 2) + 12,
+                FlightHudNumberRenderer.Alignment.LEFT
         );
     }
 }

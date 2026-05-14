@@ -61,7 +61,7 @@ public class FlightHudNumberRenderer {
     }
 
     private void renderAndMoveCursor(int index, int shift, int y) {
-        FlightHudRenderer.blitWithRenderType(
+        FlightHudRenderer.renderSprite(
             this.graphics,
             this.font.id,
             this.cursor,

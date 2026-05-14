@@ -27,7 +27,7 @@ public class DockingConnectorFlightHudAugment extends FlightHudAugmentType<Docki
 
     @Override
     public void render(DockingConnectorBlockEntity blockEntity, GuiGraphics graphics, Minecraft mc, ClientLevel level, ClientSubLevel beSubLevel, BlockPos blockPos, LocalPlayer player, float partialTick) {
-        FlightHudRenderer.blitWithRenderType(
+        FlightHudRenderer.renderSprite(
             graphics,
             TEXTURE,
             ICON_MARGIN,
@@ -38,7 +38,7 @@ public class DockingConnectorFlightHudAugment extends FlightHudAugmentType<Docki
             blockEntity.hasOtherConnector() ? 0.0F : ICON_HEIGHT,
             TEXTURE_SIZE,
             TEXTURE_SIZE,
-            BigAircraftRenderTypes.NUMBER_INVERT
+            BigAircraftRenderTypes.GUI_TEXTURED_INVERT
         );
     }
 }

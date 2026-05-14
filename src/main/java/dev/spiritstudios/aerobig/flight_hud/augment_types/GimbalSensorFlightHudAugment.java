@@ -5,6 +5,8 @@ import dev.ryanhcode.sable.companion.math.JOMLConversion;
 import dev.ryanhcode.sable.sublevel.ClientSubLevel;
 import dev.simulated_team.simulated.content.blocks.gimbal_sensor.GimbalSensorBlockEntity;
 import dev.simulated_team.simulated.index.SimBlockEntityTypes;
+import dev.spiritstudios.aerobig.BigAircraft;
+import dev.spiritstudios.aerobig.client.render.FlightHudRenderer;
 import dev.spiritstudios.aerobig.flight_hud.FlightHudAugmentType;
 import dev.spiritstudios.aerobig.client.render.FlightHudNumberRenderer;
 import dev.spiritstudios.aerobig.client.render.BigAircraftRenderTypes;
@@ -15,11 +17,14 @@ import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.CommonColors;
 import net.minecraft.util.Mth;
 import org.joml.Vector3d;
 
 public class GimbalSensorFlightHudAugment extends FlightHudAugmentType<GimbalSensorBlockEntity> {
+    private static final ResourceLocation CROSSHAIR = BigAircraft.id("textures/gui/sprites/aviation_display/crosshair.png");
+    private static final int CROSSHAIR_SIZE = 64;
 
     private static final int HORIZON_LINE_CENTRE_PADDING = 7;
     private static final int LADDER_STEP_DIST = 5;
@@ -41,17 +46,18 @@ public class GimbalSensorFlightHudAugment extends FlightHudAugmentType<GimbalSen
 
     @Override
     public void render(GimbalSensorBlockEntity blockEntity, GuiGraphics graphics, Minecraft mc, ClientLevel level, ClientSubLevel subLevel, BlockPos blockPos, LocalPlayer player, float partialTick) {
-        float roll = (float) blockEntity.getXAngle();
-        float pitch = (float) blockEntity.getZAngle();
+        float roll = (float) blockEntity.getZAngle();
+        float pitch = (float) blockEntity.getXAngle();
         Vector3d forwardNormal = JOMLConversion.atLowerCornerOf(Direction.NORTH.getNormal());
         subLevel.logicalPose().orientation().transformInverse(forwardNormal);
 
         int windowCentreX = graphics.guiWidth() / 2;
         int windowCentreY = graphics.guiHeight() / 2;
 
+
         graphics.pose().pushPose();
         graphics.pose().translate(windowCentreX, windowCentreY, 0);
-        graphics.pose().mulPose(Axis.ZN.rotationDegrees(Mth.wrapDegrees(roll * Mth.RAD_TO_DEG)));
+        graphics.pose().mulPose(Axis.ZP.rotationDegrees(Mth.wrapDegrees(roll * Mth.RAD_TO_DEG)));
         graphics.pose().translate(-windowCentreX, -windowCentreY, 0);
 
         int padX = graphics.guiWidth() / 4;
@@ -64,14 +70,14 @@ public class GimbalSensorFlightHudAugment extends FlightHudAugmentType<GimbalSen
 
         final float scale = 3;
 
-        FlightHudNumberRenderer numberRenderer = new FlightHudNumberRenderer(graphics, NumericalFont.SMALL, BigAircraftRenderTypes.NUMBER_INVERT);
+        FlightHudNumberRenderer numberRenderer = new FlightHudNumberRenderer(graphics, NumericalFont.SMALL, BigAircraftRenderTypes.GUI_TEXTURED_INVERT);
 
         for (int i = -360; i < 360; i += LADDER_STEP_DIST) {
             float angle = (i * Mth.DEG_TO_RAD) + pitch;
             float mag = angle / Mth.PI;
             mag *= scale;
 
-            int up = (int)(-mag * graphics.guiHeight() + windowCentreY - 1);
+            int up = (int) (-mag * graphics.guiHeight() + windowCentreY - 1);
             int len = i == 0 ? ZERO_RUNG_LENGTH : NORMAL_RUNG_LENGTH;
 
             graphics.hLine(
@@ -132,8 +138,9 @@ public class GimbalSensorFlightHudAugment extends FlightHudAugmentType<GimbalSen
     private static float getYaw(Vector3d forwardNormal) {
         float yaw = 0.0F;
 
-        if (forwardNormal.x * forwardNormal.x > Mth.EPSILON)
+        if (forwardNormal.x * forwardNormal.x > Mth.EPSILON) {
             yaw = (float) -Mth.atan2(-forwardNormal.x, forwardNormal.z) + Mth.PI;
+        }
 
         return yaw;
     }

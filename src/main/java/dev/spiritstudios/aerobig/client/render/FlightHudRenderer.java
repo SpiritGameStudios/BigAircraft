@@ -96,8 +96,8 @@ public class FlightHudRenderer {
         return player != null && player.getItemBySlot(EquipmentSlot.HEAD).has(ModDataComponents.FLIGHT_HUD_AUGMENTS) && !minecraft.options.hideGui && minecraft.screen == null;
     }
 
-    public static void blitWithRenderType(GuiGraphics graphics, ResourceLocation id, float x, float y, float uWidth, float vHeight, float uPos, float vPos, int textureWidth, int textureHeight, Function<ResourceLocation, RenderType> renderType) {
-        blitWithRenderType(
+    public static void renderSprite(GuiGraphics graphics, ResourceLocation id, float x, float y, float uWidth, float vHeight, float uPos, float vPos, int textureWidth, int textureHeight, Function<ResourceLocation, RenderType> renderType) {
+        renderSprite(
             graphics,
             id,
             x,
@@ -112,7 +112,7 @@ public class FlightHudRenderer {
         );
     }
 
-    public static void blitWithRenderType(GuiGraphics graphics, ResourceLocation id, float minX, float maxX, float minY, float maxY, float minU, float maxU, float minV, float maxV, Function<ResourceLocation, RenderType> renderType) {
+    public static void renderSprite(GuiGraphics graphics, ResourceLocation id, float minX, float maxX, float minY, float maxY, float minU, float maxU, float minV, float maxV, Function<ResourceLocation, RenderType> renderType) {
         Matrix4f pose = graphics.pose().last().pose();
         graphics.bufferSource().getBuffer(renderType.apply(id))
             .addVertex(pose, minX, minY, 0).setUv(minU, minV)

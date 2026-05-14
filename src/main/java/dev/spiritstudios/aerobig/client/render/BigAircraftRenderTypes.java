@@ -42,9 +42,22 @@ public class BigAircraftRenderTypes {
                     .createCompositeState(false)
     );
 
-    public static final Function<ResourceLocation, RenderType> NUMBER_INVERT = Util.memoize(
+    public static final Function<ResourceLocation, RenderType> GUI_TEXTURED = Util.memoize(
             texture -> RenderType.create(
-                    BigAircraft.MOD_ID + ":number_invert",
+                    BigAircraft.MOD_ID + ":gui_textured",
+                    DefaultVertexFormat.POSITION_TEX,
+                    VertexFormat.Mode.QUADS,
+                    786432,
+                    RenderType.CompositeState.builder()
+                            .setShaderState(RenderType.POSITION_TEX_SHADER)
+                            .setTextureState(new RenderStateShard.TextureStateShard(texture, false, false))
+                            .createCompositeState(false)
+            )
+    );
+
+    public static final Function<ResourceLocation, RenderType> GUI_TEXTURED_INVERT = Util.memoize(
+            texture -> RenderType.create(
+                    BigAircraft.MOD_ID + ":gui_textured_invert",
                     DefaultVertexFormat.POSITION_TEX,
                     VertexFormat.Mode.QUADS,
                     786432,

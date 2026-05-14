@@ -1,22 +1,23 @@
 {
-    "required": true,
-    "package": "dev.spiritstudios.aerobig.mixin",
-    "compatibilityLevel": "JAVA_21",
-    "client": [
-    ],
-    "injectors": {
-        "defaultRequire": 1
-    },
-    "overwrites": {
-        "requireAnnotations": true
-    },
-    "mixins": [
-        "CreativeTabItemTransformsAccessor",
-        "analog_speed_controller.CogWheelBlockMixin",
-        "analog_speed_controller.ComputerBehaviourMixin",
-        "analog_speed_controller.RotationPropagatorMixin",
-        "encasing.EncasableBlockMixin",
-        "flight_hud_augment.AviatorsGogglesItemMixin",
-        "flight_hud_augment.ItemStackMixin"
-    ]
+  "required": true,
+  "package": "dev.spiritstudios.aerobig.mixin",
+  "compatibilityLevel": "JAVA_21",
+  "client": [
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  },
+  "overwrites": {
+    "requireAnnotations": true
+  },
+  "mixins": [
+    "CreativeTabItemTransformsAccessor",
+    "OpticalSensorBlockEntityMixin",
+    "analog_speed_controller.CogWheelBlockMixin",
+    "analog_speed_controller.ComputerBehaviourMixin",
+    "analog_speed_controller.RotationPropagatorMixin",
+    "encasing.EncasableBlockMixin",
+    "flight_hud_augment.AviatorsGogglesItemMixin",
+    "flight_hud_augment.ItemStackMixin"
+  ]
 }
