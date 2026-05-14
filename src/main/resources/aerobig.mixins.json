@@ -16,7 +16,7 @@
         "analog_speed_controller.ComputerBehaviourMixin",
         "analog_speed_controller.RotationPropagatorMixin",
         "encasing.EncasableBlockMixin",
-        "observable_hud.AviatorsGogglesItemMixin",
-        "observable_hud.SmartBlockEntityMixin"
+        "flight_hud_augment.AviatorsGogglesItemMixin",
+        "flight_hud_augment.ItemStackMixin"
     ]
 }

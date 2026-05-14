@@ -1,9 +1,9 @@
-package dev.spiritstudios.aerobig.aviation_display.types;
+package dev.spiritstudios.aerobig.flight_hud.augment_types;
 
 import dev.ryanhcode.sable.sublevel.ClientSubLevel;
 import dev.simulated_team.simulated.content.blocks.velocity_sensor.VelocitySensorBlockEntity;
 import dev.simulated_team.simulated.index.SimBlockEntityTypes;
-import dev.spiritstudios.aerobig.aviation_display.AviationDisplayType;
+import dev.spiritstudios.aerobig.flight_hud.FlightHudAugmentType;
 import dev.spiritstudios.aerobig.client.render.BigAircraftRenderTypes;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
@@ -13,10 +13,10 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.util.CommonColors;
 import org.joml.Vector3dc;
 
-public class VelocitySensorAviationDisplay extends AviationDisplayType<VelocitySensorBlockEntity> {
+public class VelocitySensorFlightHudAugment extends FlightHudAugmentType<VelocitySensorBlockEntity> {
     private static final double BLOCKS_PER_TICK_TO_KNOTS = 18000.0 / 463.0;
 
-    public VelocitySensorAviationDisplay() {
+    public VelocitySensorFlightHudAugment() {
         super(SimBlockEntityTypes.VELOCITY_SENSOR);
     }
 

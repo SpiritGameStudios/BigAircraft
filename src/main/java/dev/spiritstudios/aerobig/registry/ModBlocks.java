@@ -181,7 +181,7 @@ public final class ModBlocks {
         return registrate().item(path, properties -> new VerticalCarbonCompositeGearboxItem(properties, color))
                 .transform(builder -> builder.onRegisterAfter(Registries.ITEM, item -> {
                     if (color != DyeColor.WHITE)
-                        CreativeTabItemTransformsAccessor.getItemVisibilities().put(item, CreativeTabItemTransforms.VisibilityType.SEARCH_ONLY);
+                        CreativeTabItemTransformsAccessor.getItemVisibility().put(item, CreativeTabItemTransforms.VisibilityType.SEARCH_ONLY);
                 }))
                 .model((context, provider) -> provider
                         .withExistingParent(path, provider.modLoc("block/wrapped_gearbox_item_vertical"))

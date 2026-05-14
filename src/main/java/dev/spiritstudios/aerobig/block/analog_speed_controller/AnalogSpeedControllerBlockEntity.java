@@ -167,7 +167,7 @@ public class AnalogSpeedControllerBlockEntity extends KineticBlockEntity {
 /*    private static class AnalogSpeedScrollValueBehaviour extends ScrollValueBehaviour {
 
         public AnalogSpeedScrollValueBehaviour(SmartBlockEntity blockEntity) {
-            super(Component.translatable(LangKeys.ANALOG_SPEED_ACTUATOR_SPEED), blockEntity, new ControllerValueBoxTransform());
+            super(Component.translatable(ModI18N.ANALOG_SPEED_ACTUATOR_SPEED), blockEntity, new ControllerValueBoxTransform());
         }
 
         @Override

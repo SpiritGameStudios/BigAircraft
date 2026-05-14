@@ -51,13 +51,12 @@ public class BigAircraft {
 
     public BigAircraft(IEventBus modBus, ModContainer modContainer) {
         registrate().registerEventListeners(modBus);
-        registrate().addRawLang(LangKeys.SIMULATED_SECTION, MOD_NAME);
-        // registrate().addRawLang(LangKeys.ANALOG_SPEED_ACTUATOR_SPEED, "Rotation Speed");
 
         modBus.register(ModBuiltInRegistries.class);
 
         ModRegistries.init();
-        ModAviationDisplayTypes.init(modBus);
+        ModI18N.init();
+        ModFlightHudAugments.init(modBus);
         ModDataComponents.init(modBus);
         ModBlocks.init();
         ModBlockEntityTypes.init();

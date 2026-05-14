@@ -1,4 +1,4 @@
-package dev.spiritstudios.aerobig.aviation_display;
+package dev.spiritstudios.aerobig.flight_hud;
 
 import com.simibubi.create.api.registry.SimpleRegistry;
 import com.tterrag.registrate.util.entry.BlockEntityEntry;
@@ -11,11 +11,11 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 
-public abstract class AviationDisplayType<T extends BlockEntity> {
-    public static final SimpleRegistry<BlockEntityType<?>, AviationDisplayType<?>> BY_BLOCK_ENTITY = SimpleRegistry.create();
+public abstract class FlightHudAugmentType<T extends BlockEntity> {
+    public static final SimpleRegistry<BlockEntityType<?>, FlightHudAugmentType<?>> BY_BLOCK_ENTITY = SimpleRegistry.create();
     public final BlockEntityType<T> blockEntityType;
 
-    public AviationDisplayType(BlockEntityEntry<T> blockEntityType) {
+    public FlightHudAugmentType(BlockEntityEntry<T> blockEntityType) {
         this.blockEntityType = blockEntityType.get();
         BY_BLOCK_ENTITY.register(this.blockEntityType, this);
     }

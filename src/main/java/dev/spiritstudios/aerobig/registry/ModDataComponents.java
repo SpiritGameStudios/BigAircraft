@@ -1,7 +1,7 @@
 package dev.spiritstudios.aerobig.registry;
 
 import dev.spiritstudios.aerobig.BigAircraft;
-import dev.spiritstudios.aerobig.component.AviationDisplaysComponent;
+import dev.spiritstudios.aerobig.component.FlightHudAugmentsComponent;
 import net.minecraft.core.component.DataComponentType;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.neoforged.bus.api.IEventBus;
@@ -16,11 +16,11 @@ public final class ModDataComponents {
             BigAircraft.MOD_ID
     );
 
-    public static final DeferredHolder<DataComponentType<?>, DataComponentType<AviationDisplaysComponent>> AVIATION_DISPLAYS = register(
+    public static final DeferredHolder<DataComponentType<?>, DataComponentType<FlightHudAugmentsComponent>> FLIGHT_HUD_AUGMENTS = register(
         "aviation_displays",
         builder -> builder
-            .persistent(AviationDisplaysComponent.CODEC)
-            .networkSynchronized(AviationDisplaysComponent.STREAM_CODEC)
+            .persistent(FlightHudAugmentsComponent.CODEC)
+            .networkSynchronized(FlightHudAugmentsComponent.STREAM_CODEC)
             .cacheEncoding()
     );
 

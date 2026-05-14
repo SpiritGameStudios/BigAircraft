@@ -1,7 +1,7 @@
 package dev.spiritstudios.aerobig.client;
 
 import dev.spiritstudios.aerobig.BigAircraft;
-import dev.spiritstudios.aerobig.client.render.AircraftHudRenderer;
+import dev.spiritstudios.aerobig.client.render.FlightHudRenderer;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.bus.api.SubscribeEvent;
@@ -14,7 +14,7 @@ import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
 @EventBusSubscriber(modid = BigAircraft.MOD_ID, value = Dist.CLIENT)
 public class BigAircraftClient {
     public BigAircraftClient(IEventBus modBus, ModContainer container) {
-        modBus.register(AircraftHudRenderer.class);
+        modBus.register(FlightHudRenderer.class);
     }
 
     @SubscribeEvent

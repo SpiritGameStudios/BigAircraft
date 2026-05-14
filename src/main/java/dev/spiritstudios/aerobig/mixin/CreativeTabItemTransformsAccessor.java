@@ -10,7 +10,7 @@ import java.util.HashMap;
 @Mixin(CreativeTabItemTransforms.class)
 public interface CreativeTabItemTransformsAccessor {
     @Accessor("ITEM_VISIBILITY")
-    static HashMap<Item, CreativeTabItemTransforms.VisibilityType> getItemVisibilities() {
+    static HashMap<Item, CreativeTabItemTransforms.VisibilityType> getItemVisibility() {
         throw new UnsupportedOperationException("Implemented via mixin.");
     }
 }

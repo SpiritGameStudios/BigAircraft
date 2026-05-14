@@ -1,9 +1,9 @@
-package dev.spiritstudios.aerobig.aviation_display.types;
+package dev.spiritstudios.aerobig.flight_hud.augment_types;
 
 import dev.eriksonn.aeronautics.content.blocks.hot_air.steam_vent.SteamVentBlockEntity;
 import dev.eriksonn.aeronautics.index.AeroBlockEntityTypes;
 import dev.ryanhcode.sable.sublevel.ClientSubLevel;
-import dev.spiritstudios.aerobig.aviation_display.AviationDisplayType;
+import dev.spiritstudios.aerobig.flight_hud.FlightHudAugmentType;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.multiplayer.ClientLevel;
@@ -11,11 +11,11 @@ import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.core.BlockPos;
 import net.minecraft.util.CommonColors;
 
-public class SteamVentAviationDisplay extends AviationDisplayType<SteamVentBlockEntity> {
+public class SteamVentFlightHudAugment extends FlightHudAugmentType<SteamVentBlockEntity> {
 
     private static final int ALTITUDE_TEXT_HEIGHT = 118;
 
-    public SteamVentAviationDisplay() {
+    public SteamVentFlightHudAugment() {
         super(AeroBlockEntityTypes.STEAM_VENT);
     }
 

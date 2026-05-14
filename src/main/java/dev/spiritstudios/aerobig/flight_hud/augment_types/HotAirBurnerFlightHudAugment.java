@@ -1,9 +1,9 @@
-package dev.spiritstudios.aerobig.aviation_display.types;
+package dev.spiritstudios.aerobig.flight_hud.augment_types;
 
 import dev.eriksonn.aeronautics.content.blocks.hot_air.hot_air_burner.HotAirBurnerBlockEntity;
 import dev.eriksonn.aeronautics.index.AeroBlockEntityTypes;
 import dev.ryanhcode.sable.sublevel.ClientSubLevel;
-import dev.spiritstudios.aerobig.aviation_display.AviationDisplayType;
+import dev.spiritstudios.aerobig.flight_hud.FlightHudAugmentType;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.multiplayer.ClientLevel;
@@ -11,9 +11,9 @@ import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.core.BlockPos;
 import net.minecraft.util.CommonColors;
 
-public class HotAirBurnerAviationDisplay extends AviationDisplayType<HotAirBurnerBlockEntity> {
+public class HotAirBurnerFlightHudAugment extends FlightHudAugmentType<HotAirBurnerBlockEntity> {
 
-    public HotAirBurnerAviationDisplay() {
+    public HotAirBurnerFlightHudAugment() {
         super(AeroBlockEntityTypes.HOT_AIR_BURNER);
     }
 
