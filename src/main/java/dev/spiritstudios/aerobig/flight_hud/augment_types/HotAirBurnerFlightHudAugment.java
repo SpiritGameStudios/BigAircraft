@@ -11,6 +11,9 @@ import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.core.BlockPos;
 import net.minecraft.util.CommonColors;
 
+/**
+ * TODO: design entirely
+ */
 public class HotAirBurnerFlightHudAugment extends FlightHudAugmentType<HotAirBurnerBlockEntity> {
 
     public HotAirBurnerFlightHudAugment() {

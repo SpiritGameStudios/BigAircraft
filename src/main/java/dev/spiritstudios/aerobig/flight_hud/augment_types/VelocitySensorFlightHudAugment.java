@@ -13,6 +13,9 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.util.CommonColors;
 import org.joml.Vector3dc;
 
+/**
+ * TODO: move to new font system
+ */
 public class VelocitySensorFlightHudAugment extends FlightHudAugmentType<VelocitySensorBlockEntity> {
     private static final double BLOCKS_PER_TICK_TO_KNOTS = 18000.0 / 463.0;
 

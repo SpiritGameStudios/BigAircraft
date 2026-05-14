@@ -13,7 +13,7 @@ public class FlightHudNumberRenderer {
     private static final int DECIMAL_POINT_INDEX = 11;
 
     private final GuiGraphics graphics;
-    private final NumericalFont font;
+    public final NumericalFont font;
     private final Function<ResourceLocation, RenderType> renderType;
 
     private int cursor;
@@ -65,7 +65,7 @@ public class FlightHudNumberRenderer {
             this.graphics,
             this.font.id,
             this.cursor,
-            (int) (y + this.font.atlasHeight / 2.0F),
+            y,
             this.font.characterWidth,
             this.font.atlasHeight,
             this.font.characterWidth * index,
@@ -75,20 +75,8 @@ public class FlightHudNumberRenderer {
             this.renderType
         );
 
-        this.cursor += shift + PADDING;
+        this.cursor += shift;
+        this.cursor += this.font.outlineWidth.isPresent() ? -this.font.outlineWidth.getAsInt() : PADDING;
     }
 
-    public enum Alignment {
-        LEFT,
-        RIGHT,
-        CENTER;
-
-        public int getOffset(int width) {
-            return switch (this) {
-                case LEFT -> 0;
-                case RIGHT -> width;
-                case CENTER -> width / 2;
-            };
-        }
-    }
 }

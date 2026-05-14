@@ -1,9 +1,6 @@
 package dev.spiritstudios.aerobig.client.render;
 
 import dev.ryanhcode.sable.Sable;
-import dev.ryanhcode.sable.companion.math.JOMLConversion;
-import dev.ryanhcode.sable.companion.math.Pose3d;
-import dev.ryanhcode.sable.companion.math.Pose3dc;
 import dev.ryanhcode.sable.sublevel.ClientSubLevel;
 import dev.spiritstudios.aerobig.BigAircraft;
 import dev.spiritstudios.aerobig.flight_hud.FlightHudAugmentType;
@@ -15,7 +12,6 @@ import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.Direction;
 import net.minecraft.core.GlobalPos;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.EquipmentSlot;
@@ -27,20 +23,10 @@ import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.neoforge.client.event.RegisterGuiLayersEvent;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Matrix4f;
-import org.joml.Quaterniond;
-import org.joml.Vector3d;
 
 import java.util.function.Function;
 
-/**
- * <h1>Plans</h1>
- * - allow players to click on certain components (gimbal sensor, altitude sensor, velocity sensor, hot air burner (?)) to add information to their hud. could be the same overlay as normal goggle tooltips or a cleaner, more minimalistic flight interface<br>
- * - @CallMeEcho maybe design a ui in paint first?
- */
 public class FlightHudRenderer {
-
-    private static final Vector3d DOWN_NORMAL = JOMLConversion.atLowerCornerOf(Direction.DOWN.getNormal());
-    private static final Pose3dc IDENTITY_POSE = new Pose3d(new Vector3d(), new Quaterniond(), new Vector3d(), new Vector3d(1.0));
 
     @SubscribeEvent
     private static void registerGuiLayers(RegisterGuiLayersEvent event) {
@@ -48,9 +34,7 @@ public class FlightHudRenderer {
             Minecraft minecraft = Minecraft.getInstance();
             LocalPlayer player = minecraft.player;
 
-            ClientSubLevel subLevel = (ClientSubLevel) Sable.HELPER.getTrackingOrVehicleSubLevel(player);
-
-            if (!shouldRender(minecraft, player) || subLevel == null)
+            if (!shouldRender(minecraft, player))
                 return;
 
             ItemStack helmet = player.getItemBySlot(EquipmentSlot.HEAD);
@@ -60,7 +44,10 @@ public class FlightHudRenderer {
                 return;
 
             for (FlightHudAugment augment : component.augments()) {
-                if (!augment.isIn(subLevel))
+                GlobalPos target = augment.target();
+                ClientSubLevel subLevel = Sable.HELPER.getContainingClient(target.pos());
+
+                if (subLevel == null || !augment.isIn(subLevel))
                     continue;
 
                 renderHudAugments(
@@ -69,7 +56,7 @@ public class FlightHudRenderer {
                     minecraft,
                     player,
                     subLevel,
-                    augment.target(),
+                    target,
                     deltaTracker.getGameTimeDeltaPartialTick(false)
                 );
             }
@@ -119,6 +106,12 @@ public class FlightHudRenderer {
             .addVertex(pose, minX, maxY, 0).setUv(minU, maxV)
             .addVertex(pose, maxX, maxY, 0).setUv(maxU, maxV)
             .addVertex(pose, maxX, minY, 0).setUv(maxU, minV);
+    }
+
+    public static void scissor(GuiGraphics graphics, int marginX, int marginY, Runnable renderAction) {
+        graphics.enableScissor(marginX, marginY, graphics.guiWidth() - marginX, graphics.guiHeight() - marginY);
+        renderAction.run();
+        graphics.disableScissor();
     }
 
 }

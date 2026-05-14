@@ -8,6 +8,7 @@ import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredRegister;
 
 public class ModSoundEvents {
+
     private static final DeferredRegister<SoundEvent> REGISTER = DeferredRegister.create(
             BuiltInRegistries.SOUND_EVENT,
             BigAircraft.MOD_ID
@@ -15,7 +16,7 @@ public class ModSoundEvents {
 
     public static final DeferredHolder<SoundEvent, SoundEvent> TERRAIN_TERRAIN_PULL_UP = REGISTER.register(
             "terrainterrainpullup",
-            () -> SoundEvent.createVariableRangeEvent(BigAircraft.id("terrainterrainpullup"))
+            () -> SoundEvent.createFixedRangeEvent(BigAircraft.id("terrainterrainpullup"), 16)
     );
 
     public static void init(IEventBus modBus) {

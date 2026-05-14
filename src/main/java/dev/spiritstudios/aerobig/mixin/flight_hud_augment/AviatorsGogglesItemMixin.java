@@ -40,30 +40,33 @@ public class AviatorsGogglesItemMixin extends BaseArmorItem {
     public void inventoryTick(ItemStack stack, Level level, Entity entity, int slotId, boolean isSelected) {
         super.inventoryTick(stack, level, entity, slotId, isSelected);
 
-        if (level.getGameTime() % SharedConstants.TICKS_PER_SECOND != 0)
+        if (level.isClientSide() || level.getGameTime() % SharedConstants.TICKS_PER_SECOND != 1)
             return;
 
         FlightHudAugmentsComponent component = FlightHudAugmentsComponent.getFromItemStack(stack);
 
-        for (FlightHudAugment display : component.augments()) {
-            GlobalPos globalPos = display.target();
+        for (FlightHudAugment augment : component.augments()) {
+            GlobalPos globalPos = augment.target();
 
             if (level.dimension() != globalPos.dimension())
                 continue;
 
             BlockEntity blockEntity = level.getBlockEntity(globalPos.pos());
 
-            if (blockEntity != null && !blockEntity.isRemoved())
+            if (blockEntity != null)
                 continue;
 
             FlightHudAugmentsComponent newComponent = component.removePosition(globalPos);
 
-            if (newComponent.augments().isEmpty())
+            if (newComponent.augments().isEmpty()) {
                 stack.remove(ModDataComponents.FLIGHT_HUD_AUGMENTS);
+                break;
+            }
             else stack.applyComponents(DataComponentMap.builder()
                 .set(ModDataComponents.FLIGHT_HUD_AUGMENTS, newComponent)
                 .build()
             );
+
         }
     }
 

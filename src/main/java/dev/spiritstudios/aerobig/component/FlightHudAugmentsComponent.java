@@ -27,6 +27,9 @@ import java.util.List;
 import java.util.Set;
 import java.util.function.Consumer;
 
+/**
+ * TODO: restrict augmentations to only work within a single sublevel. compare new list entry with contents of previous list. maybe change from GlobalPos to the sublevel id (for stability too)?
+ */
 @ParametersAreNonnullByDefault
 public record FlightHudAugmentsComponent(List<FlightHudAugment> augments) implements TooltipProvider {
     public static final FlightHudAugmentsComponent EMPTY = new FlightHudAugmentsComponent(List.of());

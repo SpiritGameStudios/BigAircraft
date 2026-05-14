@@ -5,10 +5,7 @@ import dev.simulated_team.simulated.content.blocks.lasers.optical_sensor.Optical
 import dev.simulated_team.simulated.index.SimBlockEntityTypes;
 import dev.spiritstudios.aerobig.BigAircraft;
 import dev.spiritstudios.aerobig.block.BigOpticalSensorBlockEntity;
-import dev.spiritstudios.aerobig.client.render.BigAircraftRenderTypes;
-import dev.spiritstudios.aerobig.client.render.FlightHudNumberRenderer;
-import dev.spiritstudios.aerobig.client.render.FlightHudRenderer;
-import dev.spiritstudios.aerobig.client.render.NumericalFont;
+import dev.spiritstudios.aerobig.client.render.*;
 import dev.spiritstudios.aerobig.flight_hud.FlightHudAugmentType;
 import dev.spiritstudios.aerobig.registry.ModSoundEvents;
 import net.minecraft.client.Minecraft;
@@ -23,9 +20,9 @@ public class OpticalSensorFlightHudAugment extends FlightHudAugmentType<OpticalS
 
     private static final ResourceLocation TEXTURE = BigAircraft.id("textures/gui/sprites/aviation_display/optical_sensor.png");
     private static final int ICON_MARGIN = 10;
-    private static final int ICON_HEIGHT = 18;
-    private static final int TEXTURE_WIDTH = 18;
-    private static final int TEXTURE_HEIGHT = 36;
+    private static final int ICON_HEIGHT = 12;
+    private static final int TEXTURE_WIDTH = 20;
+    private static final int TEXTURE_HEIGHT = 24;
 
     public OpticalSensorFlightHudAugment() {
         super(SimBlockEntityTypes.OPTICAL_SENSOR);
@@ -47,19 +44,19 @@ public class OpticalSensorFlightHudAugment extends FlightHudAugmentType<OpticalS
             blockEntity.hasHit() ? 0.0F : ICON_HEIGHT,
             TEXTURE_WIDTH,
             TEXTURE_HEIGHT,
-            BigAircraftRenderTypes.GUI_TEXTURED_INVERT
+            BigAircraftRenderTypes.GUI_TEXTURED
         );
 
         if (((BigOpticalSensorBlockEntity) blockEntity).bigAircraft$getPrevHitBlock() != blockEntity.getHitBlock() && blockEntity.hasHit()) {
-            mc.getSoundManager().play(SimpleSoundInstance.forAmbientAddition(ModSoundEvents.TERRAIN_TERRAIN_PULL_UP.get()));
+            mc.getSoundManager().play(SimpleSoundInstance.forUI(ModSoundEvents.TERRAIN_TERRAIN_PULL_UP.get(), 1.0F));
         }
 
         if (blockEntity.hasHit()) {
-            new FlightHudNumberRenderer(graphics, NumericalFont.BOLD, BigAircraftRenderTypes.GUI_TEXTURED_INVERT).drawDouble(
+            new FlightHudNumberRenderer(graphics, NumericalFont.BIG_BUBBLE, BigAircraftRenderTypes.GUI_TEXTURED).drawDouble(
                 blockEntity.getHitBlockDistance() - 0.5,
                 x + TEXTURE_WIDTH + 1,
                 y,
-                FlightHudNumberRenderer.Alignment.LEFT
+                Alignment.LEFT
             );
         }
     }

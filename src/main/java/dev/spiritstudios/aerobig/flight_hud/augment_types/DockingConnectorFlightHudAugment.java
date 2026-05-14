@@ -18,8 +18,8 @@ public class DockingConnectorFlightHudAugment extends FlightHudAugmentType<Docki
 
     private static final ResourceLocation TEXTURE = BigAircraft.id("textures/gui/sprites/aviation_display/docking_connector.png");
     private static final int ICON_MARGIN = 10;
-    private static final int ICON_HEIGHT = 18;
-    static final int TEXTURE_SIZE = 36;
+    private static final int ICON_HEIGHT = 12;
+    static final int TEXTURE_SIZE = 24;
 
     public DockingConnectorFlightHudAugment() {
         super(SimBlockEntityTypes.DOCKING_CONNECTOR);
@@ -38,7 +38,7 @@ public class DockingConnectorFlightHudAugment extends FlightHudAugmentType<Docki
             blockEntity.hasOtherConnector() ? 0.0F : ICON_HEIGHT,
             TEXTURE_SIZE,
             TEXTURE_SIZE,
-            BigAircraftRenderTypes.GUI_TEXTURED_INVERT
+            BigAircraftRenderTypes.GUI_TEXTURED
         );
     }
 }
