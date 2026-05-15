@@ -77,7 +77,10 @@ public class GimbalSensorFlightHudAugment extends FlightHudAugmentType<GimbalSen
         pose.mulPose(Axis.ZP.rotationDegrees(Mth.wrapDegrees(roll * Mth.RAD_TO_DEG)));
         pose.translate(-windowCentreX, -windowCentreY, 0);
 
-        FlightHudRenderer.scissor(graphics, graphics.guiWidth() / 4, graphics.guiHeight() / 4, () -> renderLadder(graphics, numberRenderer, pitch, roll, windowCentreX, windowCentreY));
+        int marginX = graphics.guiWidth() / 4;
+        int marginY = graphics.guiHeight() / 4;
+
+        FlightHudRenderer.scissor(graphics, marginX, marginY, guiGraphics -> renderLadder(guiGraphics, numberRenderer, pitch, roll, windowCentreX, windowCentreY));
 
         pose.popPose();
     }
@@ -101,9 +104,8 @@ public class GimbalSensorFlightHudAugment extends FlightHudAugmentType<GimbalSen
             int length = getNotchLength(degrees);
             int halfLength = length / 2;
 
-            if (degrees % DEGREE_INCREMENT == 0) {
+            if (degrees % DEGREE_INCREMENT == 0)
                 numberRenderer.drawInt(wrapHeading(degrees), x, topOffset + halfLength + HEADING_TEXT_VERTICAL_PADDING, Alignment.CENTER);
-            }
 
             vLine(graphics, x, topOffset - halfLength, length);
         }
@@ -122,15 +124,15 @@ public class GimbalSensorFlightHudAugment extends FlightHudAugmentType<GimbalSen
     private static void renderLadder(GuiGraphics graphics, FlightHudNumberRenderer numberRenderer, float pitch, float roll, int windowCentreX, int windowCentreY) {
         for (int degrees = -360; degrees < 360; degrees += DEGREE_INCREMENT) {
             float radians = degrees * Mth.DEG_TO_RAD + pitch;
-            float mag = radians / Mth.PI * LADDER_SPACING; // what is this an abbreviation of?
+            float magnitude = radians / Mth.PI * LADDER_SPACING;
 
-            int up = (int) (-mag * graphics.guiHeight() + windowCentreY - 1);
+            int up = (int) (-magnitude * graphics.guiHeight() + windowCentreY - 1);
             int length = degrees == 0 ? ZERO_RUNG_LENGTH : NORMAL_RUNG_LENGTH;
 
             hLine(graphics, windowCentreX - LADDER_OFFSET_FROM_CENTER, up, -length);
             hLine(graphics, windowCentreX + LADDER_OFFSET_FROM_CENTER - 1, up, length);
 
-            int y = up - numberRenderer.font.atlasHeight / 2;
+            int y = up - numberRenderer.font.textureHeight / 2;
 
 //            graphics.pose().pushPose();
 //            graphics.pose().rotateAround(
@@ -139,7 +141,7 @@ public class GimbalSensorFlightHudAugment extends FlightHudAugmentType<GimbalSen
 //                    y,
 //                    0
 //            );
-            numberRenderer.drawInt(-degrees, windowCentreX - length - 12, y, Alignment.RIGHT);
+            numberRenderer.drawInt(degrees, windowCentreX - length - 8, y, Alignment.RIGHT);
 //            graphics.pose().popPose();
 
 //            graphics.pose().pushPose();
@@ -149,7 +151,7 @@ public class GimbalSensorFlightHudAugment extends FlightHudAugmentType<GimbalSen
 //                    y,
 //                    0
 //            );
-            numberRenderer.drawInt(-degrees, windowCentreX + length + 12, y, Alignment.LEFT);
+            numberRenderer.drawInt(degrees, windowCentreX + length + 8, y, Alignment.LEFT);
 //            graphics.pose().popPose();
         }
     }

@@ -24,6 +24,7 @@ import net.neoforged.neoforge.client.event.RegisterGuiLayersEvent;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Matrix4f;
 
+import java.util.function.Consumer;
 import java.util.function.Function;
 
 public class FlightHudRenderer {
@@ -108,9 +109,9 @@ public class FlightHudRenderer {
             .addVertex(pose, maxX, minY, 0).setUv(maxU, minV);
     }
 
-    public static void scissor(GuiGraphics graphics, int marginX, int marginY, Runnable renderAction) {
+    public static void scissor(GuiGraphics graphics, int marginX, int marginY, Consumer<GuiGraphics> renderAction) {
         graphics.enableScissor(marginX, marginY, graphics.guiWidth() - marginX, graphics.guiHeight() - marginY);
-        renderAction.run();
+        renderAction.accept(graphics);
         graphics.disableScissor();
     }
 

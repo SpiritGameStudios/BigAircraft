@@ -36,7 +36,7 @@ public class AltitudeSensorFlightHudAugment extends FlightHudAugmentType<Altitud
         numberRenderer.drawDouble(
                 blockEntity.getWorldHeight(),
                 graphics.guiWidth() - graphics.guiWidth() / 4,
-                (graphics.guiHeight() / 2 - ALTITUDE_TEXT_HEIGHT / 2) + numberRenderer.font.atlasHeight,
+                (graphics.guiHeight() / 2 - ALTITUDE_TEXT_HEIGHT / 2) + numberRenderer.font.textureHeight,
                 Alignment.LEFT
         );
     }

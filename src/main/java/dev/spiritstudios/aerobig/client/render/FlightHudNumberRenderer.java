@@ -8,7 +8,6 @@ import java.util.function.Function;
 
 public class FlightHudNumberRenderer {
 
-    private static final int PADDING = 1;
     private static final int MINUS_SIGN_INDEX = 10;
     private static final int DECIMAL_POINT_INDEX = 11;
 
@@ -47,12 +46,12 @@ public class FlightHudNumberRenderer {
     }
 
     public int getWidth(int number) {
-        return Integer.toString(number).length() * (this.font.characterWidth + PADDING) - PADDING;
+        return Integer.toString(number).length() * (this.font.characterWidth + this.font.padding) - this.font.padding;
     }
 
     public int getWidth(double number) {
         String s = "%.2f".formatted(number).replace(".", "");
-        return s.length() * (this.font.characterWidth + PADDING) + this.font.pointCharWidth;
+        return s.length() * (this.font.characterWidth + this.font.padding) + this.font.pointCharWidth;
     }
 
     private void renderChars(String number, int y) {
@@ -67,16 +66,15 @@ public class FlightHudNumberRenderer {
             this.cursor,
             y,
             this.font.characterWidth,
-            this.font.atlasHeight,
+            this.font.textureHeight,
             this.font.characterWidth * index,
             0.0F,
-            this.font.atlasWidth,
-            this.font.atlasHeight,
+            this.font.textureWidth,
+            this.font.textureHeight,
             this.renderType
         );
 
-        this.cursor += shift;
-        this.cursor += this.font.outlineWidth.isPresent() ? -this.font.outlineWidth.getAsInt() : PADDING;
+        this.cursor += shift + this.font.padding;
     }
 
 }
