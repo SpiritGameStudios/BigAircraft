@@ -11,5 +11,4 @@ public enum Alignment {
             case CENTER -> width / 2;
         };
     }
-
 }

@@ -46,11 +46,11 @@ public class FlightHudNumberRenderer {
         this.renderChars(parts[1], y);
     }
 
-    private int getWidth(int number) {
+    public int getWidth(int number) {
         return Integer.toString(number).length() * (this.font.characterWidth + PADDING) - PADDING;
     }
 
-    private int getWidth(double number) {
+    public int getWidth(double number) {
         String s = "%.2f".formatted(number).replace(".", "");
         return s.length() * (this.font.characterWidth + PADDING) + this.font.pointCharWidth;
     }

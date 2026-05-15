@@ -22,9 +22,6 @@ import org.joml.Vector3d;
  * TODO: fix cancellation of all subsequent augment renderers. something to do with popPose maybe???
  */
 public class GimbalSensorFlightHudAugment extends FlightHudAugmentType<GimbalSensorBlockEntity> {
-
-    private static final Vector3d FORWARD_NORMAL = JOMLConversion.atLowerCornerOf(Direction.NORTH.getNormal());
-
     private static final int LADDER_OFFSET_FROM_CENTER = 7;
     private static final int DEGREE_INCREMENT = 5;
 
@@ -52,8 +49,8 @@ public class GimbalSensorFlightHudAugment extends FlightHudAugmentType<GimbalSen
 
     @Override
     public void render(GimbalSensorBlockEntity blockEntity, GuiGraphics graphics, Minecraft mc, ClientLevel level, ClientSubLevel subLevel, BlockPos blockPos, LocalPlayer player, float partialTick) {
-        Vector3d forwardNormal = FORWARD_NORMAL;
-        subLevel.logicalPose().orientation().transformInverse(forwardNormal);
+        Vector3d forwardNormal = JOMLConversion.atLowerCornerOf(Direction.NORTH.getNormal());
+        subLevel.renderPose(partialTick).orientation().transformInverse(forwardNormal);
 
         int windowCentreX = graphics.guiWidth() / 2;
         int windowCentreY = graphics.guiHeight() / 2;
@@ -71,7 +68,7 @@ public class GimbalSensorFlightHudAugment extends FlightHudAugmentType<GimbalSen
         pose.mulPose(Axis.ZP.rotationDegrees(Mth.wrapDegrees(roll * Mth.RAD_TO_DEG)));
         pose.translate(-windowCentreX, -windowCentreY, 0);
 
-        FlightHudRenderer.scissor(graphics, graphics.guiWidth() / 4, graphics.guiHeight() / 4, () -> renderLadder(graphics, numberRenderer, pitch, windowCentreX, windowCentreY));
+        FlightHudRenderer.scissor(graphics, graphics.guiWidth() / 4, graphics.guiHeight() / 4, () -> renderLadder(graphics, numberRenderer, pitch, roll, windowCentreX, windowCentreY));
 
         pose.popPose();
     }
@@ -95,8 +92,9 @@ public class GimbalSensorFlightHudAugment extends FlightHudAugmentType<GimbalSen
             int length = getNotchLength(degrees);
             int halfLength = length / 2;
 
-            if (degrees % DEGREE_INCREMENT == 0)
+            if (degrees % DEGREE_INCREMENT == 0) {
                 numberRenderer.drawInt(wrapHeading(degrees), x, topOffset + halfLength + HEADING_TEXT_VERTICAL_PADDING, Alignment.CENTER);
+            }
 
             vLine(graphics, x, topOffset - halfLength, length);
         }
@@ -112,7 +110,7 @@ public class GimbalSensorFlightHudAugment extends FlightHudAugmentType<GimbalSen
         return NORMAL_HEADING_NOTCH_LENGTH;
     }
 
-    private static void renderLadder(GuiGraphics graphics, FlightHudNumberRenderer numberRenderer, float pitch, int windowCentreX, int windowCentreY) {
+    private static void renderLadder(GuiGraphics graphics, FlightHudNumberRenderer numberRenderer, float pitch, float roll, int windowCentreX, int windowCentreY) {
         for (int degrees = -360; degrees < 360; degrees += DEGREE_INCREMENT) {
             float radians = degrees * Mth.DEG_TO_RAD + pitch;
             float mag = radians / Mth.PI * LADDER_SPACING; // what is this an abbreviation of?
@@ -125,8 +123,27 @@ public class GimbalSensorFlightHudAugment extends FlightHudAugmentType<GimbalSen
 
             int y = up - numberRenderer.font.atlasHeight / 2;
 
+            graphics.pose().pushPose();
+            graphics.pose().rotateAround(
+                    Axis.ZN.rotationDegrees(Mth.wrapDegrees(roll * Mth.RAD_TO_DEG)),
+                    windowCentreX - length - numberRenderer.getWidth(-degrees) - 12,
+                    y,
+                    0
+            );
             numberRenderer.drawInt(-degrees, windowCentreX - length - 12, y, Alignment.RIGHT);
+            graphics.pose().popPose();
+
+            graphics.pose().pushPose();
+            graphics.pose().rotateAround(
+                    Axis.ZN.rotationDegrees(Mth.wrapDegrees(roll * Mth.RAD_TO_DEG)),
+                    windowCentreX + length + numberRenderer.getWidth(-degrees) - 12,
+                    y,
+                    0
+            );
             numberRenderer.drawInt(-degrees, windowCentreX + length + 12, y, Alignment.LEFT);
+            graphics.pose().popPose();
+
+
         }
     }
 
@@ -141,8 +158,9 @@ public class GimbalSensorFlightHudAugment extends FlightHudAugmentType<GimbalSen
     private static float getYaw(Vector3d forwardNormal) {
         float yaw = 0.0F;
 
-        if (forwardNormal.x * forwardNormal.x > Mth.EPSILON)
+        if (forwardNormal.x * forwardNormal.x > Mth.EPSILON) {
             yaw = (float) -Mth.atan2(-forwardNormal.x, forwardNormal.z) + Mth.PI;
+        }
 
         return yaw;
     }
