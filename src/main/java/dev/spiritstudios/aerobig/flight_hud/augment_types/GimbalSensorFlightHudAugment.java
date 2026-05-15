@@ -3,6 +3,7 @@ package dev.spiritstudios.aerobig.flight_hud.augment_types;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
 import dev.ryanhcode.sable.companion.math.JOMLConversion;
+import dev.ryanhcode.sable.companion.math.Pose3dc;
 import dev.ryanhcode.sable.sublevel.ClientSubLevel;
 import dev.simulated_team.simulated.content.blocks.gimbal_sensor.GimbalSensorBlockEntity;
 import dev.simulated_team.simulated.index.SimBlockEntityTypes;
@@ -49,15 +50,23 @@ public class GimbalSensorFlightHudAugment extends FlightHudAugmentType<GimbalSen
 
     @Override
     public void render(GimbalSensorBlockEntity blockEntity, GuiGraphics graphics, Minecraft mc, ClientLevel level, ClientSubLevel subLevel, BlockPos blockPos, LocalPlayer player, float partialTick) {
+        Vector3d downNormal = JOMLConversion.atLowerCornerOf(Direction.DOWN.getNormal());
         Vector3d forwardNormal = JOMLConversion.atLowerCornerOf(Direction.NORTH.getNormal());
-        subLevel.renderPose(partialTick).orientation().transformInverse(forwardNormal);
+
+        Pose3dc pose = subLevel.renderPose(partialTick);
+
+        pose.orientation().transformInverse(downNormal);
+        pose.orientation().transformInverse(forwardNormal);
+
+        float roll = getRadians(downNormal.y(), downNormal.x());
+        float pitch = getRadians(downNormal.y(), downNormal.z());
 
         int windowCentreX = graphics.guiWidth() / 2;
         int windowCentreY = graphics.guiHeight() / 2;
 
         FlightHudNumberRenderer numberRenderer = new FlightHudNumberRenderer(graphics, NumericalFont.STOCK_SANS, BigAircraftRenderTypes.GUI_TEXTURED_INVERT);
 
-        transformAndRenderLadder(graphics, graphics.pose(), numberRenderer, windowCentreX, windowCentreY, (float) blockEntity.getZAngle(), (float) blockEntity.getXAngle());
+        transformAndRenderLadder(graphics, graphics.pose(), numberRenderer, windowCentreX, windowCentreY, roll, pitch);
         renderHeading(graphics, mc, numberRenderer, forwardNormal, windowCentreX);
     }
 
@@ -123,27 +132,25 @@ public class GimbalSensorFlightHudAugment extends FlightHudAugmentType<GimbalSen
 
             int y = up - numberRenderer.font.atlasHeight / 2;
 
-            graphics.pose().pushPose();
-            graphics.pose().rotateAround(
-                    Axis.ZN.rotationDegrees(Mth.wrapDegrees(roll * Mth.RAD_TO_DEG)),
-                    windowCentreX - length - numberRenderer.getWidth(-degrees) - 12,
-                    y,
-                    0
-            );
+//            graphics.pose().pushPose();
+//            graphics.pose().rotateAround(
+//                    Axis.ZN.rotationDegrees(Mth.wrapDegrees(roll * Mth.RAD_TO_DEG)),
+//                    windowCentreX - length - numberRenderer.getWidth(-degrees) - 12,
+//                    y,
+//                    0
+//            );
             numberRenderer.drawInt(-degrees, windowCentreX - length - 12, y, Alignment.RIGHT);
-            graphics.pose().popPose();
+//            graphics.pose().popPose();
 
-            graphics.pose().pushPose();
-            graphics.pose().rotateAround(
-                    Axis.ZN.rotationDegrees(Mth.wrapDegrees(roll * Mth.RAD_TO_DEG)),
-                    windowCentreX + length + numberRenderer.getWidth(-degrees) - 12,
-                    y,
-                    0
-            );
+//            graphics.pose().pushPose();
+//            graphics.pose().rotateAround(
+//                    Axis.ZN.rotationDegrees(Mth.wrapDegrees(roll * Mth.RAD_TO_DEG)),
+//                    windowCentreX + length + numberRenderer.getWidth(-degrees) - 12,
+//                    y,
+//                    0
+//            );
             numberRenderer.drawInt(-degrees, windowCentreX + length + 12, y, Alignment.LEFT);
-            graphics.pose().popPose();
-
-
+//            graphics.pose().popPose();
         }
     }
 
@@ -153,6 +160,10 @@ public class GimbalSensorFlightHudAugment extends FlightHudAugmentType<GimbalSen
 
     private static void hLine(GuiGraphics graphics, int x, int y, int length) {
         graphics.hLine(BigAircraftRenderTypes.GUI_INVERT, x, x + length, y, CommonColors.WHITE);
+    }
+
+    private static float getRadians(double y, double a) {
+        return a * a > Mth.EPSILON ? (float) Mth.atan2(a, -y) : 0.0F;
     }
 
     private static float getYaw(Vector3d forwardNormal) {
