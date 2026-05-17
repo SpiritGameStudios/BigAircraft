@@ -1,0 +1,7 @@
+{
+  "parent": "aerobig:block/template_stabilizer",
+  "textures": {
+    "side": "aerobig:block/blue_carbon_composite_wing_side",
+    "top": "aerobig:block/blue_carbon_composite"
+  }
+}

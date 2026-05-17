@@ -1,7 +1,13 @@
 package dev.spiritstudios.aerobig.registry;
 
+import dev.simulated_team.simulated.util.SimColors;
 import dev.spiritstudios.aerobig.BigAircraft;
+import dev.spiritstudios.aerobig.flight_hud.FlightHudAugmentType;
+import net.minecraft.Util;
+import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
+
+import java.util.Locale;
 
 import static dev.spiritstudios.aerobig.BigAircraft.registrate;
 
@@ -11,37 +17,40 @@ public final class ModI18N {
         ofId("simulated_section." + BigAircraft.MOD_ID), BigAircraft.MOD_NAME
     );
 
+    public static final MutableComponent AUGMENTS = registrate().addRawLang(
+        ofId("flight_hud_augment.tooltip_heading"), "Augments"
+    );
+
+    public static MutableComponent flightHudAugment(FlightHudAugmentType<?> augmentType) {
+        return Component.translatable(Util.makeDescriptionId("flight_hud_augment", ModBuiltInRegistries.FLIGHT_HUD_AUGMENTS.getKey(augmentType)));
+    }
+
     public static String ofId(String path) {
         return BigAircraft.id(path).toLanguageKey();
     }
 
-    public static final class FlightHudAugment {
+    public enum FlightHudAugmentError {
 
-        public static final MutableComponent ERROR_ALREADY_OBSERVING = error(
-            "already_observing",
-            "Flight HUD has already been augmented by this block!"
-        );
+        ALREADY_OBSERVING("Flight HUD has already been augmented by this block!"),
+        NOT_IN_SIMULATED_CONTRAPTION("This block is not in a Simulated Contraption!"),
+        UNOBSERVABLE_INSTRUMENT("This block's info cannot be added to the flight HUD!");
 
-        public static final MutableComponent ERROR_NOT_IN_SIMULATED_CONTRAPTION = error(
-            "not_in_simulated_contraption",
-            "This block is not in a Simulated Contraption!"
-        );
+        private final MutableComponent text;
 
-        public static final MutableComponent ERROR_UNOBSERVABLE_INSTRUMENT = error(
-            "unobservable_instrument",
-            "This block's info cannot be added to the flight HUD!"
-        );
-
-        private static MutableComponent error(String key, String value) {
-            return registrate().addRawLang("flight_hud_augment.error." + key, value);
+        FlightHudAugmentError(String value) {
+            this.text = registrate().addRawLang("flight_hud_augment.error." + this.name().toLowerCase(Locale.ROOT), value);
         }
 
-        public static void init() {}
+        public MutableComponent getText() {
+            return this.text.withColor(SimColors.NUH_UH_RED);
+        }
+
+        private static void init() {}
 
     }
 
     public static void init() {
-        FlightHudAugment.init();
+        FlightHudAugmentError.init();
     }
 
 }

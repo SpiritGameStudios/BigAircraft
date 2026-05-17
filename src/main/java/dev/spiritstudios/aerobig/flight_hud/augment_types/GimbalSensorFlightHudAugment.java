@@ -5,6 +5,7 @@ import com.mojang.math.Axis;
 import dev.ryanhcode.sable.companion.math.JOMLConversion;
 import dev.ryanhcode.sable.companion.math.Pose3dc;
 import dev.ryanhcode.sable.sublevel.ClientSubLevel;
+import dev.simulated_team.simulated.content.blocks.gimbal_sensor.GimbalSensorBlock;
 import dev.simulated_team.simulated.content.blocks.gimbal_sensor.GimbalSensorBlockEntity;
 import dev.simulated_team.simulated.index.SimBlockEntityTypes;
 import dev.spiritstudios.aerobig.client.render.*;
@@ -17,12 +18,14 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.util.CommonColors;
 import net.minecraft.util.Mth;
+import net.minecraft.world.level.block.state.BlockState;
 import org.joml.Vector3d;
 
 /**
- * TODO: fix cancellation of all subsequent augment renderers. something to do with popPose maybe???
+ * TODO: fix cancellation of the previous augment renderer. something to do with popPose maybe???
  */
 public class GimbalSensorFlightHudAugment extends FlightHudAugmentType<GimbalSensorBlockEntity> {
+
     private static final int LADDER_OFFSET_FROM_CENTER = 7;
     private static final int DEGREE_INCREMENT = 5;
 
@@ -50,8 +53,10 @@ public class GimbalSensorFlightHudAugment extends FlightHudAugmentType<GimbalSen
 
     @Override
     public void render(GimbalSensorBlockEntity blockEntity, GuiGraphics graphics, Minecraft mc, ClientLevel level, ClientSubLevel subLevel, BlockPos blockPos, LocalPlayer player, float partialTick) {
+        graphics.pose().pushPose();
+
         Vector3d downNormal = JOMLConversion.atLowerCornerOf(Direction.DOWN.getNormal());
-        Vector3d forwardNormal = JOMLConversion.atLowerCornerOf(Direction.NORTH.getNormal());
+        Vector3d forwardNormal = JOMLConversion.atLowerCornerOf(getForwardDirection(blockEntity.getBlockState()).getNormal());
 
         Pose3dc pose = subLevel.renderPose(partialTick);
 
@@ -68,6 +73,12 @@ public class GimbalSensorFlightHudAugment extends FlightHudAugmentType<GimbalSen
 
         transformAndRenderLadder(graphics, graphics.pose(), numberRenderer, windowCentreX, windowCentreY, roll, pitch);
         renderHeading(graphics, mc, numberRenderer, forwardNormal, windowCentreX);
+
+        graphics.pose().popPose();
+    }
+
+    private static Direction getForwardDirection(BlockState blockState) {
+        return Direction.get(Direction.AxisDirection.POSITIVE, blockState.getValue(GimbalSensorBlock.HORIZONTAL_AXIS));
     }
 
     private static void transformAndRenderLadder(GuiGraphics graphics, PoseStack pose, FlightHudNumberRenderer numberRenderer, int windowCentreX, int windowCentreY, float roll, float pitch) {

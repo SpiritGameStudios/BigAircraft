@@ -2,6 +2,10 @@ package dev.spiritstudios.aerobig.block;
 
 import com.simibubi.create.content.equipment.wrench.IWrenchable;
 import com.simibubi.create.foundation.block.ProperWaterloggedBlock;
+import dev.spiritstudios.aerobig.registry.ModTags;
+import net.createmod.catnip.placement.IPlacementHelper;
+import net.createmod.catnip.placement.PlacementHelpers;
+import net.createmod.catnip.placement.PlacementOffset;
 import net.minecraft.MethodsReturnNonnullByDefault;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -23,11 +27,14 @@ import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
 
 import javax.annotation.ParametersAreNonnullByDefault;
+import java.util.List;
+import java.util.function.Predicate;
 
 @ParametersAreNonnullByDefault
 @MethodsReturnNonnullByDefault
 public class CarbonCompositeWingBlock extends Block implements ProperWaterloggedBlock, IWrenchable, ICarbonCompositeWing {
 
+    static final int HELPER_ID = PlacementHelpers.register(new PlacementHelper());
     static final VoxelShape SHAPE = box(0.0, 4.0, 0.0, 16.0, 12.0, 16.0);
 
     private final DyeColor color;
@@ -39,8 +46,8 @@ public class CarbonCompositeWingBlock extends Block implements ProperWaterlogged
     }
 
     @Override
-    protected ItemInteractionResult useItemOn(ItemStack itemStack, BlockState blockState, Level level, BlockPos blockPos, Player player, InteractionHand interactionHand, BlockHitResult blockHitResult) {
-        return CarbonComposite.useItemOn(itemStack, blockState, level, blockPos);
+    public ItemInteractionResult useItemOn(ItemStack stack, BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hitResult) {
+        return CarbonComposite.useItemOn(stack, state, level, pos, player, hand, hitResult, PlacementHelpers.get(HELPER_ID));
     }
 
     @Override
@@ -72,6 +79,32 @@ public class CarbonCompositeWingBlock extends Block implements ProperWaterlogged
     @Override
     protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
         builder.add(WATERLOGGED);
+    }
+
+    private static class PlacementHelper implements IPlacementHelper {
+
+        @Override
+        public Predicate<ItemStack> getItemPredicate() {
+            return stack -> stack.is(ModTags.Items.CARBON_COMPOSITE_WINGS);
+        }
+
+        @Override
+        public Predicate<BlockState> getStatePredicate() {
+            return state -> state.getBlock() instanceof ICarbonCompositeWing;
+        }
+
+        @Override
+        public PlacementOffset getOffset(Player player, Level world, BlockState state, BlockPos pos, BlockHitResult ray) {
+            List<Direction> directions = IPlacementHelper.orderedByDistanceExceptAxis(
+                pos,
+                ray.getLocation(),
+                Direction.Axis.Y,
+                dir -> world.getBlockState(pos.relative(dir)).canBeReplaced()
+            );
+
+            return directions.isEmpty() ? PlacementOffset.fail() : PlacementOffset.success(pos.relative(directions.getFirst()));
+        }
+
     }
 
 }

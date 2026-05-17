@@ -12,6 +12,7 @@ import net.minecraft.Util;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.level.BlockAndTintGetter;
 import net.minecraft.world.level.block.Block;
@@ -21,19 +22,15 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.EnumMap;
 import java.util.function.BiPredicate;
-import java.util.function.Function;
 
 public final class ModSpriteShifts {
+
     public static final BiPredicate<BlockState, Direction> AXES_MATCH_PREDICATE = (state, direction) -> direction.getAxis() == state.getValue(BlockStateProperties.AXIS);
 
     public static final EnumMap<DyeColor, CTSpriteShiftEntry> CARBON_COMPOSITES = Util.make(Maps.newEnumMap(DyeColor.class), map -> {
         for (DyeColor color : DyeColor.values())
             map.put(color, register(AllCTTypes.OMNIDIRECTIONAL, ModBlocks.DEFAULT_WHITE_NAME.apply(color, "carbon_composite")));
     });
-
-    public static NonNullConsumer<? super Block> registerCT(DyeColor color, Function<CTSpriteShiftEntry, ? extends ConnectedTextureBehaviour> ctBehaviour) {
-        return CreateRegistrate.connectedTextures(() -> ctBehaviour.apply(CARBON_COMPOSITES.get(color)));
-    }
 
     public static NonNullConsumer<? super Block> registerCasingCT(DyeColor color, BiPredicate<BlockState, Direction> predicate) {
         return block -> {
@@ -45,14 +42,26 @@ public final class ModSpriteShifts {
     }
 
     public static CTSpriteShiftEntry register(CTType type, String path) {
-        return CTSpriteShifter.getCT(type, BigAircraft.id("block/" + path), BigAircraft.id("block/" + path + "_connected"));
+        ResourceLocation id = BigAircraft.id("block/" + path);
+        return CTSpriteShifter.getCT(type, id, id.withSuffix("_connected"));
     }
 
     public static class WingCTBehaviour extends ConnectedTextureBehaviour.Base {
-        protected CTSpriteShiftEntry shift;
 
-        public WingCTBehaviour(CTSpriteShiftEntry shift) {
-            this.shift = shift;
+        private static final EnumMap<DyeColor, CTSpriteShiftEntry> CARBON_COMPOSITE_WING_SIDES = Util.make(Maps.newEnumMap(DyeColor.class), map -> {
+            for (DyeColor color : DyeColor.values())
+                map.put(color, ModSpriteShifts.register(AllCTTypes.HORIZONTAL_KRYPPERS, ModBlocks.DEFAULT_WHITE_NAME.apply(color, "carbon_composite_wing_side")));
+        });
+
+        private final CTSpriteShiftEntry topShift, sideShift;
+
+        public WingCTBehaviour(DyeColor color) {
+            this.topShift = CARBON_COMPOSITES.get(color);
+            this.sideShift = CARBON_COMPOSITE_WING_SIDES.get(color);
+        }
+
+        public static NonNullConsumer<? super Block> register(DyeColor color) {
+            return CreateRegistrate.connectedTextures(() -> new WingCTBehaviour(color));
         }
 
         @Override
@@ -69,8 +78,9 @@ public final class ModSpriteShifts {
         @Nullable
         @Override
         public CTSpriteShiftEntry getShift(BlockState state, Direction direction, @Nullable TextureAtlasSprite sprite) {
-            return this.shift;
+            return direction.getAxis().isVertical() ? this.topShift : this.sideShift;
         }
 
     }
+
 }

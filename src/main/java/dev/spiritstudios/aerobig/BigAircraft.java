@@ -51,7 +51,6 @@ public class BigAircraft {
 
     public BigAircraft(IEventBus modBus, ModContainer modContainer) {
         registrate().registerEventListeners(modBus);
-
         modBus.register(ModBuiltInRegistries.class);
 
         ModRegistries.init();

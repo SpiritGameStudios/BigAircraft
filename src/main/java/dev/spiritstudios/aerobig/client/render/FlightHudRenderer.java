@@ -15,12 +15,13 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.GlobalPos;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.EquipmentSlot;
-import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.GameType;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.neoforge.client.event.RegisterGuiLayersEvent;
+import net.neoforged.neoforge.client.gui.VanillaGuiLayers;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Matrix4f;
 
@@ -31,7 +32,7 @@ public class FlightHudRenderer {
 
     @SubscribeEvent
     private static void registerGuiLayers(RegisterGuiLayersEvent event) {
-        event.registerAboveAll(BigAircraft.id("aviation_hud"), (graphics, deltaTracker) -> {
+        event.registerAbove(VanillaGuiLayers.CROSSHAIR, BigAircraft.id("aviation_hud"), (graphics, deltaTracker) -> {
             Minecraft minecraft = Minecraft.getInstance();
             LocalPlayer player = minecraft.player;
 
@@ -80,8 +81,11 @@ public class FlightHudRenderer {
         ));
     }
 
-    private static boolean shouldRender(Minecraft minecraft, @Nullable Player player) {
-        return player != null && player.getItemBySlot(EquipmentSlot.HEAD).has(ModDataComponents.FLIGHT_HUD_AUGMENTS) && !minecraft.options.hideGui && minecraft.screen == null;
+    private static boolean shouldRender(Minecraft minecraft, @Nullable LocalPlayer player) {
+        if (player == null || !player.getItemBySlot(EquipmentSlot.HEAD).has(ModDataComponents.FLIGHT_HUD_AUGMENTS))
+            return false;
+
+        return minecraft.gameMode != null && minecraft.gameMode.getPlayerMode() != GameType.SPECTATOR;
     }
 
     public static void renderSprite(GuiGraphics graphics, ResourceLocation id, float x, float y, float uWidth, float vHeight, float uPos, float vPos, int textureWidth, int textureHeight, Function<ResourceLocation, RenderType> renderType) {

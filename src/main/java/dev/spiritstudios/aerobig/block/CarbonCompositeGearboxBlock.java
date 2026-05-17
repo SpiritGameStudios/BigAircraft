@@ -34,8 +34,8 @@ public class CarbonCompositeGearboxBlock extends GearboxBlock implements CarbonC
     }
 
     @Override
-    protected ItemInteractionResult useItemOn(ItemStack itemStack, BlockState blockState, Level level, BlockPos blockPos, Player player, InteractionHand interactionHand, BlockHitResult blockHitResult) {
-        return CarbonComposite.useItemOn(itemStack, blockState, level, blockPos);
+    protected ItemInteractionResult useItemOn(ItemStack stack, BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hitResult) {
+        return CarbonComposite.useItemOn(stack, state, level, pos, player, hand, hitResult, null);
     }
 
     @Override

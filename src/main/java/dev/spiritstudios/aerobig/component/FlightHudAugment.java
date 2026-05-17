@@ -10,7 +10,6 @@ import net.minecraft.core.GlobalPos;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
-import org.jetbrains.annotations.Nullable;
 
 public record FlightHudAugment(FlightHudAugmentType<?> type, GlobalPos target) {
     public static final Codec<FlightHudAugment> CODEC = RecordCodecBuilder.create(

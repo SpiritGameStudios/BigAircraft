@@ -7,6 +7,7 @@ import com.tterrag.registrate.util.entry.BlockEntry;
 import dev.spiritstudios.aerobig.util.OrderedDyedEntryList;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
+import net.createmod.catnip.placement.IPlacementHelper;
 import net.minecraft.Util;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -14,13 +15,18 @@ import net.minecraft.core.Vec3i;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.Mth;
+import net.minecraft.world.InteractionHand;
 import net.minecraft.world.ItemInteractionResult;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.phys.BlockHitResult;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.HashSet;
 import java.util.List;
@@ -60,12 +66,17 @@ public interface CarbonComposite<T extends Block & CarbonComposite<T>> {
         return new ItemRequirement(ItemRequirement.ItemUseType.CONSUME, this.getOfColor().asStack());
     }
 
-    static ItemInteractionResult useItemOn(ItemStack itemStack, BlockState blockState, Level level, BlockPos blockPos) {
-        DyeColor color = DyeColor.getColor(itemStack);
+    static ItemInteractionResult useItemOn(ItemStack stack, BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hitResult, @Nullable IPlacementHelper placementHelper) {
+        DyeColor color = DyeColor.getColor(stack);
 
-        if (color != null && applyDyeOn(blockState, level, blockPos, color)) {
-            level.playSound(null, blockPos, SoundEvents.DYE_USE, SoundSource.BLOCKS, 1.0F, Mth.randomBetween(level.getRandom(), 0.9F, 1.1F));
+        if (color != null && applyDyeOn(state, level, pos, color)) {
+            level.playSound(null, pos, SoundEvents.DYE_USE, SoundSource.BLOCKS, 1.0F, Mth.randomBetween(level.getRandom(), 0.9F, 1.1F));
             return ItemInteractionResult.SUCCESS;
+        }
+
+        if (placementHelper != null && placementHelper.matchesItem(stack) && !player.isShiftKeyDown()) {
+            return placementHelper.getOffset(player, level, state, pos, hitResult)
+                .placeInWorld(level, (BlockItem) stack.getItem(), player, hand, hitResult);
         }
 
         return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;

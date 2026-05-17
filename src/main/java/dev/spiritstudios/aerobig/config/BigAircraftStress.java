@@ -20,11 +20,11 @@ public class BigAircraftStress extends CStress {
 
     @Override
     public void registerAll(final ModConfigSpec.Builder builder) {
-        builder.comment(new String[]{".", STRESS_UNITS, IMPACT}).push("impact");
+        builder.comment(".", STRESS_UNITS, IMPACT).push("impact");
         DEFAULT_IMPACTS.forEach((id, value) -> this.impacts.put(id, builder.define(id.getPath(), value)));
         builder.pop();
 
-        builder.comment(new String[]{".", STRESS_UNITS, CAPACITY}).push("capacity");
+        builder.comment(".", STRESS_UNITS, CAPACITY).push("capacity");
         DEFAULT_CAPACITIES.forEach((id, value) -> this.capacities.put(id, builder.define(id.getPath(), value)));
         builder.pop();
     }
