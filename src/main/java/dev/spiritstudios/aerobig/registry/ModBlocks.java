@@ -95,13 +95,13 @@ public final class ModBlocks {
     public static final OrderedDyedEntryList<Block, BlockEntry<CarbonCompositeStabilizerBlock>> CARBON_COMPOSITE_STABILIZERS = new OrderedDyedEntryList<>(color -> registrate()
         .block(DEFAULT_WHITE_NAME.apply(color, "carbon_composite_stabilizer"), p -> new CarbonCompositeStabilizerBlock(p, color))
         .transform(builder -> defaultBuilder(builder, ModTags.Blocks.CARBON_COMPOSITE_STABILIZERS, ModTags.Items.CARBON_COMPOSITE_STABILIZERS, color, false))
-        .blockstate((context, provider) -> provider.simpleBlock(context.get(), provider
+        .blockstate((context, provider) -> BlockStateGen.axisBlock(context, provider, blockState -> provider
             .models()
             .withExistingParent(context.getName(), provider.modLoc("block/template_stabilizer"))
             .texture("side", provider.modLoc("block/" + DEFAULT_WHITE_NAME.apply(color, "carbon_composite_wing_side")))
-            .texture("top", provider.modLoc("block/" + DEFAULT_WHITE_NAME.apply(color, "carbon_composite")))
+            .texture("top", provider.modLoc("block/" + DEFAULT_WHITE_NAME.apply(color, "carbon_composite"))),
+            true
         ))
-        .onRegister(ModSpriteShifts.WingCTBehaviour.register(color))
         .simpleItem()
         .register()
     );

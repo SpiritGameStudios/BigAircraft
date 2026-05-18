@@ -10,14 +10,22 @@ import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
+import org.apache.commons.compress.utils.Sets;
+
+import java.util.Set;
 
 public abstract class FlightHudAugmentType<T extends BlockEntity> {
+
     public static final SimpleRegistry<BlockEntityType<?>, FlightHudAugmentType<?>> BY_BLOCK_ENTITY = SimpleRegistry.create();
     public final BlockEntityType<T> blockEntityType;
 
     public FlightHudAugmentType(BlockEntityEntry<T> blockEntityType) {
         this.blockEntityType = blockEntityType.get();
         BY_BLOCK_ENTITY.register(this.blockEntityType, this);
+    }
+
+    public Set<FlightHudAugmentType<?>> getExclusives() {
+        return Sets.newHashSet();
     }
 
     public abstract void render(
@@ -30,4 +38,5 @@ public abstract class FlightHudAugmentType<T extends BlockEntity> {
         LocalPlayer player,
         float partialTick
     );
+
 }

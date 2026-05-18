@@ -38,7 +38,7 @@ import javax.annotation.ParametersAreNonnullByDefault;
 @MethodsReturnNonnullByDefault
 public class CarbonCompositeStabilizerBlock extends RotatedPillarBlock implements ProperWaterloggedBlock, IWrenchable, BlockSubLevelLiftProvider, CarbonComposite<CarbonCompositeStabilizerBlock> {
 
-    private static final int HELPER_ID = PlacementHelpers.register(new SymmetricSailPlacementHelper(stack -> stack.is(ModTags.Items.CARBON_COMPOSITE), state -> state.getBlock() instanceof CarbonCompositeStabilizerBlock));
+    private static final int HELPER_ID = PlacementHelpers.register(new SymmetricSailPlacementHelper(stack -> stack.is(ModTags.Items.CARBON_COMPOSITE_STABILIZERS), state -> state.getBlock() instanceof CarbonCompositeStabilizerBlock));
     public static final VoxelShaper SHAPE = new AllShapes.Builder(box(0.0, 4.0, 0.0, 16.0, 12.0, 16.0)).forAxis();
 
     private final DyeColor color;

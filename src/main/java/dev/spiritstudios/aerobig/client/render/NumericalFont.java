@@ -5,35 +5,29 @@ import net.minecraft.resources.ResourceLocation;
 
 /**
  * Order the texture file as follows:
- * <pre>0123456789-.</pre>
+ * <code>0123456789-.</code>
+ * @param id The resource location of the font.
+ * @param spacing The space that should be applied between each character during rendering. Use negative numbers for textures with outlines.
+ * @param charWidth The width of each character, in pixels.
+ * @param pointCharWidth The width of the decimal point "<code>.</code>" character, in pixels.
+ * @param textureWidth The total width of the texture file, in pixels.
+ * @param textureHeight The total height of the texture file, in pixels.
  */
-public enum NumericalFont {
+public record NumericalFont(ResourceLocation id, int spacing, int charWidth, int pointCharWidth, int textureWidth, int textureHeight) {
 
-    BIG_BUBBLE("gui/sprites/aviation_display/font_big_bubble", -1, 8, 4, 12, 96),
-    STOCK_SANS("gui/sprites/aviation_display/font_stock_sans", 1, 3, 1, 5, 36);
+    public static final NumericalFont BIG_BUBBLE = forOutline(BigAircraft.id("sprites/aviation_display/font_big_bubble"), 1, 8, 4, 96, 12);
+    public static final NumericalFont STOCK_SANS = create(BigAircraft.id("sprites/aviation_display/font_stock_sans"), 3, 1, 36, 5);
 
-    public final ResourceLocation id;
-    public final int padding;
-    public final int characterWidth;
-    public final int pointCharWidth;
-    public final int textureHeight;
-    public final int textureWidth;
+    public static NumericalFont forOutline(ResourceLocation id, int outlineWidth, int charWidth, int pointCharWidth, int textureWidth, int textureHeight) {
+        return new NumericalFont(id.withPrefix("textures/gui/").withSuffix(".png"), -outlineWidth, charWidth, pointCharWidth, textureWidth, textureHeight);
+    }
 
-    /**
-     * @param path The file path for this font inside the textures/ directory.
-     * @param padding The space that should be applied between each character during rendering. Use negative numbers for textures with outlines.
-     * @param charWidth The width of each character, in pixels.
-     * @param pointCharWidth The width of the decimal point "<code>.</code>" character, in pixels.
-     * @param textureHeight The total height of the texture file, in pixels.
-     * @param textureWidth The total width of the texture file, in pixels.
-     */
-    NumericalFont(String path, int padding, int charWidth, int pointCharWidth, int textureHeight, int textureWidth) {
-        this.id = BigAircraft.id("textures/" + path + ".png");
-        this.padding = padding;
-        this.characterWidth = charWidth;
-        this.pointCharWidth = pointCharWidth;
-        this.textureHeight = textureHeight;
-        this.textureWidth = textureWidth;
+    public static NumericalFont create(ResourceLocation id, int charWidth, int pointCharWidth, int textureWidth, int textureHeight) {
+        return create(id, 1, charWidth, pointCharWidth, textureWidth, textureHeight);
+    }
+
+    public static NumericalFont create(ResourceLocation id, int spacing, int charWidth, int pointCharWidth, int textureWidth, int textureHeight) {
+        return new NumericalFont(id.withPrefix("textures/gui/").withSuffix(".png"), spacing, charWidth, pointCharWidth, textureWidth, textureHeight);
     }
 
 }

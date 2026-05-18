@@ -18,7 +18,9 @@
         "analog_speed_controller.RotationPropagatorMixin",
         "encasing.EncasableBlockMixin",
         "flight_hud_augment.AviatorsGogglesItemMixin",
+        "flight_hud_augment.HotAirBurnerBlockEntityAccessor",
         "flight_hud_augment.ItemImplMixin",
-        "flight_hud_augment.ItemStackMixin"
+        "flight_hud_augment.ItemStackMixin",
+        "flight_hud_augment.SteamVentBlockEntityAccessor"
     ]
 }

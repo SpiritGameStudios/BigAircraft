@@ -1,7 +1,17 @@
 {
   "variants": {
-    "": {
+    "axis=x": {
+      "model": "aerobig:block/gray_carbon_composite_stabilizer",
+      "x": 90,
+      "y": 90
+    },
+    "axis=y": {
       "model": "aerobig:block/gray_carbon_composite_stabilizer"
+    },
+    "axis=z": {
+      "model": "aerobig:block/gray_carbon_composite_stabilizer",
+      "x": 90,
+      "y": 180
     }
   }
 }

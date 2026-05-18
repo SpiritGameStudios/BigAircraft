@@ -81,9 +81,12 @@ public record FlightHudAugmentsComponent(List<FlightHudAugment> augments) implem
         return DataResult.success(component);
     }
 
-    public boolean hasAnyMatchingData(GlobalPos globalPos, FlightHudAugmentType<?> augmentType) {
+    public boolean hasAnyMatchingData(GlobalPos globalPos, FlightHudAugmentType<?> other) {
         for (FlightHudAugment augment : this.augments()) {
-            if (augment.target().equals(globalPos) || augment.type().equals(augmentType))
+            GlobalPos target = augment.target();
+            FlightHudAugmentType<?> type = augment.type();
+
+            if (target.equals(globalPos) || type.equals(other) || type.getExclusives().contains(other))
                 return true;
         }
 

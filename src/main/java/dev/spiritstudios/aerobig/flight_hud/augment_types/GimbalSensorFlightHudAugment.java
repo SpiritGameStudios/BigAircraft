@@ -143,7 +143,7 @@ public class GimbalSensorFlightHudAugment extends FlightHudAugmentType<GimbalSen
             hLine(graphics, windowCentreX - LADDER_OFFSET_FROM_CENTER, up, -length);
             hLine(graphics, windowCentreX + LADDER_OFFSET_FROM_CENTER - 1, up, length);
 
-            int y = up - numberRenderer.font.textureHeight / 2;
+            int y = up - numberRenderer.getFont().textureHeight() / 2;
 
 //            graphics.pose().pushPose();
 //            graphics.pose().rotateAround(

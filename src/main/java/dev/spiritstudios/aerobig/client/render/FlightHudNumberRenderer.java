@@ -12,7 +12,7 @@ public class FlightHudNumberRenderer {
     private static final int DECIMAL_POINT_INDEX = 11;
 
     private final GuiGraphics graphics;
-    public final NumericalFont font;
+    private final NumericalFont font;
     private final Function<ResourceLocation, RenderType> renderType;
 
     private int cursor;
@@ -23,11 +23,15 @@ public class FlightHudNumberRenderer {
         this.renderType = renderType;
     }
 
+    public NumericalFont getFont() {
+        return this.font;
+    }
+
     public void drawInt(int number, int x, int y, Alignment alignment) {
         this.cursor = x - alignment.getOffset(this.getWidth(number));
 
         if (number < 0)
-            this.renderAndMoveCursor(MINUS_SIGN_INDEX, this.font.characterWidth, y);
+            this.renderAndMoveCursor(MINUS_SIGN_INDEX, this.font.charWidth(), y);
 
         this.renderChars(Integer.toString(Math.abs(number)), y);
     }
@@ -36,45 +40,45 @@ public class FlightHudNumberRenderer {
         this.cursor = x - alignment.getOffset(this.getWidth(number));
 
         if (number < 0)
-            this.renderAndMoveCursor(MINUS_SIGN_INDEX, this.font.characterWidth, y);
+            this.renderAndMoveCursor(MINUS_SIGN_INDEX, this.font.charWidth(), y);
 
         String[] parts = "%.2f".formatted(Math.abs(number)).split("\\.");
 
         this.renderChars(parts[0], y);
-        this.renderAndMoveCursor(DECIMAL_POINT_INDEX, this.font.pointCharWidth, y);
+        this.renderAndMoveCursor(DECIMAL_POINT_INDEX, this.font.pointCharWidth(), y);
         this.renderChars(parts[1], y);
     }
 
     public int getWidth(int number) {
-        return Integer.toString(number).length() * (this.font.characterWidth + this.font.padding) - this.font.padding;
+        return Integer.toString(number).length() * (this.font.charWidth() + this.font.spacing()) - this.font.spacing();
     }
 
     public int getWidth(double number) {
         String s = "%.2f".formatted(number).replace(".", "");
-        return s.length() * (this.font.characterWidth + this.font.padding) + this.font.pointCharWidth;
+        return s.length() * (this.font.charWidth() + this.font.spacing()) + this.font.pointCharWidth();
     }
 
     private void renderChars(String number, int y) {
         for (char c : number.toCharArray())
-            this.renderAndMoveCursor(c - '0', this.font.characterWidth, y);
+            this.renderAndMoveCursor(c - '0', this.font.charWidth(), y);
     }
 
     private void renderAndMoveCursor(int index, int shift, int y) {
         FlightHudRenderer.renderSprite(
             this.graphics,
-            this.font.id,
+            this.font.id(),
             this.cursor,
             y,
-            this.font.characterWidth,
-            this.font.textureHeight,
-            this.font.characterWidth * index,
+            this.font.charWidth(),
+            this.font.textureHeight(),
+            this.font.charWidth() * index,
             0.0F,
-            this.font.textureWidth,
-            this.font.textureHeight,
+            this.font.textureWidth(),
+            this.font.textureHeight(),
             this.renderType
         );
 
-        this.cursor += shift + this.font.padding;
+        this.cursor += shift + this.font.spacing();
     }
 
 }
