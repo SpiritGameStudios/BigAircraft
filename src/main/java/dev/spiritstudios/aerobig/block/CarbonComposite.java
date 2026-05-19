@@ -8,6 +8,7 @@ import dev.spiritstudios.aerobig.util.OrderedDyedEntryList;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
 import net.createmod.catnip.placement.IPlacementHelper;
+import net.createmod.catnip.placement.PlacementOffset;
 import net.minecraft.Util;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -75,8 +76,8 @@ public interface CarbonComposite<T extends Block & CarbonComposite<T>> {
         }
 
         if (placementHelper != null && placementHelper.matchesItem(stack) && !player.isShiftKeyDown()) {
-            return placementHelper.getOffset(player, level, state, pos, hitResult)
-                .placeInWorld(level, (BlockItem) stack.getItem(), player, hand, hitResult);
+            PlacementOffset offset = placementHelper.getOffset(player, level, state, pos, hitResult);
+            return offset.placeInWorld(level, (BlockItem) stack.getItem(), player, hand, hitResult);
         }
 
         return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;

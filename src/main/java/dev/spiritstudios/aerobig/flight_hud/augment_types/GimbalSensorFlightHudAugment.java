@@ -53,8 +53,6 @@ public class GimbalSensorFlightHudAugment extends FlightHudAugmentType<GimbalSen
 
     @Override
     public void render(GimbalSensorBlockEntity blockEntity, GuiGraphics graphics, Minecraft mc, ClientLevel level, ClientSubLevel subLevel, BlockPos blockPos, LocalPlayer player, float partialTick) {
-        graphics.pose().pushPose();
-
         Vector3d downNormal = JOMLConversion.atLowerCornerOf(Direction.DOWN.getNormal());
         Vector3d forwardNormal = JOMLConversion.atLowerCornerOf(getForwardDirection(blockEntity.getBlockState()).getNormal());
 
@@ -73,8 +71,6 @@ public class GimbalSensorFlightHudAugment extends FlightHudAugmentType<GimbalSen
 
         transformAndRenderLadder(graphics, graphics.pose(), numberRenderer, windowCentreX, windowCentreY, roll, pitch);
         renderHeading(graphics, mc, numberRenderer, forwardNormal, windowCentreX);
-
-        graphics.pose().popPose();
     }
 
     private static Direction getForwardDirection(BlockState blockState) {

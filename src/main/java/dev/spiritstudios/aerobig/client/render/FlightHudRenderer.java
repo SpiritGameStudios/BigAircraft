@@ -69,16 +69,20 @@ public class FlightHudRenderer {
         BlockPos pos = globalPos.pos();
         BlockEntityType<T> blockEntityType = augmentType.blockEntityType;
 
-        player.clientLevel.getBlockEntity(pos, blockEntityType).ifPresent(blockEntity -> augmentType.render(
-            blockEntity,
-            graphics,
-            minecraft,
-            player.clientLevel,
-            subLevel,
-            pos,
-            player,
-            partialTick
-        ));
+        player.clientLevel.getBlockEntity(pos, blockEntityType).ifPresent(blockEntity -> {
+            graphics.pose().pushPose();
+            augmentType.render(
+                blockEntity,
+                graphics,
+                minecraft,
+                player.clientLevel,
+                subLevel,
+                pos,
+                player,
+                partialTick
+            );
+            graphics.pose().popPose();
+        });
     }
 
     private static boolean shouldRender(Minecraft minecraft, @Nullable LocalPlayer player) {

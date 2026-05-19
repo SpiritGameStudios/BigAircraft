@@ -52,7 +52,7 @@ public class OpticalSensorFlightHudAugment extends FlightHudAugmentType<OpticalS
         }
 
         if (blockEntity.hasHit()) {
-            new FlightHudNumberRenderer(graphics, NumericalFont.BIG_BUBBLE, BigAircraftRenderTypes.GUI_TEXTURED).drawDouble(
+            new FlightHudNumberRenderer(graphics, NumericalFont.BIG_BLOCK, BigAircraftRenderTypes.GUI_TEXTURED).drawDouble(
                 blockEntity.getHitBlockDistance() - 0.5,
                 x + TEXTURE_WIDTH + 1,
                 y,

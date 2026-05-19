@@ -15,11 +15,11 @@ import net.minecraft.resources.ResourceLocation;
  */
 public record NumericalFont(ResourceLocation id, int spacing, int charWidth, int pointCharWidth, int textureWidth, int textureHeight) {
 
-    public static final NumericalFont BIG_BUBBLE = forOutline(BigAircraft.id("sprites/aviation_display/font_big_bubble"), 1, 8, 4, 96, 12);
+    public static final NumericalFont BIG_BLOCK = forOutline(BigAircraft.id("sprites/aviation_display/font_big_block"), 1, 8, 4, 96, 12);
     public static final NumericalFont STOCK_SANS = create(BigAircraft.id("sprites/aviation_display/font_stock_sans"), 3, 1, 36, 5);
 
     public static NumericalFont forOutline(ResourceLocation id, int outlineWidth, int charWidth, int pointCharWidth, int textureWidth, int textureHeight) {
-        return new NumericalFont(id.withPrefix("textures/gui/").withSuffix(".png"), -outlineWidth, charWidth, pointCharWidth, textureWidth, textureHeight);
+        return create(id, -outlineWidth, charWidth, pointCharWidth, textureWidth, textureHeight);
     }
 
     public static NumericalFont create(ResourceLocation id, int charWidth, int pointCharWidth, int textureWidth, int textureHeight) {

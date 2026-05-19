@@ -86,8 +86,8 @@ public class HotAirBurnerFlightHudAugment extends FlightHudAugmentType<HotAirBur
         Vector2i pos = position(graphics);
         graphics.blitSprite(sprite, pos.x, pos.y, TEXTURE_SIZE, TEXTURE_SIZE);
 
-        FlightHudNumberRenderer numberRenderer = new FlightHudNumberRenderer(graphics, NumericalFont.BIG_BUBBLE, BigAircraftRenderTypes.GUI_TEXTURED);
-        numberRenderer.drawDouble(lift, pos.x - 1, pos.y + NumericalFont.BIG_BUBBLE.textureHeight() / 2 + NumericalFont.BIG_BUBBLE.spacing() * 2, Alignment.RIGHT);
+        FlightHudNumberRenderer numberRenderer = new FlightHudNumberRenderer(graphics, NumericalFont.BIG_BLOCK, BigAircraftRenderTypes.GUI_TEXTURED);
+        numberRenderer.drawDouble(lift, pos.x - 1, pos.y + NumericalFont.BIG_BLOCK.textureHeight() / 2 + NumericalFont.BIG_BLOCK.spacing() * 2, Alignment.RIGHT);
     }
 
     public static double getCumulativeLift(ClientBalloon balloon, ClientLevel level) {
