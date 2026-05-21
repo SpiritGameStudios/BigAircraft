@@ -42,7 +42,11 @@ public class FlightHudNumberRenderer {
         if (number < 0)
             this.renderAndMoveCursor(MINUS_SIGN_INDEX, this.font.charWidth(), y);
 
-        String[] parts = "%.2f".formatted(Math.abs(number)).split("\\.");
+        String formatted = "%01.2f".formatted(Math.abs(number));
+        String[] parts = formatted.split("\\.");
+
+        if (parts.length != 2)
+            throw new RuntimeException("Double \"%s\" was not correctly split at the decimal point during string conversion [%s]. Report this to axialeaa or CallMeEcho.".formatted(number, formatted));
 
         this.renderChars(parts[0], y);
         this.renderAndMoveCursor(DECIMAL_POINT_INDEX, this.font.pointCharWidth(), y);
