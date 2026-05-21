@@ -1,12 +1,12 @@
 modLoader="javafml"
-loaderVersion="${loader_version_range}"
-license="${mod_license}"
+loaderVersion="[4,)"
+license="MIT"
 
 [[mods]]
     modId="${mod_id}"
     version="${mod_version}"
-    displayName="${mod_name}"
-    authors="axialeaa, CallMeEcho"
+    displayName="Aeronautics: Big"
+    authors="axialeaa, CallMeEcho, Kilip1000"
     description='''Adds composite materials for building large-scale aircraft in Create: Aeronautics!'''
 
 [[mixins]]
@@ -15,14 +15,14 @@ license="${mod_license}"
 [[dependencies.${mod_id}]]
     modId="neoforge"
     type="required"
-    versionRange="[${neo_version},)"
+    versionRange="[${neoforge_version},)"
     ordering="NONE"
     side="BOTH"
 
 [[dependencies.${mod_id}]]
     modId="minecraft"
     type="required"
-    versionRange="${minecraft_version_range}"
+    versionRange="[${minecraft_version},)"
     ordering="NONE"
     side="BOTH"
 

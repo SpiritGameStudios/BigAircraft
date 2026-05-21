@@ -1,0 +1,40 @@
+[versions]
+moddevgradle = "2.0.141"
+neoforge = "21.1.224"
+
+minecraft = "1.21.1"
+parchment = "2024.11.17"
+
+flywheel = "1.0.6"
+
+sable = "1.2.2"
+sable-companion = "1.6.0"
+
+registrate = "MC1.21-1.3.0+67"
+
+create = "6.0.9-215"
+simulated = "1.2.1"
+
+computercraft = "1.117.1"
+
+[libraries]
+flywheel = { module = "dev.engine-room.flywheel:flywheel-neoforge-1.21.1", version.ref = "flywheel" }
+flywheel-api = { module = "dev.engine-room.flywheel:flywheel-neoforge-api-1.21.1", version.ref = "flywheel" }
+
+sable = { module = "dev.ryanhcode.sable:sable-neoforge-1.21.1", version.ref = "sable" }
+sable-companion = { module = "dev.ryanhcode.sable-companion:sable-companion-common-1.21.1", version.ref = "sable-companion" }
+
+registrate = { module = "com.tterrag.registrate:Registrate", version.ref = "registrate" }
+
+create = { module = "com.simibubi.create:create-1.21.1", version.ref = "create" }
+
+simulated = { module = "dev.simulated_team.simulated:simulated-neoforge-1.21.1", version.ref = "simulated" }
+aeronautics = { module = "dev.eriksonn.aeronautics:aeronautics-neoforge-1.21.1", version.ref = "simulated" }
+offroad = { module = "dev.ryanhcode.offroad:offroad-neoforge-1.21.1", version.ref = "simulated" }
+
+computercraft-core-api = { module = "cc.tweaked:cc-tweaked-1.21.1-core-api", version.ref = "computercraft" }
+computercraft-forge-api = { module = "cc.tweaked:cc-tweaked-1.21.1-forge-api", version.ref = "computercraft" }
+computercraft-forge = { module = "cc.tweaked:cc-tweaked-1.21.1-forge", version.ref = "computercraft" }
+
+[plugins]
+moddevgradle = { id = "net.neoforged.moddev", version.ref = "moddevgradle" }
