@@ -3,6 +3,7 @@
     "values": [
         "#aerobig:carbon_composite",
         "#aerobig:carbon_composite_wings",
+        "#aerobig:carbon_composite_stabilizers",
         "aerobig:carbon_plating",
         "aerobig:carbon_plating_stairs",
         "aerobig:carbon_plating_slab"

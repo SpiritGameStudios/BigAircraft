@@ -1,5 +1,6 @@
 package dev.spiritstudios.aerobig.client.render;
 
+import dev.spiritstudios.aerobig.BigAircraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.resources.ResourceLocation;
@@ -30,27 +31,13 @@ public class FlightHudNumberRenderer {
     public void drawInt(int number, int x, int y, Alignment alignment) {
         this.cursor = x - alignment.getOffset(this.getWidth(number));
 
-        if (number < 0)
-            this.renderAndMoveCursor(MINUS_SIGN_INDEX, this.font.charWidth(), y);
-
-        this.renderChars(Integer.toString(Math.abs(number)), y);
+        this.renderChars(Integer.toString(number), y);
     }
 
     public void drawDouble(double number, int x, int y, Alignment alignment) {
         this.cursor = x - alignment.getOffset(this.getWidth(number));
 
-        if (number < 0)
-            this.renderAndMoveCursor(MINUS_SIGN_INDEX, this.font.charWidth(), y);
-
-        String formatted = "%01.2f".formatted(Math.abs(number));
-        String[] parts = formatted.split("\\.");
-
-        if (parts.length != 2)
-            throw new RuntimeException("Double \"%s\" was not correctly split at the decimal point during string conversion [%s]. Report this to axialeaa or CallMeEcho.".formatted(number, formatted));
-
-        this.renderChars(parts[0], y);
-        this.renderAndMoveCursor(DECIMAL_POINT_INDEX, this.font.pointCharWidth(), y);
-        this.renderChars(parts[1], y);
+        this.renderChars("%01.2f".formatted(number), y);
     }
 
     public int getWidth(int number) {
@@ -63,23 +50,32 @@ public class FlightHudNumberRenderer {
     }
 
     private void renderChars(String number, int y) {
-        for (char c : number.toCharArray())
-            this.renderAndMoveCursor(c - '0', this.font.charWidth(), y);
+        for (char c : number.toCharArray()) {
+            if (Character.isDigit(c)) {
+                this.renderAndMoveCursor(c - '0', this.font.charWidth(), y);
+            } else if (c == '.' || c == ',') { // TODO: comma in spritesheet
+                this.renderAndMoveCursor(DECIMAL_POINT_INDEX, this.font.pointCharWidth(), y);
+            } else if (c == '-') {
+                this.renderAndMoveCursor(MINUS_SIGN_INDEX, this.font.charWidth(), y);
+            } else {
+                BigAircraft.LOGGER.warn("Cannot render character '{}' with FlightHudNumberRenderer", c);
+            }
+        }
     }
 
     private void renderAndMoveCursor(int index, int shift, int y) {
         FlightHudRenderer.renderSprite(
-            this.graphics,
-            this.font.id(),
-            this.cursor,
-            y,
-            this.font.charWidth(),
-            this.font.textureHeight(),
-            this.font.charWidth() * index,
-            0.0F,
-            this.font.textureWidth(),
-            this.font.textureHeight(),
-            this.renderType
+                this.graphics,
+                this.font.id(),
+                this.cursor,
+                y,
+                this.font.charWidth(),
+                this.font.textureHeight(),
+                this.font.charWidth() * index,
+                0.0F,
+                this.font.textureWidth(),
+                this.font.textureHeight(),
+                this.renderType
         );
 
         this.cursor += shift + this.font.spacing();
