@@ -4,15 +4,12 @@ import dev.ryanhcode.sable.sublevel.ClientSubLevel;
 import dev.simulated_team.simulated.content.blocks.lasers.optical_sensor.OpticalSensorBlockEntity;
 import dev.simulated_team.simulated.index.SimBlockEntityTypes;
 import dev.spiritstudios.aerobig.BigAircraft;
-import dev.spiritstudios.aerobig.block.BigOpticalSensorBlockEntity;
 import dev.spiritstudios.aerobig.client.render.*;
 import dev.spiritstudios.aerobig.flight_hud.FlightHudAugmentType;
-import dev.spiritstudios.aerobig.registry.ModSoundEvents;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.player.LocalPlayer;
-import net.minecraft.client.resources.sounds.SimpleSoundInstance;
 import net.minecraft.core.BlockPos;
 import net.minecraft.resources.ResourceLocation;
 
@@ -47,17 +44,9 @@ public class OpticalSensorFlightHudAugment extends FlightHudAugmentType<OpticalS
             BigAircraftRenderTypes.GUI_TEXTURED
         );
 
-        if (((BigOpticalSensorBlockEntity) blockEntity).bigAircraft$getPrevHitBlock() != blockEntity.getHitBlock() && blockEntity.hasHit()) {
-            mc.getSoundManager().play(SimpleSoundInstance.forUI(ModSoundEvents.TERRAIN_TERRAIN_PULL_UP.get(), 1.0F));
-        }
-
         if (blockEntity.hasHit()) {
-            new FlightHudNumberRenderer(graphics, NumericalFont.BIG_BLOCK, BigAircraftRenderTypes.GUI_TEXTURED).drawDouble(
-                blockEntity.getHitBlockDistance() - 0.5,
-                x + TEXTURE_WIDTH + 1,
-                y,
-                Alignment.LEFT
-            );
+            double dist = blockEntity.getHitBlockDistance() - 0.5;
+            new FlightHudNumberRenderer(graphics, MonoNumberFont.BIG_BLOCK, BigAircraftRenderTypes.GUI_TEXTURED).drawDouble(dist, x + TEXTURE_WIDTH + 1, y);
         }
     }
 }

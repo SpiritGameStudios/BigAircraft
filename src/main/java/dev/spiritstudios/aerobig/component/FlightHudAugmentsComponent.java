@@ -13,6 +13,8 @@ import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
@@ -59,6 +61,10 @@ public record FlightHudAugmentsComponent(List<FlightHudAugment> augments) implem
 
     public static FlightHudAugmentsComponent getFromItemStack(ItemStack itemStack) {
         return itemStack.getOrDefault(ModDataComponents.FLIGHT_HUD_AUGMENTS, EMPTY);
+    }
+
+    public static FlightHudAugmentsComponent getFromHeadSlot(Player player) {
+        return getFromItemStack(player.getItemBySlot(EquipmentSlot.HEAD));
     }
 
     private static DataResult<FlightHudAugmentsComponent> validate(FlightHudAugmentsComponent component) {

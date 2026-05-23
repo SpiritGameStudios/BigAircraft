@@ -9,7 +9,7 @@ import dev.spiritstudios.aerobig.BigAircraft;
 import dev.spiritstudios.aerobig.client.render.Alignment;
 import dev.spiritstudios.aerobig.client.render.BigAircraftRenderTypes;
 import dev.spiritstudios.aerobig.client.render.FlightHudNumberRenderer;
-import dev.spiritstudios.aerobig.client.render.NumericalFont;
+import dev.spiritstudios.aerobig.client.render.MonoNumberFont;
 import dev.spiritstudios.aerobig.flight_hud.FlightHudAugmentType;
 import dev.spiritstudios.aerobig.mixin.flight_hud_augment.HotAirBurnerBlockEntityAccessor;
 import dev.spiritstudios.aerobig.mixin.flight_hud_augment.SteamVentBlockEntityAccessor;
@@ -86,8 +86,10 @@ public class HotAirBurnerFlightHudAugment extends FlightHudAugmentType<HotAirBur
         Vector2i pos = position(graphics);
         graphics.blitSprite(sprite, pos.x, pos.y, TEXTURE_SIZE, TEXTURE_SIZE);
 
-        FlightHudNumberRenderer numberRenderer = new FlightHudNumberRenderer(graphics, NumericalFont.BIG_BLOCK, BigAircraftRenderTypes.GUI_TEXTURED);
-        numberRenderer.drawDouble(lift, pos.x - 1, pos.y + NumericalFont.BIG_BLOCK.textureHeight() / 2 + NumericalFont.BIG_BLOCK.spacing() * 2, Alignment.RIGHT);
+        FlightHudNumberRenderer numberRenderer = new FlightHudNumberRenderer(graphics, MonoNumberFont.BIG_BLOCK, BigAircraftRenderTypes.GUI_TEXTURED);
+
+        numberRenderer.alignTo(Alignment.RIGHT);
+        numberRenderer.drawDouble(lift, pos.x - 1, pos.y + MonoNumberFont.BIG_BLOCK.textureHeight() / 2 + MonoNumberFont.BIG_BLOCK.spacing() * 2);
     }
 
     public static double getCumulativeLift(ClientBalloon balloon, ClientLevel level) {
@@ -96,15 +98,14 @@ public class HotAirBurnerFlightHudAugment extends FlightHudAugmentType<HotAirBur
         for (BlockEntityLiftingGasProvider heater : balloon.getHeaters()) {
             BlockEntityLiftingGasProvider.ClientBalloonInfo info = getClientBalloonInfo(heater);
 
-            if (info == null)
-                continue;
+            if (info != null) {
+                double d = info.clientBalloonLift() * heater.getAirPressure(info, level);
 
-            double d = info.clientBalloonLift() * heater.getAirPressure(info, level);
+                if (info.clientBalloonFilled() > 0.01)
+                    d *= heater.getClientPredictedVolume() / info.clientBalloonFilled();
 
-            if (info.clientBalloonFilled() > 0.01)
-                d *= heater.getClientPredictedVolume() / info.clientBalloonFilled();
-
-            lift += d;
+                lift += d;
+            }
         }
 
         return lift;

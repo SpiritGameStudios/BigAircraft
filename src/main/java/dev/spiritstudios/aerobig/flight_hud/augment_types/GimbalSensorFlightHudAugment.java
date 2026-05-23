@@ -67,9 +67,13 @@ public class GimbalSensorFlightHudAugment extends FlightHudAugmentType<GimbalSen
         int windowCentreX = graphics.guiWidth() / 2;
         int windowCentreY = graphics.guiHeight() / 2;
 
-        FlightHudNumberRenderer numberRenderer = new FlightHudNumberRenderer(graphics, NumericalFont.STOCK_SANS, BigAircraftRenderTypes.GUI_TEXTURED_INVERT);
+        FlightHudNumberRenderer numberRenderer = new FlightHudNumberRenderer(graphics, MonoNumberFont.STOCK_SANS, BigAircraftRenderTypes.GUI_TEXTURED_INVERT);
 
         transformAndRenderLadder(graphics, graphics.pose(), numberRenderer, windowCentreX, windowCentreY, roll, pitch);
+
+        numberRenderer.alignTo(Alignment.CENTER);
+        numberRenderer.setPaddedZeroPlaces(3);
+
         renderHeading(graphics, mc, numberRenderer, forwardNormal, windowCentreX);
     }
 
@@ -112,7 +116,7 @@ public class GimbalSensorFlightHudAugment extends FlightHudAugmentType<GimbalSen
             int halfLength = length / 2;
 
             if (degrees % DEGREE_INCREMENT == 0)
-                numberRenderer.drawInt(wrapHeading(degrees), x, topOffset + halfLength + HEADING_TEXT_VERTICAL_PADDING, Alignment.CENTER);
+                numberRenderer.drawInt(wrapHeading(degrees), x, topOffset + halfLength + HEADING_TEXT_VERTICAL_PADDING);
 
             vLine(graphics, x, topOffset - halfLength, length);
         }
@@ -139,26 +143,28 @@ public class GimbalSensorFlightHudAugment extends FlightHudAugmentType<GimbalSen
             hLine(graphics, windowCentreX - LADDER_OFFSET_FROM_CENTER, up, -length);
             hLine(graphics, windowCentreX + LADDER_OFFSET_FROM_CENTER - 1, up, length);
 
-            int y = up - numberRenderer.getFont().textureHeight() / 2;
+            int y = up - MonoNumberFont.STOCK_SANS.textureHeight() / 2;
 
 //            graphics.pose().pushPose();
 //            graphics.pose().rotateAround(
 //                    Axis.ZN.rotationDegrees(Mth.wrapDegrees(roll * Mth.RAD_TO_DEG)),
-//                    windowCentreX - length - numberRenderer.getWidth(-degrees) - 12,
+//                    windowCentreX - length - numberRenderer.getIntWidth(-degrees) - 12,
 //                    y,
 //                    0
 //            );
-            numberRenderer.drawInt(degrees, windowCentreX - length - 8, y, Alignment.RIGHT);
+            numberRenderer.alignTo(Alignment.RIGHT);
+            numberRenderer.drawInt(degrees, windowCentreX - length - 8, y);
 //            graphics.pose().popPose();
 
 //            graphics.pose().pushPose();
 //            graphics.pose().rotateAround(
 //                    Axis.ZN.rotationDegrees(Mth.wrapDegrees(roll * Mth.RAD_TO_DEG)),
-//                    windowCentreX + length + numberRenderer.getWidth(-degrees) - 12,
+//                    windowCentreX + length + numberRenderer.getIntWidth(-degrees) - 12,
 //                    y,
 //                    0
 //            );
-            numberRenderer.drawInt(degrees, windowCentreX + length + 8, y, Alignment.LEFT);
+            numberRenderer.alignTo(Alignment.LEFT);
+            numberRenderer.drawInt(degrees, windowCentreX + length + 8, y);
 //            graphics.pose().popPose();
         }
     }
