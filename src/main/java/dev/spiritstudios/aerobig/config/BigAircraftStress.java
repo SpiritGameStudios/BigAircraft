@@ -33,7 +33,7 @@ public class BigAircraftStress extends CStress {
         return setImpact(0.0F);
     }
 
-    public static <B extends Block, P> NonNullUnaryOperator<BlockBuilder<B, P>> setImpact(final double value) {
+    public static <B extends Block, P> NonNullUnaryOperator<BlockBuilder<B, P>> setImpact(double value) {
         return (builder) -> {
             assertFromMod(builder);
             DEFAULT_IMPACTS.put(BigAircraft.id(builder.getName()), value);
@@ -41,7 +41,7 @@ public class BigAircraftStress extends CStress {
         };
     }
 
-    public static <B extends Block, P> NonNullUnaryOperator<BlockBuilder<B, P>> setCapacity(final double value) {
+    public static <B extends Block, P> NonNullUnaryOperator<BlockBuilder<B, P>> setCapacity(double value) {
         return (builder) -> {
             assertFromMod(builder);
             DEFAULT_CAPACITIES.put(BigAircraft.id(builder.getName()), value);
@@ -49,7 +49,7 @@ public class BigAircraftStress extends CStress {
         };
     }
 
-    private static void assertFromMod(final BlockBuilder<?, ?> builder) {
+    private static void assertFromMod(BlockBuilder<?, ?> builder) {
         if (!builder.getOwner().getModid().equals(BigAircraft.MOD_ID))
             throw new IllegalStateException("Non-%1$s blocks cannot be added to %1$s's config.".formatted(BigAircraft.MOD_NAME));
     }

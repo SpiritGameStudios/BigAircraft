@@ -1,6 +1,5 @@
 {
   "values": [
-    "aerobig:analog_speed_controller",
     "aerobig:mechanical_speaker"
   ]
 }

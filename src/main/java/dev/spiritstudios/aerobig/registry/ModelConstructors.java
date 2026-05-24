@@ -3,7 +3,7 @@ package dev.spiritstudios.aerobig.registry;
 import com.tterrag.registrate.providers.DataGenContext;
 import com.tterrag.registrate.providers.RegistrateBlockstateProvider;
 import com.tterrag.registrate.util.nullness.NonNullBiConsumer;
-import dev.spiritstudios.aerobig.block.CarbonCompositeWingShaftBlock;
+import dev.spiritstudios.aerobig.block.carbon_composite.CarbonCompositeWingShaftBlock;
 import dev.spiritstudios.aerobig.block.analog_speed_controller.AnalogSpeedControllerBlock;
 import net.minecraft.core.Direction;
 import net.minecraft.world.item.DyeColor;

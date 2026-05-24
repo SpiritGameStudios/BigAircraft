@@ -99,6 +99,7 @@
     "aerobig:carbon_plating",
     "aerobig:carbon_plating_stairs",
     "aerobig:carbon_plating_slab",
-    "aerobig:analog_speed_controller"
+    "aerobig:analog_speed_controller",
+    "aerobig:mechanical_speaker"
   ]
 }

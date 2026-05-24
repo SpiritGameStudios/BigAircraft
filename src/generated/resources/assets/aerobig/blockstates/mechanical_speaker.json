@@ -1,0 +1,30 @@
+{
+  "variants": {
+    "facing=down": {
+      "model": "aerobig:block/mechanical_speaker",
+      "x": 180
+    },
+    "facing=east": {
+      "model": "aerobig:block/mechanical_speaker",
+      "x": 90,
+      "y": 90
+    },
+    "facing=north": {
+      "model": "aerobig:block/mechanical_speaker",
+      "x": 90
+    },
+    "facing=south": {
+      "model": "aerobig:block/mechanical_speaker",
+      "x": 90,
+      "y": 180
+    },
+    "facing=up": {
+      "model": "aerobig:block/mechanical_speaker"
+    },
+    "facing=west": {
+      "model": "aerobig:block/mechanical_speaker",
+      "x": 90,
+      "y": 270
+    }
+  }
+}

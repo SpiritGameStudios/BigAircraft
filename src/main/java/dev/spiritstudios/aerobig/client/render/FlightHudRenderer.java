@@ -21,7 +21,6 @@ import net.neoforged.neoforge.client.event.RegisterGuiLayersEvent;
 import net.neoforged.neoforge.client.gui.VanillaGuiLayers;
 import org.joml.Matrix4f;
 
-import java.util.GregorianCalendar;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
@@ -102,10 +101,14 @@ public class FlightHudRenderer {
         graphics.vLine(renderType, right, top, bottom, color);
     }
 
-    public static void scissor(GuiGraphics graphics, int marginX, int marginY, Consumer<GuiGraphics> renderAction) {
-        graphics.enableScissor(marginX, marginY, graphics.guiWidth() - marginX, graphics.guiHeight() - marginY);
+    public static void scissor(GuiGraphics graphics, int minX, int minY, int maxX, int maxY, Consumer<GuiGraphics> renderAction) {
+        graphics.enableScissor(minX, minY, maxX, maxY);
         renderAction.accept(graphics);
         graphics.disableScissor();
+    }
+
+    public static void scissor(GuiGraphics graphics, int marginX, int marginY, Consumer<GuiGraphics> renderAction) {
+        scissor(graphics, marginX, marginY, graphics.guiWidth() - marginX, graphics.guiHeight() - marginY, renderAction);
     }
 
 }

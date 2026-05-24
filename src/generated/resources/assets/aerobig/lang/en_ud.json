@@ -1,6 +1,10 @@
 {
   "aerobig.flight_hud_augment.tooltip_heading": "sʇuǝɯbnⱯ",
   "aerobig.simulated_section.aerobig": "ʇɟɐɹɔɹıⱯ bıᗺ",
+  "aerobig.speaking_mode": "ǝpoW buıʞɐǝdS",
+  "aerobig.speaking_modeboth": "ɥɔǝǝdS puɐ ʇxǝ⟘",
+  "aerobig.speaking_modespeak_only": "ʎןuO ɥɔǝǝdS",
+  "aerobig.speaking_modetext_only": "ʎןuO ʇxǝ⟘",
   "block.aerobig.analog_speed_controller": "ɹǝןןoɹʇuoƆ pǝǝdS boןɐuⱯ",
   "block.aerobig.black_carbon_composite": "ǝʇısodɯoƆ uoqɹɐƆ ʞɔɐןᗺ",
   "block.aerobig.black_carbon_composite_encased_shaft": "ʇɟɐɥS pǝsɐɔuƎ ǝʇısodɯoƆ uoqɹɐƆ ʞɔɐןᗺ",
@@ -71,6 +75,7 @@
   "block.aerobig.magenta_carbon_composite_stabilizer": "ɹǝzıןıqɐʇS ǝʇısodɯoƆ uoqɹɐƆ ɐʇuǝbɐW",
   "block.aerobig.magenta_carbon_composite_wing": "buıM ǝʇısodɯoƆ uoqɹɐƆ ɐʇuǝbɐW",
   "block.aerobig.magenta_carbon_composite_wing_shaft": "ʇɟɐɥS buıM ǝʇısodɯoƆ uoqɹɐƆ ɐʇuǝbɐW",
+  "block.aerobig.mechanical_speaker": "ɹǝʞɐǝdS ןɐɔıuɐɥɔǝW",
   "block.aerobig.orange_carbon_composite": "ǝʇısodɯoƆ uoqɹɐƆ ǝbuɐɹO",
   "block.aerobig.orange_carbon_composite_encased_shaft": "ʇɟɐɥS pǝsɐɔuƎ ǝʇısodɯoƆ uoqɹɐƆ ǝbuɐɹO",
   "block.aerobig.orange_carbon_composite_gearbox": "xoqɹɐǝ⅁ ǝʇısodɯoƆ uoqɹɐƆ ǝbuɐɹO",

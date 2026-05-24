@@ -1,6 +1,10 @@
 {
   "aerobig.flight_hud_augment.tooltip_heading": "Augments",
   "aerobig.simulated_section.aerobig": "Big Aircraft",
+  "aerobig.speaking_mode": "Speaking Mode",
+  "aerobig.speaking_modeboth": "Text and Speech",
+  "aerobig.speaking_modespeak_only": "Speech Only",
+  "aerobig.speaking_modetext_only": "Text Only",
   "block.aerobig.analog_speed_controller": "Analog Speed Controller",
   "block.aerobig.black_carbon_composite": "Black Carbon Composite",
   "block.aerobig.black_carbon_composite_encased_shaft": "Black Carbon Composite Encased Shaft",
@@ -71,6 +75,7 @@
   "block.aerobig.magenta_carbon_composite_stabilizer": "Magenta Carbon Composite Stabilizer",
   "block.aerobig.magenta_carbon_composite_wing": "Magenta Carbon Composite Wing",
   "block.aerobig.magenta_carbon_composite_wing_shaft": "Magenta Carbon Composite Wing Shaft",
+  "block.aerobig.mechanical_speaker": "Mechanical Speaker",
   "block.aerobig.orange_carbon_composite": "Orange Carbon Composite",
   "block.aerobig.orange_carbon_composite_encased_shaft": "Orange Carbon Composite Encased Shaft",
   "block.aerobig.orange_carbon_composite_gearbox": "Orange Carbon Composite Gearbox",

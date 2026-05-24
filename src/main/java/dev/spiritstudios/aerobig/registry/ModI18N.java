@@ -2,6 +2,7 @@ package dev.spiritstudios.aerobig.registry;
 
 import dev.simulated_team.simulated.util.SimColors;
 import dev.spiritstudios.aerobig.BigAircraft;
+import dev.spiritstudios.aerobig.block.speaker.MechanicalSpeakerBlockEntity;
 import dev.spiritstudios.aerobig.flight_hud.FlightHudAugmentType;
 import net.minecraft.Util;
 import net.minecraft.network.chat.Component;
@@ -13,16 +14,16 @@ import static dev.spiritstudios.aerobig.BigAircraft.registrate;
 
 public final class ModI18N {
 
-    public static final MutableComponent SIMULATED_SECTION = registrate().addRawLang(
-        ofId("simulated_section." + BigAircraft.MOD_ID), BigAircraft.MOD_NAME
-    );
-
-    public static final MutableComponent AUGMENTS = registrate().addRawLang(
-        ofId("flight_hud_augment.tooltip_heading"), "Augments"
-    );
+    public static final MutableComponent SIMULATED_SECTION = addRaw("simulated_section." + BigAircraft.MOD_ID, BigAircraft.MOD_NAME);
+    public static final MutableComponent SPEAKING_MODE = addRaw("speaking_mode", "Speaking Mode");
+    public static final MutableComponent AUGMENTS = addRaw("flight_hud_augment.tooltip_heading", "Augments");
 
     public static MutableComponent flightHudAugment(FlightHudAugmentType<?> augmentType) {
         return Component.translatable(Util.makeDescriptionId("flight_hud_augment", ModBuiltInRegistries.FLIGHT_HUD_AUGMENTS.getKey(augmentType)));
+    }
+
+    private static MutableComponent addRaw(String path, String value) {
+        return registrate().addRawLang(ofId(path), value);
     }
 
     public static String ofId(String path) {
@@ -51,6 +52,7 @@ public final class ModI18N {
 
     public static void init() {
         FlightHudAugmentError.init();
+        MechanicalSpeakerBlockEntity.SpeakingMode.registerLang();
     }
 
 }

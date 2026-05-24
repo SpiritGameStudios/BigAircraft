@@ -13,8 +13,9 @@ import com.tterrag.registrate.util.entry.BlockEntry;
 import com.tterrag.registrate.util.entry.ItemEntry;
 import com.tterrag.registrate.util.nullness.NonNullBiFunction;
 import dev.simulated_team.simulated.registrate.simulated_tab.CreativeTabItemTransforms;
-import dev.spiritstudios.aerobig.block.*;
 import dev.spiritstudios.aerobig.block.analog_speed_controller.AnalogSpeedControllerBlock;
+import dev.spiritstudios.aerobig.block.carbon_composite.*;
+import dev.spiritstudios.aerobig.block.speaker.MechanicalSpeakerBlock;
 import dev.spiritstudios.aerobig.config.BigAircraftStress;
 import dev.spiritstudios.aerobig.item.VerticalCarbonCompositeGearboxItem;
 import dev.spiritstudios.aerobig.mixin.CreativeTabItemTransformsAccessor;
@@ -22,16 +23,15 @@ import dev.spiritstudios.aerobig.util.OrderedDyedEntryList;
 import dev.spiritstudios.aerobig.util.ModSpriteShifts;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.data.recipes.RecipeCategory;
+import net.minecraft.data.recipes.ShapedRecipeBuilder;
 import net.minecraft.data.recipes.ShapelessRecipeBuilder;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.tags.ItemTags;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.item.Item;
-import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.SlabBlock;
-import net.minecraft.world.level.block.SoundType;
-import net.minecraft.world.level.block.StairBlock;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.level.block.*;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.material.MapColor;
 import net.minecraft.world.level.storage.loot.LootPool;
@@ -237,6 +237,29 @@ public final class ModBlocks {
             .model((context, provider) -> provider.blockItem(context::get, "_item"))
             .build()
             .register();
+
+    public static final BlockEntry<MechanicalSpeakerBlock> MECHANICAL_SPEAKER = registrate()
+        .block("mechanical_speaker", MechanicalSpeakerBlock::new)
+        .initialProperties(SharedProperties::wooden)
+        .properties(properties -> properties.mapColor(MechanicalSpeakerBlock.MAP_COLOR_PROVIDER))
+        .transform(TagGen.axeOrPickaxe())
+        .tag(AllTags.AllBlockTags.SAFE_NBT.tag)
+        .transform(BigAircraftStress.setImpact(2.0))
+        .blockstate((context, provider) -> provider.directionalBlock(context.get(), provider.models().getExistingFile(context.getId())))
+        .recipe((context, provider) -> ShapedRecipeBuilder.shaped(RecipeCategory.MISC, context.get())
+            .pattern("N")
+            .pattern("C")
+            .pattern("S")
+            .define('N', Items.NOTE_BLOCK)
+            .define('C', AllBlocks.BRASS_CASING)
+            .define('S', AllBlocks.SHAFT)
+            .unlockedBy("has_note_block", RegistrateRecipeProvider.has(Items.NOTE_BLOCK))
+            .save(provider)
+        )
+        .item()
+        .model((context, provider) -> provider.blockItem(context::get, "_item"))
+        .build()
+        .register();
 
     private static <T extends Block> BlockBuilder<T, CreateRegistrate> defaultBuilder(BlockBuilder<T, CreateRegistrate> builder, TagKey<Block> blockTag, @Nullable TagKey<Item> itemTag, DyeColor color, boolean invisible) {
         builder = builder

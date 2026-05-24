@@ -2,14 +2,17 @@
   "variants": {
     "axis=x": {
       "model": "aerobig:block/cyan_carbon_composite_stabilizer",
+      "uvlock": true,
       "x": 90,
       "y": 90
     },
     "axis=y": {
-      "model": "aerobig:block/cyan_carbon_composite_stabilizer"
+      "model": "aerobig:block/cyan_carbon_composite_stabilizer",
+      "uvlock": true
     },
     "axis=z": {
       "model": "aerobig:block/cyan_carbon_composite_stabilizer",
+      "uvlock": true,
       "x": 90,
       "y": 180
     }

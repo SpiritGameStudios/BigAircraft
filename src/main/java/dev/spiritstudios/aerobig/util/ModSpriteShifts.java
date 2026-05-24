@@ -6,7 +6,7 @@ import com.simibubi.create.foundation.block.connected.*;
 import com.simibubi.create.foundation.data.CreateRegistrate;
 import com.tterrag.registrate.util.nullness.NonNullConsumer;
 import dev.spiritstudios.aerobig.BigAircraft;
-import dev.spiritstudios.aerobig.block.ICarbonCompositeWing;
+import dev.spiritstudios.aerobig.block.carbon_composite.ICarbonCompositeWing;
 import dev.spiritstudios.aerobig.registry.ModBlocks;
 import net.minecraft.Util;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
