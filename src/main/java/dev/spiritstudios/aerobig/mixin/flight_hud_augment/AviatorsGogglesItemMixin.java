@@ -15,6 +15,7 @@ import net.minecraft.core.component.DataComponentMap;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.Level;
@@ -23,13 +24,13 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
+import org.spongepowered.asm.mixin.injection.Inject;
 
 import javax.annotation.ParametersAreNonnullByDefault;
 
 @ParametersAreNonnullByDefault
 @Mixin(AviatorsGogglesItem.class)
 public class AviatorsGogglesItemMixin extends ItemImplMixin {
-
     @Override
     public void inventoryTickImpl(ItemStack stack, Level level, Entity entity, int slotId, boolean isSelected, Operation<Void> original) {
         original.call(stack, level, entity, slotId, isSelected);

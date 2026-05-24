@@ -45,8 +45,9 @@ public class GimbalSensorFlightHudAugment extends FlightHudAugmentType<GimbalSen
     private static int wrapHeading(int angle) {
         int i = angle % 360;
 
-        while (i < 0)
+        while (i < 0) {
             i += 360;
+        }
 
         return i;
     }
@@ -70,10 +71,6 @@ public class GimbalSensorFlightHudAugment extends FlightHudAugmentType<GimbalSen
         FlightHudNumberRenderer numberRenderer = new FlightHudNumberRenderer(graphics, MonoNumberFont.STOCK_SANS, BigAircraftRenderTypes.GUI_TEXTURED_INVERT);
 
         transformAndRenderLadder(graphics, graphics.pose(), numberRenderer, windowCentreX, windowCentreY, roll, pitch);
-
-        numberRenderer.alignTo(Alignment.CENTER);
-        numberRenderer.setPaddedZeroPlaces(3);
-
         renderHeading(graphics, mc, numberRenderer, forwardNormal, windowCentreX);
     }
 
@@ -106,6 +103,9 @@ public class GimbalSensorFlightHudAugment extends FlightHudAugmentType<GimbalSen
 
         int offset = windowCentreX - Mth.floor(yawDegrees * degreesPerPixel);
 
+        numberRenderer.alignTo(Alignment.CENTER);
+        numberRenderer.setPaddedZeroPlaces(3);
+
         for (int degrees = -540; degrees < 540; degrees++) {
             int x = degrees * degreesPerPixel + offset;
 
@@ -115,8 +115,9 @@ public class GimbalSensorFlightHudAugment extends FlightHudAugmentType<GimbalSen
             int length = getNotchLength(degrees);
             int halfLength = length / 2;
 
-            if (degrees % DEGREE_INCREMENT == 0)
+            if (degrees % DEGREE_INCREMENT == 0) {
                 numberRenderer.drawInt(wrapHeading(degrees), x, topOffset + halfLength + HEADING_TEXT_VERTICAL_PADDING);
+            }
 
             vLine(graphics, x, topOffset - halfLength, length);
         }

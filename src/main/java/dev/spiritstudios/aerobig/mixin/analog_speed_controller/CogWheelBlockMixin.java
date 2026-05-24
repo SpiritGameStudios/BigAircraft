@@ -16,5 +16,4 @@ public class CogWheelBlockMixin {
     private boolean alignWithAnalogSpeedController(BlockEntry<SpeedControllerBlock> instance, BlockState state, Operation<Boolean> original) {
         return original.call(instance, state) || original.call(ModBlocks.ANALOG_SPEED_CONTROLLER, state);
     }
-
 }

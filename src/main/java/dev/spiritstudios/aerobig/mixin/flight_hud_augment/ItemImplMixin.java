@@ -12,7 +12,6 @@ import org.spongepowered.asm.mixin.Mixin;
 
 @Mixin(Item.class)
 public abstract class ItemImplMixin {
-
     @WrapMethod(method = "inventoryTick")
     public void inventoryTickImpl(ItemStack stack, Level level, Entity entity, int slotId, boolean isSelected, Operation<Void> original) {
         original.call(stack, level, entity, slotId, isSelected);
@@ -22,5 +21,4 @@ public abstract class ItemImplMixin {
     public InteractionResult useOnImpl(UseOnContext context, Operation<InteractionResult> original) {
         return original.call(context);
     }
-
 }

@@ -21,6 +21,7 @@ import net.neoforged.neoforge.client.event.RegisterGuiLayersEvent;
 import net.neoforged.neoforge.client.gui.VanillaGuiLayers;
 import org.joml.Matrix4f;
 
+import java.util.GregorianCalendar;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
@@ -35,12 +36,13 @@ public class FlightHudRenderer {
             if (player == null || minecraft.gameMode != null && minecraft.gameMode.getPlayerMode() == GameType.SPECTATOR)
                 return;
 
+            float partialTick = deltaTracker.getGameTimeDeltaPartialTick(false);
+
             for (FlightHudAugment augment : FlightHudAugmentsComponent.getFromHeadSlot(player).augments()) {
                 GlobalPos target = augment.target();
                 ClientSubLevel subLevel = Sable.HELPER.getContainingClient(target.pos());
 
                 if (subLevel != null && augment.isIn(subLevel)) {
-                    float partialTick = deltaTracker.getGameTimeDeltaPartialTick(false);
                     renderHudAugments(augment.type(), graphics, minecraft, player, subLevel, target, partialTick);
                 }
             }
@@ -90,6 +92,14 @@ public class FlightHudRenderer {
             .addVertex(pose, minX, maxY, 0).setUv(minU, maxV)
             .addVertex(pose, maxX, maxY, 0).setUv(maxU, maxV)
             .addVertex(pose, maxX, minY, 0).setUv(maxU, minV);
+    }
+
+    public static void renderOutline(GuiGraphics graphics, RenderType renderType, int left, int right, int top, int bottom, int color) {
+        graphics.hLine(renderType, left, right, top, color);
+        graphics.hLine(renderType, left, right, bottom, color);
+
+        graphics.vLine(renderType, left, top, bottom, color);
+        graphics.vLine(renderType, right, top, bottom, color);
     }
 
     public static void scissor(GuiGraphics graphics, int marginX, int marginY, Consumer<GuiGraphics> renderAction) {
