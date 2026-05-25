@@ -38,5 +38,4 @@ public abstract class FlightHudAugmentType<T extends BlockEntity> {
         LocalPlayer player,
         float partialTick
     );
-
 }

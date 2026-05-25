@@ -28,8 +28,8 @@ public class AltitudeSensorFlightHudAugment extends FlightHudAugmentType<Altitud
         FlightHudNumberRenderer stock = new FlightHudNumberRenderer(graphics, STOCK_SANS, GUI_TEXTURED_INVERT);
         FlightHudNumberRenderer big = new FlightHudNumberRenderer(graphics, BIG_BLOCK, GUI_TEXTURED_INVERT);
 
-        int left = graphics.guiWidth() - graphics.guiWidth() / 4;
-        int right = graphics.guiWidth() - graphics.guiWidth() / 4 - 6;
+        int left = graphics.guiWidth() - graphics.guiWidth() / 4 + 6 + 12 + 4;
+        int right = left - 6;
 
         int top = graphics.guiHeight() / 4;
         int bottom = graphics.guiHeight() - top;
@@ -50,7 +50,7 @@ public class AltitudeSensorFlightHudAugment extends FlightHudAugmentType<Altitud
 
         graphics.vLine(GUI_INVERT, outlineL, boxT, boxB, CommonColors.WHITE);
 
-        big.drawInt((int) blockEntity.getWorldHeight(), outlineR + 4, boxT - 2);
+        big.drawInt((int) blockEntity.getWorldHeight(), outlineR + 4, hCentre - BIG_BLOCK.textureHeight() / 2);
 
         graphics.hLine(GUI_INVERT, right - 4, right - 12, hCentre, CommonColors.WHITE);
 
@@ -61,22 +61,25 @@ public class AltitudeSensorFlightHudAugment extends FlightHudAugmentType<Altitud
 
         stock.alignTo(Alignment.LEFT);
 
-        FlightHudRenderer.scissor(graphics, 0, boxT + 1, graphics.guiWidth(), bottom, guiGraphics -> drawAltitudeLadder(blockEntity, guiGraphics, level, stock, left, right));
+        graphics.enableScissor(0, boxT + 1, graphics.guiWidth(), bottom);
+        boolean switchedScissor = false;
 
-        graphics.flush();
-
-        FlightHudRenderer.scissor(graphics, 0, top, graphics.guiWidth(), boxB - 1, guiGraphics -> drawAltitudeLadder(blockEntity, guiGraphics, level, stock, left, right));
-    }
-
-    private static void drawAltitudeLadder(AltitudeSensorBlockEntity blockEntity, GuiGraphics graphics, ClientLevel level, FlightHudNumberRenderer numberRenderer, int left, int right) {
         for (int i = 0; i < level.getMaxBuildHeight(); i += 5) {
-            int y = graphics.guiWidth() / 2 - (int) ((i - blockEntity.getWorldHeight()) * 4);
+            int y = hCentre - (int) ((i - blockEntity.getWorldHeight()) * 4);
+
+            if (!switchedScissor && y < boxB - STOCK_SANS.textureHeight()) {
+                graphics.disableScissor();
+                graphics.enableScissor(0, top, graphics.guiWidth(), boxB);
+                graphics.flush();
+                switchedScissor = true;
+            }
 
             graphics.hLine(GUI_INVERT, left, right, y, CommonColors.WHITE);
 
             if (i % 10 == 0)
-                numberRenderer.drawInt(i, left + 4, y - STOCK_SANS.textureHeight() / 2);
+                stock.drawInt(i, left + 4, y - STOCK_SANS.textureHeight() / 2);
         }
-    }
 
+        graphics.disableScissor();
+    }
 }
