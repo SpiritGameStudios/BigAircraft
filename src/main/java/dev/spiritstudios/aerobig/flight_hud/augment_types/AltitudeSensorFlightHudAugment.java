@@ -28,56 +28,54 @@ public class AltitudeSensorFlightHudAugment extends FlightHudAugmentType<Altitud
         FlightHudNumberRenderer stock = new FlightHudNumberRenderer(graphics, STOCK_SANS, GUI_TEXTURED_INVERT);
         FlightHudNumberRenderer big = new FlightHudNumberRenderer(graphics, BIG_BLOCK, GUI_TEXTURED_INVERT);
 
-        int left = graphics.guiWidth() - graphics.guiWidth() / 4 + 6 + 12 + 4;
-        int right = left - 6;
+        int maxX = graphics.guiWidth() - graphics.guiWidth() / 4 + 6 + 12 + 4;
+        int minX = maxX - 6;
 
-        int top = graphics.guiHeight() / 4;
-        int bottom = graphics.guiHeight() - top;
+        int maxY = graphics.guiHeight() / 4;
+        int minY = graphics.guiHeight() - maxY;
 
-        int hCentre = graphics.guiHeight() / 2;
+        int vCentre = graphics.guiHeight() / 2;
 
-        int outlineL = left + 4 + 10 + STOCK_SANS.charWidth() * 3;
-        int outlineR = right - 1;
-
-        int boxT = hCentre + BIG_BLOCK.textureHeight() / 2 + 2;
-        int boxB = hCentre - BIG_BLOCK.textureHeight() / 2 - 3;
+        int outlineMaxX = maxX + 4 + 10 + STOCK_SANS.charWidth() * 3;
 
         big.alignTo(Alignment.LEFT);
-        big.drawDouble(blockEntity.getAirPressure(), outlineR + 4, bottom + STOCK_SANS.textureHeight());
+        big.drawDouble(blockEntity.getAirPressure(), minX + 4, minY + STOCK_SANS.textureHeight());
 
-        graphics.hLine(GUI_INVERT, outlineL, outlineR + 1, boxT, CommonColors.WHITE);
-        graphics.hLine(GUI_INVERT, outlineL, outlineR + 1, boxB, CommonColors.WHITE);
+        // number box
+        int boxMax = vCentre + BIG_BLOCK.textureHeight() / 2 + 2;
+        int boxMin = vCentre - BIG_BLOCK.textureHeight() / 2 - 3;
 
-        graphics.vLine(GUI_INVERT, outlineL, boxT, boxB, CommonColors.WHITE);
+        graphics.hLine(GUI_INVERT, minX + 1, outlineMaxX, boxMax, CommonColors.WHITE);
+        graphics.hLine(GUI_INVERT, minX + 1, outlineMaxX, boxMin, CommonColors.WHITE);
+        graphics.vLine(GUI_INVERT, outlineMaxX, boxMax, boxMin, CommonColors.WHITE);
 
-        big.drawInt((int) blockEntity.getWorldHeight(), outlineR + 4, hCentre - BIG_BLOCK.textureHeight() / 2);
+        big.drawInt((int) blockEntity.getWorldHeight(), minX + 4, vCentre - BIG_BLOCK.textureHeight() / 2);
 
-        graphics.hLine(GUI_INVERT, right - 4, right - 12, hCentre, CommonColors.WHITE);
-
-        graphics.hLine(GUI_INVERT, outlineL, outlineR, bottom + 1, CommonColors.WHITE);
-        graphics.hLine(GUI_INVERT, outlineL, outlineR, top - 1, CommonColors.WHITE);
-
-        graphics.vLine(GUI_INVERT, outlineR, bottom + 1, top - 1, CommonColors.WHITE);
+        // outline
+        graphics.hLine(GUI_INVERT, minX, outlineMaxX, minY + 1, CommonColors.WHITE);
+        graphics.hLine(GUI_INVERT, minX, outlineMaxX, maxY - 1, CommonColors.WHITE);
+        graphics.vLine(GUI_INVERT, minX, minY + 1, maxY - 1, CommonColors.WHITE);
 
         stock.alignTo(Alignment.LEFT);
 
-        graphics.enableScissor(0, boxT + 1, graphics.guiWidth(), bottom);
+        graphics.enableScissor(0, boxMax + 1, graphics.guiWidth(), minY);
         boolean switchedScissor = false;
 
         for (int i = 0; i < level.getMaxBuildHeight(); i += 5) {
-            int y = hCentre - (int) ((i - blockEntity.getWorldHeight()) * 4);
+            int y = vCentre - (int) ((i - blockEntity.getWorldHeight()) * 4);
 
-            if (!switchedScissor && y < boxB - STOCK_SANS.textureHeight()) {
+            if (!switchedScissor && y < boxMin - STOCK_SANS.textureHeight()) {
                 graphics.disableScissor();
-                graphics.enableScissor(0, top, graphics.guiWidth(), boxB);
+                graphics.enableScissor(0, maxY, graphics.guiWidth(), boxMin);
                 graphics.flush();
                 switchedScissor = true;
             }
 
-            graphics.hLine(GUI_INVERT, left, right, y, CommonColors.WHITE);
+            graphics.hLine(GUI_INVERT, minX + 1, maxX, y, CommonColors.WHITE);
 
-            if (i % 10 == 0)
-                stock.drawInt(i, left + 4, y - STOCK_SANS.textureHeight() / 2);
+            if (i % 10 == 0) {
+                stock.drawInt(i, maxX + 4, y - STOCK_SANS.textureHeight() / 2);
+            }
         }
 
         graphics.disableScissor();

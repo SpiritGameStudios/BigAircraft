@@ -8,6 +8,7 @@ import dev.spiritstudios.aerobig.client.render.FlightHudNumberRenderer;
 import dev.spiritstudios.aerobig.client.render.MonoNumberFont;
 import dev.spiritstudios.aerobig.flight_hud.FlightHudAugmentType;
 import dev.spiritstudios.aerobig.client.render.BigAircraftRenderTypes;
+import net.minecraft.SharedConstants;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.multiplayer.ClientLevel;
@@ -15,6 +16,12 @@ import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.core.BlockPos;
 import net.minecraft.util.CommonColors;
 import org.joml.Vector3dc;
+
+import static dev.spiritstudios.aerobig.client.render.BigAircraftRenderTypes.GUI_INVERT;
+import static dev.spiritstudios.aerobig.client.render.BigAircraftRenderTypes.GUI_TEXTURED_INVERT;
+import static dev.spiritstudios.aerobig.client.render.FlightHudRenderer.renderOutline;
+import static dev.spiritstudios.aerobig.client.render.MonoNumberFont.BIG_BLOCK;
+import static dev.spiritstudios.aerobig.client.render.MonoNumberFont.STOCK_SANS;
 
 /**
  * TODO: move to new font system
@@ -28,58 +35,60 @@ public class VelocitySensorFlightHudAugment extends FlightHudAugmentType<Velocit
 
     @Override
     public void render(VelocitySensorBlockEntity blockEntity, GuiGraphics graphics, Minecraft mc, ClientLevel level, ClientSubLevel subLevel, BlockPos blockPos, LocalPlayer player, float partialTick) {
-        Vector3dc logicalVec = subLevel.logicalPose().position();
-        Vector3dc prevVec = subLevel.lastPose().position();
+        FlightHudNumberRenderer stock = new FlightHudNumberRenderer(graphics, STOCK_SANS, GUI_TEXTURED_INVERT);
+        FlightHudNumberRenderer big = new FlightHudNumberRenderer(graphics, BIG_BLOCK, GUI_TEXTURED_INVERT);
 
-        double dx = logicalVec.x() - prevVec.x();
-        double dz = logicalVec.z() - prevVec.z();
+        float velocity = Math.abs(blockEntity.getAdjustedVelocity());
 
-        double airspeedBPT = Math.hypot(dx, dz);
-        final int strLen = MonoNumberFont.STOCK_SANS.charWidth() * 3 - 1;
+        int minX = graphics.guiWidth() / 4 - (6 + 12 + 4);
+        int maxX = minX + 6;
 
-        final int padding = 2;
+        int maxY = graphics.guiHeight() / 4;
+        int minY = graphics.guiHeight() - maxY;
 
-        final int minX = graphics.guiWidth() / 6;
-        final int minY = graphics.guiHeight() / 2;
+        int vCentre = graphics.guiHeight() / 2;
 
-        final int maxX = minX + strLen - 1;
-        final int maxY = minY + MonoNumberFont.STOCK_SANS.textureHeight() - 1;
+        int outlineMinX = minX - (4 + 10 + STOCK_SANS.charWidth() * 3);
 
+        big.alignTo(Alignment.LEFT);
 
-        graphics.hLine(
-                BigAircraftRenderTypes.GUI_INVERT,
-                minX - padding, maxX + padding,
-                minY - padding,
-                CommonColors.WHITE
-        );
+        // number box
+        int boxMax = vCentre + BIG_BLOCK.textureHeight() / 2 + 2;
+        int boxMin = vCentre - BIG_BLOCK.textureHeight() / 2 - 3;
 
-        graphics.hLine(
-                BigAircraftRenderTypes.GUI_INVERT,
-                minX - padding, maxX + padding,
-                maxY + padding,
-                CommonColors.WHITE
-        );
+        graphics.hLine(GUI_INVERT, maxX - 1, outlineMinX, boxMax, CommonColors.WHITE);
+        graphics.hLine(GUI_INVERT, maxX - 1, outlineMinX, boxMin, CommonColors.WHITE);
+        graphics.vLine(GUI_INVERT, outlineMinX, boxMax, boxMin, CommonColors.WHITE);
 
-        graphics.vLine(
-                BigAircraftRenderTypes.GUI_INVERT,
-                minX - padding,
-                minY - padding, maxY + padding,
-                CommonColors.WHITE
-        );
+        big.drawInt((int)velocity, outlineMinX + 4, vCentre - BIG_BLOCK.textureHeight() / 2);
 
-        graphics.vLine(
-                BigAircraftRenderTypes.GUI_INVERT,
-                maxX + padding,
-                minY - padding, maxY + padding,
-                CommonColors.WHITE
-        );
+        // outline
+        graphics.hLine(GUI_INVERT, maxX, outlineMinX, minY + 1, CommonColors.WHITE);
+        graphics.hLine(GUI_INVERT, maxX, outlineMinX, maxY - 1, CommonColors.WHITE);
+        graphics.vLine(GUI_INVERT, maxX, minY + 1, maxY - 1, CommonColors.WHITE);
 
-        FlightHudNumberRenderer numberRenderer = new FlightHudNumberRenderer(graphics, MonoNumberFont.STOCK_SANS, BigAircraftRenderTypes.GUI_TEXTURED_INVERT);
+        stock.alignTo(Alignment.RIGHT);
 
-        numberRenderer.alignTo(Alignment.LEFT);
-        numberRenderer.drawInt(
-                (int) (airspeedBPT * BLOCKS_PER_TICK_TO_KNOTS),
-                minX, minY
-        );
+        graphics.enableScissor(0, boxMax + 1, graphics.guiWidth(), minY);
+        boolean switchedScissor = false;
+
+        for (int i = 0; i < 1000; i += 10) {
+            int y = vCentre - (int) ((i - velocity));
+
+            if (!switchedScissor && y < boxMin - STOCK_SANS.textureHeight()) {
+                graphics.disableScissor();
+                graphics.enableScissor(0, maxY + 1, graphics.guiWidth(), boxMin);
+                graphics.flush();
+                switchedScissor = true;
+            }
+
+            graphics.hLine(GUI_INVERT, minX, maxX - 1, y, CommonColors.WHITE);
+
+            if (i % 20 == 0) {
+                stock.drawInt(i, minX - 4, y - STOCK_SANS.textureHeight() / 2);
+            }
+        }
+
+        graphics.disableScissor();
     }
 }
