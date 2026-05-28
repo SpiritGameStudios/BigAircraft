@@ -11,7 +11,6 @@ import com.tterrag.registrate.util.nullness.NonNullSupplier;
 import dev.simulated_team.simulated.registrate.SimulatedRegistrate;
 import dev.spiritstudios.aerobig.block.analog_speed_controller.AnalogSpeedControllerBlockEntity;
 import dev.spiritstudios.aerobig.config.BigAircraftConfigService;
-import dev.spiritstudios.aerobig.item.ItemEvents;
 import dev.spiritstudios.aerobig.registry.*;
 import dev.spiritstudios.aerobig.util.OrderedDyedEntryList;
 import net.createmod.catnip.config.ConfigBase;
@@ -24,7 +23,6 @@ import net.neoforged.fml.ModLoadingContext;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.fml.event.config.ModConfigEvent;
 import net.neoforged.neoforge.capabilities.RegisterCapabilitiesEvent;
-import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.BlockEntityTypeAddBlocksEvent;
 import org.slf4j.Logger;
 
@@ -54,7 +52,6 @@ public class BigAircraft {
     public BigAircraft(IEventBus modBus, ModContainer modContainer) {
         registrate().registerEventListeners(modBus);
         modBus.register(ModBuiltInRegistries.class);
-        NeoForge.EVENT_BUS.register(ItemEvents.class);
 
         ModRegistries.init();
         ModI18N.init();

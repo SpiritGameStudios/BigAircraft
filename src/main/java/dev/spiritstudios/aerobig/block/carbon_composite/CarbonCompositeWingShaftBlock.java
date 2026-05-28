@@ -10,6 +10,7 @@ import com.simibubi.create.content.kinetics.base.RotatedPillarKineticBlock;
 import com.simibubi.create.content.schematics.requirement.ItemRequirement;
 import com.simibubi.create.foundation.block.IBE;
 import com.simibubi.create.foundation.block.ProperWaterloggedBlock;
+import dev.spiritstudios.aerobig.registry.ModBlocks;
 import net.createmod.catnip.placement.PlacementHelpers;
 import net.minecraft.MethodsReturnNonnullByDefault;
 import net.minecraft.core.BlockPos;
@@ -85,27 +86,18 @@ public class CarbonCompositeWingShaftBlock extends HorizontalAxisKineticBlock im
 
     @Override
     public BlockState getStateForPlacement(BlockPlaceContext context) {
+        Level level = context.getLevel();
+        BlockPos clickedPos = context.getClickedPos();
         Direction.Axis axis = Objects.requireNonNullElse(
             getPreferredHorizontalAxis(context),
             context.getHorizontalDirection().getAxis()
         );
 
-        BlockState stateForPlacement = this.defaultBlockState().setValue(HORIZONTAL_AXIS, axis);
-
-        Level level = context.getLevel();
-        BlockPos clickedPos = context.getClickedPos();
-
-        if (level.getBlockState(relativeAxisDirectionPos(clickedPos, axis, false)).getBlock() instanceof ICarbonCompositeWing)
-            stateForPlacement = stateForPlacement.setValue(CONNECT_POSITIVE, true);
-
-        if (level.getBlockState(relativeAxisDirectionPos(clickedPos, axis, true)).getBlock() instanceof ICarbonCompositeWing)
-            stateForPlacement = stateForPlacement.setValue(CONNECT_NEGATIVE, true);
-
-        return this.withWater(stateForPlacement, context);
+        return this.withWater(this.getConnectedState(level, clickedPos, axis), context);
     }
 
-    private static BlockPos relativeAxisDirectionPos(BlockPos pos, Direction.Axis axis, boolean positive) {
-        return pos.relative(Direction.fromAxisAndDirection(axis, positive ? Direction.AxisDirection.POSITIVE : Direction.AxisDirection.NEGATIVE));
+    private static BlockPos relativeAxisDirectionPos(BlockPos pos, Direction.Axis axis, Direction.AxisDirection axisDirection) {
+        return pos.relative(Direction.fromAxisAndDirection(axis, axisDirection));
     }
 
     @Override
@@ -116,7 +108,9 @@ public class CarbonCompositeWingShaftBlock extends HorizontalAxisKineticBlock im
         if (direction.getAxis() != axis)
             return state;
 
-        return state.setValue(getAxisDirectionProperty(direction.getAxisDirection().opposite()), neighborState.getBlock() instanceof ICarbonCompositeWing);
+        boolean connected = neighborState.getBlock() instanceof ICarbonCompositeWing;
+
+        return state.setValue(getAxisDirectionProperty(direction.getAxisDirection().opposite()), connected);
     }
 
     private static BooleanProperty getAxisDirectionProperty(Direction.AxisDirection axisDirection) {
@@ -130,12 +124,13 @@ public class CarbonCompositeWingShaftBlock extends HorizontalAxisKineticBlock im
 
     @Override
     public ItemRequirement getRequiredItems(BlockState state, @Nullable BlockEntity blockEntity) {
-        return ItemRequirement.of(AllBlocks.SHAFT.getDefaultState(), blockEntity).union(this.getItemRequirement());
+        return new ItemRequirement(ItemRequirement.ItemUseType.CONSUME, this.getCasing().asItem())
+            .union(new ItemRequirement(ItemRequirement.ItemUseType.CONSUME, AllBlocks.SHAFT.asStack()));
     }
 
     @Override
     public Block getCasing() {
-        return this.getOfColor().get();
+        return ModBlocks.CARBON_COMPOSITE_WINGS.get(this.getDyeColor()).get();
     }
 
     @Override
@@ -143,18 +138,22 @@ public class CarbonCompositeWingShaftBlock extends HorizontalAxisKineticBlock im
         Direction.Axis axis = state.getValue(RotatedPillarKineticBlock.AXIS);
         assert axis.isHorizontal();
 
-        BlockState blockState = this.defaultBlockState().setValue(HORIZONTAL_AXIS, axis);
-
-        if (level.getBlockState(relativeAxisDirectionPos(pos, axis, false)).getBlock() instanceof ICarbonCompositeWing)
-            blockState = blockState.setValue(CONNECT_POSITIVE, true);
-
-        if (level.getBlockState(relativeAxisDirectionPos(pos, axis, true)).getBlock() instanceof ICarbonCompositeWing)
-            blockState = blockState.setValue(CONNECT_NEGATIVE, true);
-
-        KineticBlockEntity.switchToBlockState(level, pos, blockState);
+        KineticBlockEntity.switchToBlockState(level, pos, this.getConnectedState(level, pos, axis));
 
         if (!player.isCreative())
             player.getItemInHand(hand).shrink(1);
+    }
+
+    private BlockState getConnectedState(Level level, BlockPos pos, Direction.Axis axis) {
+        BlockState blockState = this.defaultBlockState().setValue(HORIZONTAL_AXIS, axis);
+
+        if (level.getBlockState(relativeAxisDirectionPos(pos, axis, Direction.AxisDirection.POSITIVE)).getBlock() instanceof ICarbonCompositeWing)
+            blockState = blockState.setValue(CONNECT_POSITIVE, true);
+
+        if (level.getBlockState(relativeAxisDirectionPos(pos, axis, Direction.AxisDirection.NEGATIVE)).getBlock() instanceof ICarbonCompositeWing)
+            blockState = blockState.setValue(CONNECT_NEGATIVE, true);
+
+        return blockState;
     }
 
     @Override
@@ -178,7 +177,7 @@ public class CarbonCompositeWingShaftBlock extends HorizontalAxisKineticBlock im
             Player player = context.getPlayer();
 
             if (player != null && !player.isCreative())
-                player.getInventory().placeItemBackInInventory(this.getOfColor().asStack());
+                player.getInventory().placeItemBackInInventory(new ItemStack(this.getCasing()));
         }
 
         return InteractionResult.SUCCESS;
@@ -187,7 +186,7 @@ public class CarbonCompositeWingShaftBlock extends HorizontalAxisKineticBlock im
     @Override
     public ItemStack getCloneItemStack(BlockState state, HitResult target, LevelReader level, BlockPos pos, Player player) {
         if (target instanceof BlockHitResult blockHitResult)
-            return blockHitResult.getDirection().getAxis() == this.getRotationAxis(state) ? AllBlocks.SHAFT.asStack() : this.getOfColor().asStack();
+            return blockHitResult.getDirection().getAxis() == this.getRotationAxis(state) ? AllBlocks.SHAFT.asStack() : new ItemStack(this.getCasing());
 
         return super.getCloneItemStack(state, target, level, pos, player);
     }

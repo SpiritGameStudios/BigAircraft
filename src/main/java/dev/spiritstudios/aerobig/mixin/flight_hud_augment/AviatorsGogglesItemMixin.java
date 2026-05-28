@@ -15,7 +15,6 @@ import net.minecraft.core.component.DataComponentMap;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.Level;
@@ -24,19 +23,24 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
-import org.spongepowered.asm.mixin.injection.Inject;
 
 import javax.annotation.ParametersAreNonnullByDefault;
 
 @ParametersAreNonnullByDefault
 @Mixin(AviatorsGogglesItem.class)
 public class AviatorsGogglesItemMixin extends ItemImplMixin {
+
     @Override
     public void inventoryTickImpl(ItemStack stack, Level level, Entity entity, int slotId, boolean isSelected, Operation<Void> original) {
         original.call(stack, level, entity, slotId, isSelected);
 
         if (level.getGameTime() % SharedConstants.TICKS_PER_SECOND == 1 && stack.has(ModDataComponents.FLIGHT_HUD_AUGMENTS))
-            bigAircraft$removeInvalidEntries(level, FlightHudAugmentsComponent.getFromItemStack(stack), stack);
+            bigAircraft$removeInvalidEntries(level, FlightHudAugmentsComponent.getFromItemStack(stack), stack, entity);
+    }
+
+    @Override
+    public boolean isFoilImpl(ItemStack stack, Operation<Boolean> original) {
+        return super.isFoilImpl(stack, original) || !FlightHudAugmentsComponent.getFromItemStack(stack).augments().isEmpty();
     }
 
     @Override
@@ -88,7 +92,7 @@ public class AviatorsGogglesItemMixin extends ItemImplMixin {
     }
 
     @Unique
-    private static void bigAircraft$removeInvalidEntries(Level level, FlightHudAugmentsComponent component, ItemStack stack) {
+    private static void bigAircraft$removeInvalidEntries(Level level, FlightHudAugmentsComponent component, ItemStack stack, Entity entity) {
         if (FlightHudAugmentsComponent.removeIfEmpty(component, stack))
             return;
 
@@ -99,6 +103,9 @@ public class AviatorsGogglesItemMixin extends ItemImplMixin {
                 continue;
 
             FlightHudAugmentsComponent newComponent = component.removePosition(target);
+
+            if (entity instanceof Player player)
+                player.displayClientMessage(ModI18N.FlightHudAugmentError.LOST_CONNECTION.getText(ModI18N.flightHudAugment(augment.type())), true);
 
             if (FlightHudAugmentsComponent.removeIfEmpty(newComponent, stack))
                 return;

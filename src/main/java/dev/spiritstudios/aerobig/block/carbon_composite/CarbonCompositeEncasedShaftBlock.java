@@ -26,7 +26,7 @@ import javax.annotation.ParametersAreNonnullByDefault;
 
 @ParametersAreNonnullByDefault
 @MethodsReturnNonnullByDefault
-public class CarbonCompositeEncasedShaftBlock extends EncasedShaftBlock implements CarbonComposite<CarbonCompositeBlock> {
+public class CarbonCompositeEncasedShaftBlock extends EncasedShaftBlock implements CarbonComposite<CarbonCompositeEncasedShaftBlock> {
 
     private final DyeColor color;
 
@@ -41,8 +41,8 @@ public class CarbonCompositeEncasedShaftBlock extends EncasedShaftBlock implemen
     }
 
     @Override
-    public OrderedDyedEntryList<Block, BlockEntry<CarbonCompositeBlock>> getDyedVariants() {
-        return ModBlocks.CARBON_COMPOSITE_BLOCKS;
+    public OrderedDyedEntryList<Block, BlockEntry<CarbonCompositeEncasedShaftBlock>> getDyedVariants() {
+        return ModBlocks.CARBON_COMPOSITE_ENCASED_SHAFTS;
     }
 
     @Override
@@ -55,7 +55,7 @@ public class CarbonCompositeEncasedShaftBlock extends EncasedShaftBlock implemen
 
     @Override
     public ItemRequirement getRequiredItems(BlockState state, @Nullable BlockEntity be) {
-        return super.getRequiredItems(state, be).union(this.getItemRequirement());
+        return new ItemRequirement(ItemRequirement.ItemUseType.CONSUME, this.getCasing().asItem()).union(super.getRequiredItems(state, be));
     }
 
     @Override
@@ -71,7 +71,7 @@ public class CarbonCompositeEncasedShaftBlock extends EncasedShaftBlock implemen
             Player player = context.getPlayer();
 
             if (player != null && !player.isCreative())
-                player.getInventory().placeItemBackInInventory(this.getOfColor().asStack());
+                player.getInventory().placeItemBackInInventory(new ItemStack(this.getCasing()));
         }
 
         return InteractionResult.SUCCESS;

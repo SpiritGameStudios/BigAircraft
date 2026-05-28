@@ -67,7 +67,7 @@ public class MechanicalSpeakerBlockEntity extends KineticBlockEntity {
 
         TEXT_ONLY(BigAircraftIcons.TEXT_ONLY, "text_only", "Text Only"),
         BOTH(BigAircraftIcons.BOTH, "both", "Text and Speech"),
-        SPEAK_ONLY(BigAircraftIcons.SPEAK_ONLY, "speak_only", "Speech Only");
+        SPEECH_ONLY(BigAircraftIcons.SPEECH_ONLY, "speech_only", "Speech Only");
 
         private final BigAircraftIcons icon;
         private final String translationKey;
@@ -75,7 +75,7 @@ public class MechanicalSpeakerBlockEntity extends KineticBlockEntity {
 
         SpeakingMode(BigAircraftIcons icon, String path, String name) {
             this.icon = icon;
-            this.translationKey = ModI18N.ofId("speaking_mode" + path);
+            this.translationKey = ModI18N.ofId("speaking_mode." + path);
             this.name = name;
         }
 

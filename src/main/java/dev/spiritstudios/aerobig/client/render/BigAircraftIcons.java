@@ -24,9 +24,9 @@ public class BigAircraftIcons extends AllIcons {
      * mechanical speaker value selector
      */
     public static final BigAircraftIcons
-        SPEAK_ONLY = newRow(),
-        TEXT_ONLY = next(),
-        BOTH = next();
+        TEXT_ONLY = newRow(),
+        BOTH = next(),
+        SPEECH_ONLY = next();
 
     private final int iconX;
     private final int iconY;
@@ -38,11 +38,11 @@ public class BigAircraftIcons extends AllIcons {
     }
 
     private static BigAircraftIcons next() {
-        return new BigAircraftIcons(x++, y);
+        return new BigAircraftIcons(++x, y);
     }
 
     private static BigAircraftIcons newRow() {
-        return new BigAircraftIcons(x = 0, y++);
+        return new BigAircraftIcons(x = 0, ++y);
     }
 
     @Override

@@ -65,7 +65,7 @@ public final class ModBlocks {
                             .texture("gearbox", provider.modLoc("block/" + DEFAULT_WHITE_NAME.apply(color, "carbon_composite_gearbox"))),
                     true
             ))
-            .loot((lootTables, block) -> lootTables.add(block, lootTables.createSingleItemTable(block.getDyedVariants().get(color))
+            .loot((lootTables, block) -> lootTables.add(block, lootTables.createSingleItemTable(CARBON_COMPOSITE_BLOCKS.get(color))
                     .withPool(lootTables.applyExplosionCondition(AllBlocks.SHAFT.get(), LootPool.lootPool()
                             .setRolls(ConstantValue.exactly(1.0F))
                             .add(LootItem.lootTableItem(AllBlocks.SHAFT.get()))
@@ -112,7 +112,7 @@ public final class ModBlocks {
             .transform(builder -> defaultBuilder(builder, ModTags.Blocks.CARBON_COMPOSITE_WING_SHAFTS, ModTags.Items.CARBON_COMPOSITE_WINGS, color, true))
             .properties(BlockBehaviour.Properties::noOcclusion)
             .blockstate(ModelConstructors.wingShaft(color))
-            .loot((lootTables, block) -> lootTables.add(block, lootTables.createSingleItemTable(block.getDyedVariants().get(color))
+            .loot((lootTables, block) -> lootTables.add(block, lootTables.createSingleItemTable(CARBON_COMPOSITE_WINGS.get(color))
                     .withPool(lootTables.applyExplosionCondition(AllBlocks.SHAFT.get(), LootPool.lootPool()
                             .setRolls(ConstantValue.exactly(1.0F))
                             .add(LootItem.lootTableItem(AllBlocks.SHAFT.get()))

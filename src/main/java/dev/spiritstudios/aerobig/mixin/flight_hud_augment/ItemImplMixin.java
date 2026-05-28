@@ -21,4 +21,10 @@ public abstract class ItemImplMixin {
     public InteractionResult useOnImpl(UseOnContext context, Operation<InteractionResult> original) {
         return original.call(context);
     }
+
+    @WrapMethod(method = "isFoil")
+    public boolean isFoilImpl(ItemStack stack, Operation<Boolean> original) {
+        return original.call(stack);
+    }
+
 }

@@ -1,7 +1,6 @@
 package dev.spiritstudios.aerobig.block.carbon_composite;
 
 import com.google.common.collect.Sets;
-import com.simibubi.create.content.schematics.requirement.ItemRequirement;
 import com.simibubi.create.foundation.utility.BlockHelper;
 import com.tterrag.registrate.util.entry.BlockEntry;
 import dev.spiritstudios.aerobig.util.OrderedDyedEntryList;
@@ -58,14 +57,6 @@ public interface CarbonComposite<T extends Block & CarbonComposite<T>> {
     @NotNull DyeColor getDyeColor();
     @NotNull OrderedDyedEntryList<Block, BlockEntry<T>> getDyedVariants();
     @NotNull DyeableGroup getDyeableGroup();
-
-    default BlockEntry<T> getOfColor() {
-        return this.getDyedVariants().get(this.getDyeColor());
-    }
-
-    default ItemRequirement getItemRequirement() {
-        return new ItemRequirement(ItemRequirement.ItemUseType.CONSUME, this.getOfColor().asStack());
-    }
 
     static ItemInteractionResult useItemOn(ItemStack stack, BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hitResult, @Nullable IPlacementHelper placementHelper) {
         DyeColor color = DyeColor.getColor(stack);

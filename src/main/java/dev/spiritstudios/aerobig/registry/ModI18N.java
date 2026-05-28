@@ -34,16 +34,18 @@ public final class ModI18N {
 
         ALREADY_OBSERVING("Flight HUD has already been augmented by this block!"),
         NOT_IN_SIMULATED_CONTRAPTION("This block is not in a Simulated Contraption!"),
-        UNOBSERVABLE_INSTRUMENT("This block's info cannot be added to the flight HUD!");
+        UNOBSERVABLE_INSTRUMENT("This block's info cannot be added to the flight HUD!"),
+        LOST_CONNECTION("Lost connection to %s. Its augment has been invalidated."),
+        ;
 
-        private final MutableComponent text;
+        private final String key;
 
         FlightHudAugmentError(String value) {
-            this.text = registrate().addRawLang("flight_hud_augment.error." + this.name().toLowerCase(Locale.ROOT), value);
+            registrate().addRawLang(this.key = "flight_hud_augment.error." + this.name().toLowerCase(Locale.ROOT), value);
         }
 
-        public MutableComponent getText() {
-            return this.text.withColor(SimColors.NUH_UH_RED);
+        public MutableComponent getText(Object... args) {
+            return Component.translatable(this.key, args).withColor(SimColors.NUH_UH_RED);
         }
 
         private static void init() {}
