@@ -1,9 +1,8 @@
 package dev.spiritstudios.aerobig.flight_hud.augment_types;
 
+import com.tterrag.registrate.util.entry.BlockEntityEntry;
 import dev.eriksonn.aeronautics.content.blocks.hot_air.BlockEntityLiftingGasProvider;
 import dev.eriksonn.aeronautics.content.blocks.hot_air.balloon.ClientBalloon;
-import dev.eriksonn.aeronautics.content.blocks.hot_air.hot_air_burner.HotAirBurnerBlockEntity;
-import dev.eriksonn.aeronautics.index.AeroBlockEntityTypes;
 import dev.ryanhcode.sable.sublevel.ClientSubLevel;
 import dev.spiritstudios.aerobig.BigAircraft;
 import dev.spiritstudios.aerobig.client.render.Alignment;
@@ -21,42 +20,43 @@ import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.core.BlockPos;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
+import net.minecraft.world.level.block.entity.BlockEntity;
 import org.apache.commons.compress.utils.Sets;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Vector2i;
 
 import java.util.Set;
 
-public class HotAirBurnerFlightHudAugment extends FlightHudAugmentType<HotAirBurnerBlockEntity> {
+public class BalloonHeaterFlightHudAugment<T extends BlockEntity & BlockEntityLiftingGasProvider> extends FlightHudAugmentType<T> {
 
-    private static final ResourceLocation TEXTURE = BigAircraft.id("aviation_display/hot_air_burner");
-    private static final ResourceLocation FLOOP_TEXTURE = BigAircraft.id("aviation_display/hot_air_burner_floop");
-    private static final ResourceLocation RISING_TEXTURE = BigAircraft.id("aviation_display/hot_air_burner_rising");
-    private static final ResourceLocation FALLING_TEXTURE = BigAircraft.id("aviation_display/hot_air_burner_falling");
+    private static final ResourceLocation TEXTURE = BigAircraft.id("aviation_display/balloon");
+    private static final ResourceLocation FLOOP_TEXTURE = BigAircraft.id("aviation_display/balloon_floop");
+    private static final ResourceLocation RISING_TEXTURE = BigAircraft.id("aviation_display/balloon_rising");
+    private static final ResourceLocation FALLING_TEXTURE = BigAircraft.id("aviation_display/balloon_falling");
 
     private static final int MARGIN = 1;
     private static final int TEXTURE_SIZE = 18;
 
     private double lastLift = 0;
 
-    public HotAirBurnerFlightHudAugment() {
-        super(AeroBlockEntityTypes.HOT_AIR_BURNER);
+    public BalloonHeaterFlightHudAugment(BlockEntityEntry<T> blockEntityType) {
+        super(blockEntityType);
     }
 
     @Override
     public Set<FlightHudAugmentType<?>> getExclusives() {
-        return Sets.newHashSet(ModFlightHudAugments.STEAM_VENT.get());
+        return Sets.newHashSet(ModFlightHudAugments.HOT_AIR_BURNER.get(), ModFlightHudAugments.STEAM_VENT.get());
     }
 
     @Override
-    public void render(HotAirBurnerBlockEntity blockEntity, GuiGraphics graphics, Minecraft mc, ClientLevel level, ClientSubLevel beSubLevel, BlockPos blockPos, LocalPlayer player, float partialTick) {
+    public void render(T blockEntity, GuiGraphics graphics, Minecraft mc, ClientLevel level, ClientSubLevel beSubLevel, BlockPos blockPos, LocalPlayer player, float partialTick) {
         ClientBalloon balloon = (ClientBalloon) blockEntity.getBalloon();
 
-        if (!renderNoBalloon(balloon, graphics)) {
-            double lift = getCumulativeLift(balloon, level);
-            this.lastLift = Mth.lerp(partialTick, this.lastLift, lift);
+        if (!renderNoBalloon(graphics, balloon)) {
+            double lift = getCumulativeLift(level, balloon);
+            this.lastLift = Mth.lerp(partialTick, this.lastLift, lift); // this seems cursed
 
-            renderLift(graphics, this.lastLift, lift);
+            this.renderLift(graphics, lift);
         }
     }
 
@@ -64,7 +64,7 @@ public class HotAirBurnerFlightHudAugment extends FlightHudAugmentType<HotAirBur
         return new Vector2i(graphics.guiWidth() - TEXTURE_SIZE - MARGIN, graphics.guiHeight() / 2 - TEXTURE_SIZE / 2);
     }
 
-    public static boolean renderNoBalloon(ClientBalloon balloon, GuiGraphics graphics) {
+    private static boolean renderNoBalloon(GuiGraphics graphics, ClientBalloon balloon) {
         if (balloon == null || !balloon.isValid()) {
             Vector2i pos = position(graphics);
             graphics.blitSprite(FLOOP_TEXTURE, pos.x, pos.y, TEXTURE_SIZE, TEXTURE_SIZE);
@@ -75,12 +75,12 @@ public class HotAirBurnerFlightHudAugment extends FlightHudAugmentType<HotAirBur
         return false;
     }
 
-    public static void renderLift(GuiGraphics graphics, double lastLift, double lift) {
+    private void renderLift(GuiGraphics graphics, double lift) {
         ResourceLocation sprite = TEXTURE;
 
-        if (lift - lastLift < -Mth.EPSILON)
+        if (lift - this.lastLift < -Mth.EPSILON)
             sprite = FALLING_TEXTURE;
-        else if (lift - lastLift > Mth.EPSILON)
+        else if (lift - this.lastLift > Mth.EPSILON)
             sprite = RISING_TEXTURE;
 
         Vector2i pos = position(graphics);
@@ -92,20 +92,21 @@ public class HotAirBurnerFlightHudAugment extends FlightHudAugmentType<HotAirBur
         numberRenderer.drawDouble(lift, pos.x - 1, pos.y + MonoNumberFont.BIG_BLOCK.textureHeight() / 2 + MonoNumberFont.BIG_BLOCK.spacing() * 2);
     }
 
-    public static double getCumulativeLift(ClientBalloon balloon, ClientLevel level) {
+    private static double getCumulativeLift(ClientLevel level, ClientBalloon balloon) {
         double lift = 0.0;
 
         for (BlockEntityLiftingGasProvider heater : balloon.getHeaters()) {
             BlockEntityLiftingGasProvider.ClientBalloonInfo info = getClientBalloonInfo(heater);
 
-            if (info != null) {
-                double d = info.clientBalloonLift() * heater.getAirPressure(info, level);
+            if (info == null)
+                continue;
 
-                if (info.clientBalloonFilled() > 0.01)
-                    d *= heater.getClientPredictedVolume() / info.clientBalloonFilled();
+            double d = info.clientBalloonLift() * heater.getAirPressure(info, level);
 
-                lift += d;
-            }
+            if (info.clientBalloonFilled() > 0.01)
+                d *= heater.getClientPredictedVolume() / info.clientBalloonFilled();
+
+            lift += d;
         }
 
         return lift;

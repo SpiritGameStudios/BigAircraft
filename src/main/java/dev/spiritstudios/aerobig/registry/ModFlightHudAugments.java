@@ -1,6 +1,7 @@
 package dev.spiritstudios.aerobig.registry;
 
 import com.tterrag.registrate.providers.RegistrateLangProvider;
+import dev.eriksonn.aeronautics.index.AeroBlockEntityTypes;
 import dev.spiritstudios.aerobig.BigAircraft;
 import dev.spiritstudios.aerobig.flight_hud.FlightHudAugmentType;
 import dev.spiritstudios.aerobig.flight_hud.augment_types.*;
@@ -32,14 +33,14 @@ public final class ModFlightHudAugments {
         VelocitySensorFlightHudAugment::new
     );
 
-    public static final DeferredHolder<FlightHudAugmentType<?>, HotAirBurnerFlightHudAugment> HOT_AIR_BURNER = register(
+    public static final DeferredHolder<FlightHudAugmentType<?>, BalloonHeaterFlightHudAugment<?>> HOT_AIR_BURNER = register(
         "hot_air_burner",
-        HotAirBurnerFlightHudAugment::new
+        () -> new BalloonHeaterFlightHudAugment<>(AeroBlockEntityTypes.HOT_AIR_BURNER)
     );
 
-    public static final DeferredHolder<FlightHudAugmentType<?>, SteamVentFlightHudAugment> STEAM_VENT = register(
+    public static final DeferredHolder<FlightHudAugmentType<?>, BalloonHeaterFlightHudAugment<?>> STEAM_VENT = register(
         "steam_vent",
-        SteamVentFlightHudAugment::new
+        () -> new BalloonHeaterFlightHudAugment<>(AeroBlockEntityTypes.STEAM_VENT)
     );
 
     public static final DeferredHolder<FlightHudAugmentType<?>, PortableEngineFlightHudAugment> PORTABLE_ENGINE = register(

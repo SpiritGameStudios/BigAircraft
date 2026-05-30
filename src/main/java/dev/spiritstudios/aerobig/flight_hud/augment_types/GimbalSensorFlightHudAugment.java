@@ -116,7 +116,7 @@ public class GimbalSensorFlightHudAugment extends FlightHudAugmentType<GimbalSen
             int halfLength = length / 2;
 
             if (degrees % DEGREE_INCREMENT == 0) {
-                numberRenderer.drawInt(wrapHeading(degrees), x, topOffset + halfLength + HEADING_TEXT_VERTICAL_PADDING);
+                numberRenderer.drawInt(wrapHeading(degrees), x, topOffset + halfLength);
             }
 
             vLine(graphics, x, topOffset - halfLength, length);
@@ -154,7 +154,7 @@ public class GimbalSensorFlightHudAugment extends FlightHudAugmentType<GimbalSen
 //                    0
 //            );
             numberRenderer.alignTo(Alignment.RIGHT);
-            numberRenderer.drawInt(degrees, windowCentreX - length - 8, y);
+            numberRenderer.drawInt(degrees, windowCentreX - length - LADDER_OFFSET_FROM_CENTER, y);
 //            graphics.pose().popPose();
 
 //            graphics.pose().pushPose();
@@ -165,7 +165,7 @@ public class GimbalSensorFlightHudAugment extends FlightHudAugmentType<GimbalSen
 //                    0
 //            );
             numberRenderer.alignTo(Alignment.LEFT);
-            numberRenderer.drawInt(degrees, windowCentreX + length + 8, y);
+            numberRenderer.drawInt(degrees, windowCentreX + length + LADDER_OFFSET_FROM_CENTER, y);
 //            graphics.pose().popPose();
         }
     }

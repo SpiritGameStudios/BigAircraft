@@ -5,27 +5,19 @@ import dev.simulated_team.simulated.content.blocks.velocity_sensor.VelocitySenso
 import dev.simulated_team.simulated.index.SimBlockEntityTypes;
 import dev.spiritstudios.aerobig.client.render.Alignment;
 import dev.spiritstudios.aerobig.client.render.FlightHudNumberRenderer;
-import dev.spiritstudios.aerobig.client.render.MonoNumberFont;
 import dev.spiritstudios.aerobig.flight_hud.FlightHudAugmentType;
-import dev.spiritstudios.aerobig.client.render.BigAircraftRenderTypes;
-import net.minecraft.SharedConstants;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.core.BlockPos;
 import net.minecraft.util.CommonColors;
-import org.joml.Vector3dc;
 
 import static dev.spiritstudios.aerobig.client.render.BigAircraftRenderTypes.GUI_INVERT;
 import static dev.spiritstudios.aerobig.client.render.BigAircraftRenderTypes.GUI_TEXTURED_INVERT;
-import static dev.spiritstudios.aerobig.client.render.FlightHudRenderer.renderOutline;
 import static dev.spiritstudios.aerobig.client.render.MonoNumberFont.BIG_BLOCK;
 import static dev.spiritstudios.aerobig.client.render.MonoNumberFont.STOCK_SANS;
 
-/**
- * TODO: move to new font system
- */
 public class VelocitySensorFlightHudAugment extends FlightHudAugmentType<VelocitySensorBlockEntity> {
     private static final double BLOCKS_PER_TICK_TO_KNOTS = 18000.0 / 463.0;
 
@@ -73,7 +65,7 @@ public class VelocitySensorFlightHudAugment extends FlightHudAugmentType<Velocit
         boolean switchedScissor = false;
 
         for (int i = 0; i < 1000; i += 10) {
-            int y = vCentre - (int) ((i - velocity));
+            int y = vCentre - (int) (i - velocity);
 
             if (!switchedScissor && y < boxMin - STOCK_SANS.textureHeight()) {
                 graphics.disableScissor();
@@ -85,7 +77,7 @@ public class VelocitySensorFlightHudAugment extends FlightHudAugmentType<Velocit
             graphics.hLine(GUI_INVERT, minX, maxX - 1, y, CommonColors.WHITE);
 
             if (i % 20 == 0) {
-                stock.drawInt(i, minX - 4, y - STOCK_SANS.textureHeight() / 2);
+                stock.drawInt(i, minX - 3, y - STOCK_SANS.textureHeight() / 2);
             }
         }
 

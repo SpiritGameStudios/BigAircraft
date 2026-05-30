@@ -74,7 +74,7 @@ public class AltitudeSensorFlightHudAugment extends FlightHudAugmentType<Altitud
             graphics.hLine(GUI_INVERT, minX + 1, maxX, y, CommonColors.WHITE);
 
             if (i % 10 == 0) {
-                stock.drawInt(i, maxX + 4, y - STOCK_SANS.textureHeight() / 2);
+                stock.drawInt(i, maxX + 3, y - STOCK_SANS.textureHeight() / 2);
             }
         }
 

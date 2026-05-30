@@ -7,7 +7,7 @@ import net.minecraft.resources.ResourceLocation;
  * A monospaced font used for flight hud rendering. Order the texture file as follows:
  * <code>0123456789-.</code>
  * @param id The resource location of the font.
- * @param spacing The space that should be applied between each character during rendering. Use negative numbers for textures with outlines.
+ * @param spacing The space that should be applied between each character during rendering. Use negative numbers for textures with outlines where the value is equal to the outline width, in pixels.
  * @param charWidth The width of each character, in pixels.
  * @param pointCharWidth The width of the decimal point "<code>.</code>" character, in pixels.
  * @param textureWidth The total width of the texture file, in pixels.
@@ -16,7 +16,7 @@ import net.minecraft.resources.ResourceLocation;
 public record MonoNumberFont(ResourceLocation id, int spacing, int charWidth, int pointCharWidth, int textureWidth, int textureHeight) {
 
     public static final MonoNumberFont BIG_BLOCK = forOutline(BigAircraft.id("sprites/aviation_display/font_big_block"), 1, 8, 4, 96, 12);
-    public static final MonoNumberFont STOCK_SANS = create(BigAircraft.id("sprites/aviation_display/font_stock_sans"), 3, 1, 36, 5);
+    public static final MonoNumberFont STOCK_SANS = forOutline(BigAircraft.id("sprites/aviation_display/font_stock_sans"), 1, 5, 3, 60, 7);
 
     public static MonoNumberFont forOutline(ResourceLocation id, int outlineWidth, int charWidth, int pointCharWidth, int textureWidth, int textureHeight) {
         return create(id, -outlineWidth, charWidth, pointCharWidth, textureWidth, textureHeight);

@@ -30,23 +30,21 @@ public class OpticalSensorFlightHudAugment extends FlightHudAugmentType<OpticalS
         int x = ICON_MARGIN * 2 + DockingConnectorFlightHudAugment.TEXTURE_SIZE;
         int y = graphics.guiHeight() - ICON_MARGIN - ICON_HEIGHT;
 
-        FlightHudRenderer.renderSprite(
+        boolean eyeOpen = blockEntity.hasHit();
+        FlightHudRenderer.renderBooleanConditionalSprite(
             graphics,
             TEXTURE,
             x,
             y,
             TEXTURE_WIDTH,
-            ICON_HEIGHT,
-            0.0F,
-            blockEntity.hasHit() ? 0.0F : ICON_HEIGHT,
-            TEXTURE_WIDTH,
             TEXTURE_HEIGHT,
-            BigAircraftRenderTypes.GUI_TEXTURED
+            ICON_HEIGHT,
+            eyeOpen
         );
 
-        if (blockEntity.hasHit()) {
-            double dist = blockEntity.getHitBlockDistance() - 0.5;
-            new FlightHudNumberRenderer(graphics, MonoNumberFont.BIG_BLOCK, BigAircraftRenderTypes.GUI_TEXTURED).drawDouble(dist, x + TEXTURE_WIDTH + 1, y);
+        if (eyeOpen) {
+            FlightHudNumberRenderer numberRenderer = new FlightHudNumberRenderer(graphics, MonoNumberFont.BIG_BLOCK, BigAircraftRenderTypes.GUI_TEXTURED);
+            numberRenderer.drawDouble(blockEntity.getHitBlockDistance() - 0.5, x + TEXTURE_WIDTH + 1, y);
         }
     }
 }

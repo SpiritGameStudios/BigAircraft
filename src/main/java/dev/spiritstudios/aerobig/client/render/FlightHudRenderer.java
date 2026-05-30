@@ -68,6 +68,25 @@ public class FlightHudRenderer {
         });
     }
 
+    /**
+     * Renders a sprite from a vertical spritesheet consisting of two entries: the top being used when {@code condition} is true, and the bottom for when it's false.
+     */
+    public static void renderBooleanConditionalSprite(GuiGraphics graphics, ResourceLocation id, float x, float y, int textureWidth, int textureHeight, int spriteHeight, boolean condition) {
+        FlightHudRenderer.renderSprite(
+            graphics,
+            id,
+            x,
+            y,
+            textureWidth,
+            spriteHeight,
+            0.0F,
+            condition ? 0.0F : spriteHeight,
+            textureWidth,
+            textureHeight,
+            BigAircraftRenderTypes.GUI_TEXTURED
+        );
+    }
+
     public static void renderSprite(GuiGraphics graphics, ResourceLocation id, float x, float y, float uWidth, float vHeight, float uPos, float vPos, int textureWidth, int textureHeight, Function<ResourceLocation, RenderType> renderType) {
         renderSprite(
             graphics,
