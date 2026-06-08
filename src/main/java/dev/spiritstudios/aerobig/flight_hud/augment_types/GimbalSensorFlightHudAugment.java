@@ -19,7 +19,7 @@ import net.minecraft.core.Direction;
 import net.minecraft.util.CommonColors;
 import net.minecraft.util.Mth;
 import net.minecraft.world.level.block.state.BlockState;
-import org.joml.Vector3d;
+import org.joml.*;
 
 /**
  * TODO: fix cancellation of the previous augment renderer. something to do with popPose maybe???
@@ -54,47 +54,37 @@ public class GimbalSensorFlightHudAugment extends FlightHudAugmentType<GimbalSen
 
     @Override
     public void render(GimbalSensorBlockEntity blockEntity, GuiGraphics graphics, Minecraft mc, ClientLevel level, ClientSubLevel subLevel, BlockPos blockPos, LocalPlayer player, float partialTick) {
-        Vector3d downNormal = JOMLConversion.atLowerCornerOf(Direction.DOWN.getNormal());
-        Vector3d forwardNormal = JOMLConversion.atLowerCornerOf(getForwardDirection(blockEntity.getBlockState()).getNormal());
-
         Pose3dc pose = subLevel.renderPose(partialTick);
 
-        pose.orientation().transformInverse(downNormal);
-        pose.orientation().transformInverse(forwardNormal);
-
-        float roll = getRadians(downNormal.y(), downNormal.x());
-        float pitch = getRadians(downNormal.y(), downNormal.z());
+        Vector3f angles = blockEntity.getBaseQuaternion().premul((float) pose.orientation().x(), (float) pose.orientation().y(), (float) pose.orientation().z(), (float) pose.orientation().w())
+                .getEulerAnglesYXZ(new Vector3f());
 
         int windowCentreX = graphics.guiWidth() / 2;
         int windowCentreY = graphics.guiHeight() / 2;
 
         FlightHudNumberRenderer numberRenderer = new FlightHudNumberRenderer(graphics, MonoNumberFont.STOCK_SANS, BigAircraftRenderTypes.GUI_TEXTURED_INVERT);
 
-        transformAndRenderLadder(graphics, graphics.pose(), numberRenderer, windowCentreX, windowCentreY, roll, pitch);
-        renderHeading(graphics, mc, numberRenderer, forwardNormal, windowCentreX);
+        transformAndRenderLadder(graphics, graphics.pose(), numberRenderer, windowCentreX, windowCentreY, angles);
+        renderHeading(graphics, mc, numberRenderer, angles, windowCentreX);
     }
 
-    private static Direction getForwardDirection(BlockState blockState) {
-        return Direction.get(Direction.AxisDirection.POSITIVE, blockState.getValue(GimbalSensorBlock.HORIZONTAL_AXIS));
-    }
-
-    private static void transformAndRenderLadder(GuiGraphics graphics, PoseStack pose, FlightHudNumberRenderer numberRenderer, int windowCentreX, int windowCentreY, float roll, float pitch) {
+    private static void transformAndRenderLadder(GuiGraphics graphics, PoseStack pose, FlightHudNumberRenderer numberRenderer, int windowCentreX, int windowCentreY, Vector3fc angles) {
         pose.pushPose();
 
         pose.translate(windowCentreX, windowCentreY, 0);
-        pose.mulPose(Axis.ZP.rotationDegrees(Mth.wrapDegrees(roll * Mth.RAD_TO_DEG)));
+        pose.mulPose(Axis.ZP.rotationDegrees(Mth.wrapDegrees(angles.z() * Mth.RAD_TO_DEG)));
         pose.translate(-windowCentreX, -windowCentreY, 0);
 
         int marginX = graphics.guiWidth() / 4;
         int marginY = graphics.guiHeight() / 4;
 
-        FlightHudRenderer.scissor(graphics, marginX, marginY, guiGraphics -> renderLadder(guiGraphics, numberRenderer, pitch, roll, windowCentreX, windowCentreY));
+        FlightHudRenderer.scissor(graphics, marginX, marginY, guiGraphics -> renderLadder(guiGraphics, numberRenderer, angles.x(), angles.z(), windowCentreX, windowCentreY));
 
         pose.popPose();
     }
 
-    private static void renderHeading(GuiGraphics graphics, Minecraft mc, FlightHudNumberRenderer numberRenderer, Vector3d forwardNormal, int windowCentreX) {
-        float yawDegrees = (getYaw(forwardNormal) * Mth.RAD_TO_DEG + 180) % 360;
+    private static void renderHeading(GuiGraphics graphics, Minecraft mc, FlightHudNumberRenderer numberRenderer, Vector3fc angles, int windowCentreX) {
+        float yawDegrees = (angles.y() * Mth.RAD_TO_DEG + 180) % 360;
 
         int left = graphics.guiWidth() / 3;
         int right = left * 2;
@@ -135,7 +125,7 @@ public class GimbalSensorFlightHudAugment extends FlightHudAugmentType<GimbalSen
 
     private static void renderLadder(GuiGraphics graphics, FlightHudNumberRenderer numberRenderer, float pitch, float roll, int windowCentreX, int windowCentreY) {
         for (int degrees = -360; degrees < 360; degrees += DEGREE_INCREMENT) {
-            float radians = degrees * Mth.DEG_TO_RAD + pitch;
+            float radians = degrees * Mth.DEG_TO_RAD - pitch;
             float magnitude = radians / Mth.PI * LADDER_SPACING;
 
             int up = (int) (-magnitude * graphics.guiHeight() + windowCentreY - 1);
@@ -154,7 +144,7 @@ public class GimbalSensorFlightHudAugment extends FlightHudAugmentType<GimbalSen
 //                    0
 //            );
             numberRenderer.alignTo(Alignment.RIGHT);
-            numberRenderer.drawInt(degrees, windowCentreX - length - LADDER_OFFSET_FROM_CENTER, y);
+            numberRenderer.drawInt(-degrees, windowCentreX - length - LADDER_OFFSET_FROM_CENTER, y);
 //            graphics.pose().popPose();
 
 //            graphics.pose().pushPose();
@@ -165,7 +155,7 @@ public class GimbalSensorFlightHudAugment extends FlightHudAugmentType<GimbalSen
 //                    0
 //            );
             numberRenderer.alignTo(Alignment.LEFT);
-            numberRenderer.drawInt(degrees, windowCentreX + length + LADDER_OFFSET_FROM_CENTER, y);
+            numberRenderer.drawInt(-degrees, windowCentreX + length + LADDER_OFFSET_FROM_CENTER, y);
 //            graphics.pose().popPose();
         }
     }
@@ -177,19 +167,4 @@ public class GimbalSensorFlightHudAugment extends FlightHudAugmentType<GimbalSen
     private static void hLine(GuiGraphics graphics, int x, int y, int length) {
         graphics.hLine(BigAircraftRenderTypes.GUI_INVERT, x, x + length, y, CommonColors.WHITE);
     }
-
-    private static float getRadians(double y, double a) {
-        return a * a > Mth.EPSILON ? (float) Mth.atan2(a, -y) : 0.0F;
-    }
-
-    private static float getYaw(Vector3d forwardNormal) {
-        float yaw = 0.0F;
-
-        if (forwardNormal.x * forwardNormal.x > Mth.EPSILON) {
-            yaw = (float) -Mth.atan2(-forwardNormal.x, forwardNormal.z) + Mth.PI;
-        }
-
-        return yaw;
-    }
-
 }
